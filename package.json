@@ -1,0 +1,18 @@
+{
+  "name": "carousel-prompt-studio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "AI-powered Instagram carousel prompt generator",
+  "scripts": {
+    "start": "node api/index.js",
+    "vercel-dev": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.1"
+  }
+}
