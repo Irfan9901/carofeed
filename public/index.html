@@ -994,8 +994,8 @@ async function renderUserList() {
 function showLoginModal() {
   document.getElementById("login-form").classList.remove("hidden");
   document.getElementById("forgot-form").classList.add("hidden");
-  document.getElementById("inp-login-name").value = "";
-  document.getElementById("inp-login-email").value = "";
+  document.getElementById("inp-login-name").value = localStorage.getItem("cps_last_name") || "";
+  document.getElementById("inp-login-email").value = localStorage.getItem("cps_last_email") || "";
   document.getElementById("inp-login-password").value = "";
   document.getElementById("inp-forgot-email").value = "";
   document.getElementById("inp-forgot-phone").value = "";
@@ -2125,14 +2125,17 @@ function bindInputs() {
     const name = document.getElementById("inp-login-name").value.trim();
     const email = document.getElementById("inp-login-email").value.trim();
     const password = document.getElementById("inp-login-password").value;
-    if (!name || !email) { showToast("Isi nama dan email", "error"); return; }
+    if (!email) { showToast("Isi email", "error"); return; }
+    if (!password) { showToast("Isi password", "error"); return; }
     try {
       const result = await api("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name: name || undefined, email, password }),
       });
       storeToken(result.token);
       state.currentUser = result.user;
+      try { localStorage.setItem("cps_last_name", name); } catch {}
+      try { localStorage.setItem("cps_last_email", email); } catch {}
       renderUserMenu();
       applyRoleVisibility();
       document.getElementById("login-modal").classList.add("hidden");

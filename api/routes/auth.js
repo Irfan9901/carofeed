@@ -35,14 +35,14 @@ async function ensureAdminExists() {
 
 router.post('/login', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password required' });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password required' });
     }
 
     const users = await ensureAdminExists();
     const user = users.find(
-      (u) => u.name.toLowerCase() === name.toLowerCase() && u.email.toLowerCase() === email.toLowerCase()
+      (u) => u.email.toLowerCase() === email.toLowerCase()
     );
 
     if (!user) return res.status(401).json({ error: 'User not found' });
