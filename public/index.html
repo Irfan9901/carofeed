@@ -255,9 +255,9 @@
             <div>
               <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Palet warna</label>
               <div class="flex gap-2 items-center">
-                <input id="inp-color-1" type="color" class="color-swatch rounded-lg border cursor-pointer p-0.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-                <input id="inp-color-2" type="color" class="color-swatch rounded-lg border cursor-pointer p-0.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-                <input id="inp-color-3" type="color" class="color-swatch rounded-lg border cursor-pointer p-0.5" style="background:var(--bg-card); border-color:var(--border-soft)">
+                <button id="inp-color-1" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                <button id="inp-color-2" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                <button id="inp-color-3" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
                 <input id="inp-palette" type="text" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm hidden" placeholder="navy, putih, emas">
               </div>
             </div>
@@ -446,6 +446,32 @@
     <i class="ti ti-alert-circle text-2xl mb-3" style="color:var(--amber)"></i>
     <p class="text-sm mb-4" style="color:var(--cream)">Pilih niche terlebih dahulu</p>
     <button id="btn-close-niche" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--amber);color:#1a1a1a">Tutup</button>
+  </div>
+</div>
+
+<!-- COLOR PICKER MODAL -->
+<div id="color-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full mx-4 p-5" style="max-width:340px; background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Pilih Warna</h3>
+      <button id="btn-close-color" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb-3 rounded-lg overflow-hidden" style="height:180px">
+      <canvas id="color-canvas" class="w-full h-full" style="cursor:crosshair"></canvas>
+    </div>
+    <div class="flex items-center gap-3 mb-3">
+      <div id="color-preview" class="rounded-lg border flex-shrink-0" style="width:36px;height:36px;border-color:var(--border-soft)"></div>
+      <div class="flex-1 flex items-center gap-2">
+        <span class="text-[10px]" style="color:var(--ink-faint)">H</span>
+        <input id="color-hue" type="range" min="0" max="360" value="0" class="flex-1" style="accent-color:var(--amber);height:6px">
+      </div>
+    </div>
+    <div class="flex gap-2 mb-3">
+      <span class="text-[10px] self-center" style="color:var(--ink-faint)">#</span>
+      <input id="color-hex" type="text" maxlength="6" class="input-field flex-1 rounded-lg px-3 py-2 text-xs font-mono" placeholder="HEX">
+      <button id="btn-apply-color" class="rounded-lg px-4 py-2 text-xs font-medium" style="background:var(--amber);color:#1A1408">Pakai</button>
+    </div>
+    <div id="color-presets" class="flex gap-1.5 flex-wrap"></div>
   </div>
 </div>
 

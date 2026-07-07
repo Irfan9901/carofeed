@@ -454,15 +454,137 @@ function populateVisualCategory() {
   el.value = state.visualCategory;
 }
 
+function updateColorSwatches() {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById(`inp-color-${i}`);
+    if (el) el.style.background = state[`color${i}`];
+  }
+}
+
 function applyStylePalette(styleId) {
   const palette = STYLE_PALETTES[styleId];
   if (!palette || palette.length === 0) return;
   state.color1 = palette[0] || state.color1;
   state.color2 = palette[1] || state.color2;
   state.color3 = palette[2] || state.color3;
-  document.getElementById("inp-color-1").value = state.color1;
-  document.getElementById("inp-color-2").value = state.color2;
-  document.getElementById("inp-color-3").value = state.color3;
+  updateColorSwatches();
+}
+
+// ── Color Picker ──
+
+let _cpTarget = null;
+let _cpH = 0, _cpS = 100, _cpV = 100;
+
+function hsvToHex(h, s, v) {
+  s /= 100; v /= 100;
+  const c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; }
+  else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { g = c; b = x; }
+  else if (h < 240) { g = x; b = c; }
+  else if (h < 300) { r = x; b = c; }
+  else { r = c; b = x; }
+  const toHex = (n) => Math.round((n + m) * 255).toString(16).padStart(2, "0");
+  return "#" + toHex(r) + toHex(g) + toHex(b);
+}
+
+function hexToHsv(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+  const d = mx - mn;
+  let h = 0;
+  if (d) {
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0)) * 60;
+    else if (mx === g) h = ((b - r) / d + 2) * 60;
+    else h = ((r - g) / d + 4) * 60;
+  }
+  return { h, s: mx ? (d / mx) * 100 : 0, v: mx * 100 };
+}
+
+function drawColorField() {
+  const canvas = document.getElementById("color-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * 2;
+  canvas.height = rect.height * 2;
+  ctx.scale(2, 2);
+  const w = rect.width, h = rect.height;
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const s = (x / w) * 100;
+      const v = (1 - y / h) * 100;
+      const hex = hsvToHex(_cpH, s, v);
+      ctx.fillStyle = hex;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+function getColorFromCanvas(x, y) {
+  const rect = document.getElementById("color-canvas").parentElement.getBoundingClientRect();
+  const sx = Math.max(0, Math.min(1, x / rect.width));
+  const sy = Math.max(0, Math.min(1, y / rect.height));
+  _cpS = sx * 100;
+  _cpV = (1 - sy) * 100;
+  const hex = hsvToHex(_cpH, _cpS, _cpV);
+  document.getElementById("color-preview").style.background = hex;
+  document.getElementById("color-hex").value = hex.slice(1);
+}
+
+function handleColorEvent(e) {
+  e.preventDefault();
+  const rect = document.getElementById("color-canvas").parentElement.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  getColorFromCanvas(clientX - rect.left, clientY - rect.top);
+}
+
+function openColorPicker(target) {
+  _cpTarget = target;
+  const currentHex = state[target];
+  const hsv = hexToHsv(currentHex);
+  _cpH = hsv.h;
+  _cpS = hsv.s;
+  _cpV = hsv.v;
+
+  document.getElementById("color-preview").style.background = currentHex;
+  document.getElementById("color-hex").value = currentHex.slice(1);
+  document.getElementById("color-hue").value = _cpH;
+
+  // Populate presets from current style palette
+  const presetsEl = document.getElementById("color-presets");
+  const palette = state.stylePreset ? STYLE_PALETTES[state.stylePreset] : null;
+  if (palette && palette.length) {
+    presetsEl.innerHTML = palette.map(c =>
+      `<button class="preset-chip rounded-lg border" style="width:28px;height:28px;background:${c};border-color:var(--border-soft)" data-color="${c}"></button>`
+    ).join("");
+  } else {
+    presetsEl.innerHTML = "";
+  }
+
+  // Set up canvas
+  const canvas = document.getElementById("color-canvas");
+  const parent = canvas.parentElement;
+  parent.style.height = parent.offsetWidth > 0 ? parent.offsetWidth + "px" : "180px";
+  setTimeout(() => { drawColorField(); }, 50);
+
+  document.getElementById("color-modal").classList.remove("hidden");
+}
+
+function applyColor() {
+  if (!_cpTarget) return;
+  const hex = "#" + document.getElementById("color-hex").value.replace(/[^0-9a-fA-F]/g, "").slice(0, 6);
+  if (hex.length === 7) {
+    state[_cpTarget] = hex;
+    updateColorSwatches();
+  }
+  document.getElementById("color-modal").classList.add("hidden");
+  _cpTarget = null;
 }
 
 function renderStylePresets() {
@@ -675,8 +797,7 @@ function resetApp(silent) {
   document.getElementById("inp-count").value = "";
   document.getElementById("inp-ratio").value = "";
   document.getElementById("inp-customstyle").value = "";
-  document.getElementById("inp-color-1").value = state.color1;
-  document.getElementById("inp-color-2").value = state.color2;
+  updateColorSwatches();
   document.getElementById("inp-palette").value = "";
   document.getElementById("inp-brand").value = "";
   document.getElementById("custom-ratio-fields").classList.add("hidden");
@@ -1167,11 +1288,70 @@ function bindInputs() {
   });
 
   document.getElementById("inp-customstyle").addEventListener("input", (e) => { state.customStyle = e.target.value; });
-  document.getElementById("inp-color-1").addEventListener("input", (e) => { state.color1 = e.target.value; });
-  document.getElementById("inp-color-2").addEventListener("input", (e) => { state.color2 = e.target.value; });
-  document.getElementById("inp-color-3").addEventListener("input", (e) => { state.color3 = e.target.value; });
+  document.getElementById("inp-color-1").addEventListener("click", () => openColorPicker("color1"));
+  document.getElementById("inp-color-2").addEventListener("click", () => openColorPicker("color2"));
+  document.getElementById("inp-color-3").addEventListener("click", () => openColorPicker("color3"));
   document.getElementById("inp-palette").addEventListener("input", (e) => { state.palette = e.target.value; });
   document.getElementById("inp-brand").addEventListener("input", (e) => { state.brandNote = e.target.value; });
+
+  // ── Color Picker Modal ──
+  const canvas = document.getElementById("color-canvas");
+  if (canvas) {
+    let picking = false;
+    function onColorMove(e) { if (picking) handleColorEvent(e); }
+    canvas.addEventListener("mousedown", (e) => { picking = true; handleColorEvent(e); });
+    canvas.addEventListener("mousemove", onColorMove);
+    document.addEventListener("mouseup", () => { picking = false; });
+    canvas.addEventListener("touchstart", (e) => { picking = true; handleColorEvent(e); }, { passive: false });
+    canvas.addEventListener("touchmove", (e) => { if (picking) handleColorEvent(e); }, { passive: false });
+    canvas.addEventListener("touchend", () => { picking = false; });
+  }
+
+  document.getElementById("color-hue").addEventListener("input", (e) => {
+    _cpH = Number(e.target.value);
+    drawColorField();
+    const hex = hsvToHex(_cpH, _cpS, _cpV);
+    document.getElementById("color-preview").style.background = hex;
+    document.getElementById("color-hex").value = hex.slice(1);
+  });
+
+  document.getElementById("color-hex").addEventListener("input", (e) => {
+    const val = "#" + e.target.value.replace(/[^0-9a-fA-F]/g, "").slice(0, 6);
+    if (val.length === 7) {
+      document.getElementById("color-preview").style.background = val;
+      const hsv = hexToHsv(val);
+      _cpH = hsv.h; _cpS = hsv.s; _cpV = hsv.v;
+      document.getElementById("color-hue").value = _cpH;
+      drawColorField();
+    }
+  });
+  document.getElementById("color-hex").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") applyColor();
+  });
+
+  document.getElementById("btn-apply-color").addEventListener("click", applyColor);
+  document.getElementById("btn-close-color").addEventListener("click", () => {
+    document.getElementById("color-modal").classList.add("hidden");
+    _cpTarget = null;
+  });
+  document.getElementById("color-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      document.getElementById("color-modal").classList.add("hidden");
+      _cpTarget = null;
+    }
+  });
+  document.getElementById("color-presets").addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-color]");
+    if (chip) {
+      const c = chip.getAttribute("data-color");
+      document.getElementById("color-preview").style.background = c;
+      document.getElementById("color-hex").value = c.slice(1);
+      const hsv = hexToHsv(c);
+      _cpH = hsv.h; _cpS = hsv.s; _cpV = hsv.v;
+      document.getElementById("color-hue").value = _cpH;
+      drawColorField();
+    }
+  });
 
   function populateSubniche() {
     const el = document.getElementById("inp-evergreen-niche");
@@ -1535,9 +1715,7 @@ async function init() {
   bindInputs();
   renderSlidesArea();
 
-  document.getElementById("inp-color-1").value = state.color1;
-  document.getElementById("inp-color-2").value = state.color2;
-  document.getElementById("inp-color-3").value = state.color3;
+  updateColorSwatches();
   updateRatioIcon();
 
   document.addEventListener("keydown", (e) => {

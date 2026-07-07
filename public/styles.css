@@ -190,10 +190,14 @@
     .flex-row.gap-2.mb-2{ flex-direction:column; }
     header p.text-\[11px\]{ display:none; }
   }
-  .color-swatch{
+  .color-swatch-btn{
     width:40px; height:40px;
     min-width:40px; min-height:40px;
+    padding:2px;
   }
+  .color-swatch-btn::-webkit-color-swatch-wrapper{ padding:0; }
+  .color-swatch-btn::-webkit-color-swatch{ border:none; border-radius:6px; }
+  #color-canvas{ touch-action:none; }
   @media (max-width:480px){
     body{ overflow-x:hidden; }
     header{ padding-left:16px; padding-right:16px; }
@@ -201,7 +205,7 @@
     .modal-row{ flex-direction:column; }
     .modal-row .input-field{ width:100%; }
     .carousel-card.w-44{ width:140px; }
-    .color-swatch{
+    .color-swatch-btn{
       width:48px; height:48px;
       min-width:48px; min-height:48px;
     }
