@@ -198,6 +198,28 @@
   .color-swatch-btn::-webkit-color-swatch-wrapper{ padding:0; }
   .color-swatch-btn::-webkit-color-swatch{ border:none; border-radius:6px; }
   #color-canvas{ touch-action:none; }
+
+  #color-hue{
+    -webkit-appearance:none; appearance:none;
+    height:8px; border-radius:4px;
+    background:linear-gradient(to right,
+      hsl(0,100%,50%), hsl(30,100%,50%), hsl(60,100%,50%), hsl(90,100%,50%),
+      hsl(120,100%,50%), hsl(150,100%,50%), hsl(180,100%,50%), hsl(210,100%,50%),
+      hsl(240,100%,50%), hsl(270,100%,50%), hsl(300,100%,50%), hsl(330,100%,50%), hsl(360,100%,50%)
+    );
+    outline:none;
+  }
+  #color-hue::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none;
+    width:18px; height:18px; border-radius:50%;
+    background:var(--cream); border:2px solid var(--border-strong);
+    cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
+  #color-hue::-moz-range-thumb{
+    width:18px; height:18px; border-radius:50%;
+    background:var(--cream); border:2px solid var(--border-strong);
+    cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,.4);
+  }
   @media (max-width:480px){
     body{ overflow-x:hidden; }
     header{ padding-left:16px; padding-right:16px; }
