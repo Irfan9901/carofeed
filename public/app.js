@@ -1749,6 +1749,7 @@ let _pickerTarget = null;
 
 function showPicker(el) {
   _pickerTarget = el;
+  el.blur();
   const overlay = document.getElementById("picker-overlay");
   const sheet = document.getElementById("picker-sheet");
   const container = document.getElementById("picker-options");
@@ -1800,10 +1801,15 @@ function initMobilePicker() {
   }
   document.querySelectorAll("select.input-field:not([data-mp])").forEach((el) => {
     el.setAttribute("data-mp", "1");
-    el.addEventListener("touchstart", (e) => {
+    const tap = (e) => {
       if (_pickerTarget !== el) showPicker(el);
       e.preventDefault();
-    }, { passive: false });
+      el.blur();
+    };
+    el.addEventListener("touchstart", tap, { passive: false });
+    el.addEventListener("touchend", tap, { passive: false });
+    el.addEventListener("click", (e) => { e.preventDefault(); el.blur(); if (_pickerTarget !== el) showPicker(el); });
+    el.addEventListener("focus", (e) => { e.target.blur(); });
   });
 }
 initMobilePicker();
