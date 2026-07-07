@@ -191,6 +191,8 @@
     header p.text-\[11px\]{ display:none; }
     #carousel-track{ display:none; }
     #slides-area .flex.items-center.justify-between p:last-child{ display:none; }
+    #empty-state .desktop-only{ display:none; }
+    #empty-state .mobile-only{ display:inline; }
   }
   .color-swatch-btn{
     width:40px; height:40px;
