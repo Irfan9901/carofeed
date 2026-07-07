@@ -711,13 +711,13 @@ function renderSlideList() {
       </div>
 
       <label class="block text-[11px] mb-1" style="color:var(--ink-soft)">Headline</label>
-      <input data-field="headline" data-id="${s.id}" type="text" value="${escapeHtml(s.headline)}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="Judul singkat slide ini">
+      <textarea data-field="headline" data-id="${s.id}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="Judul singkat slide ini" rows="1">${escapeHtml(s.headline)}</textarea>
 
       <label class="block text-[11px] mb-1" style="color:var(--ink-soft)">Isi teks singkat</label>
-      <input data-field="body" data-id="${s.id}" type="text" value="${escapeHtml(s.body)}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="Kalimat pendukung, 1 kalimat">
+      <textarea data-field="body" data-id="${s.id}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="Kalimat pendukung, 1 kalimat" rows="1">${escapeHtml(s.body)}</textarea>
 
       <label class="block text-[11px] mb-1" style="color:var(--ink-soft)">Ide visual utama</label>
-      <input data-field="visualIdea" data-id="${s.id}" type="text" value="${escapeHtml(s.visualIdea)}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="contoh: ilustrasi celengan dan grafik naik">
+      <textarea data-field="visualIdea" data-id="${s.id}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="contoh: ilustrasi celengan dan grafik naik" rows="1">${escapeHtml(s.visualIdea)}</textarea>
 
       <button data-copy-json="${s.id}" class="btn-ghost w-full rounded-lg py-2 text-xs flex items-center justify-center gap-1.5 opacity-70 hover:opacity-100">
         <i class="ti ti-code text-sm"></i> Copy JSON slide ini
@@ -734,7 +734,13 @@ function renderSlideList() {
         slide[field] = e.target.value;
         renderCarouselTrack();
       }
+      e.target.style.height = "auto";
+      e.target.style.height = e.target.scrollHeight + "px";
     });
+  });
+  list.querySelectorAll("textarea[data-field]").forEach((t) => {
+    t.style.height = "auto";
+    t.style.height = t.scrollHeight + "px";
   });
 
   list.querySelectorAll("[data-remove]").forEach((btn) => {
@@ -1430,7 +1436,6 @@ function bindInputs() {
     renderSlidesArea();
   });
 
-  document.getElementById("btn-generate-json").addEventListener("click", handleGenerateJson);
   document.getElementById("btn-copy-json").addEventListener("click", handleCopyJson);
   document.getElementById("btn-download-json").addEventListener("click", handleDownloadJson);
   document.getElementById("json-output").addEventListener("click", () => {
