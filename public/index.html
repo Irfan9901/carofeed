@@ -502,9 +502,9 @@
 
 <div id="picker-overlay" class="hidden fixed inset-0 z-[60]" style="background:rgba(0,0,0,0)">
   <div id="picker-backdrop" class="absolute inset-0"></div>
-  <div id="picker-sheet" class="absolute bottom-0 left-0 right-0 max-h-[70vh] min-h-[20vh] overflow-y-auto rounded-t-2xl border-t shadow-2xl px-2 pb-8 pt-2 flex flex-col" style="background:var(--bg-card); border-color:var(--border-soft); transform:translateY(100%)">
-    <div class="w-9 h-1 rounded-full mx-auto mb-3" style="background:var(--ink-faint)"></div>
-    <div id="picker-options" class="flex flex-col gap-1"></div>
+  <div id="picker-sheet" class="absolute bottom-0 left-0 right-0 max-h-[70vh] rounded-t-2xl border-t shadow-2xl flex flex-col" style="background:var(--bg-card); border-color:var(--border-soft); transform:translateY(100%)">
+    <div class="w-9 h-1 rounded-full mx-auto my-3 flex-shrink-0" style="background:var(--ink-faint)"></div>
+    <div id="picker-options" class="flex-1 flex flex-col gap-1 overflow-y-auto min-h-0 px-2 pb-8" style="-webkit-overflow-scrolling:touch"></div>
   </div>
 </div>
 

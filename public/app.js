@@ -1782,7 +1782,6 @@ function hidePicker() {
 }
 
 document.getElementById("picker-backdrop").addEventListener("click", hidePicker);
-document.getElementById("picker-backdrop").addEventListener("touchstart", (e) => { e.preventDefault(); hidePicker(); }, { passive: false });
 document.getElementById("picker-options").addEventListener("click", (e) => {
   const opt = e.target.closest(".picker-option");
   if (!opt || !_pickerTarget) return;
