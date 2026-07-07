@@ -190,6 +190,7 @@
     .flex-row.gap-2.mb-2{ flex-direction:column; }
     header p.text-\[11px\]{ display:none; }
     #carousel-track{ display:none; }
+    #slides-area .flex.items-center.justify-between p:last-child{ display:none; }
   }
   .color-swatch-btn{
     width:40px; height:40px;
