@@ -1782,6 +1782,7 @@ function hidePicker() {
 }
 
 document.getElementById("picker-backdrop").addEventListener("click", hidePicker);
+document.getElementById("picker-backdrop").addEventListener("touchstart", (e) => { e.preventDefault(); hidePicker(); }, { passive: false });
 document.getElementById("picker-options").addEventListener("click", (e) => {
   const opt = e.target.closest(".picker-option");
   if (!opt || !_pickerTarget) return;
@@ -1792,19 +1793,21 @@ document.getElementById("picker-options").addEventListener("click", (e) => {
 });
 
 function initMobilePicker() {
-  if (window.innerWidth > 640) return;
-  document.querySelectorAll("select.input-field").forEach((el) => {
-    el.addEventListener("click", (e) => {
-      e.preventDefault();
-      showPicker(el);
+  if (window.innerWidth > 640) {
+    document.querySelectorAll("select.input-field[data-mp]").forEach((el) => {
+      el.removeAttribute("data-mp");
     });
-    el.addEventListener("mousedown", (e) => e.preventDefault());
+    return;
+  }
+  document.querySelectorAll("select.input-field:not([data-mp])").forEach((el) => {
+    el.setAttribute("data-mp", "1");
+    el.addEventListener("touchstart", (e) => {
+      if (_pickerTarget !== el) showPicker(el);
+      e.preventDefault();
+    }, { passive: false });
   });
 }
 initMobilePicker();
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 640) hidePicker();
-  else initMobilePicker();
-});
+window.addEventListener("resize", initMobilePicker);
 
 init();
