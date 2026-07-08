@@ -185,7 +185,7 @@
   @media (max-width:640px){
     body{ overflow-x:hidden; }
     main .grid-cols-2{ grid-template-columns:1fr; }
-    .step-rail.pl-10{ padding-left:32px; }
+    .step-rail.pl-10{ padding-left:44px; }
     .step-rail::before{ left:16px; }
     .flex-row.gap-2.mb-2{ flex-direction:column; }
     header p.text-\[11px\]{ display:none; }
