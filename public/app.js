@@ -264,7 +264,7 @@ function renderUserMenu() {
   const logoutBtn = document.getElementById("btn-logout");
   const aiBtn = document.getElementById("btn-ai-panel");
   const adminBtn = document.getElementById("btn-admin-panel");
-  if (label) label.textContent = u ? u.name : "Guest";
+  if (label) label.textContent = u ? "Welcome, " + u.name : "Guest";
   if (info) info.textContent = u ? `${u.name} (${u.role})` : "Belum login";
   if (u) {
     const isUserAdmin = u.role === "admin";

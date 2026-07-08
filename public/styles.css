@@ -29,7 +29,7 @@
   .step-rail::before{
     content:'';
     position:absolute;
-    left:15px; top:32px; bottom:-8px;
+    left:16px; top:32px; bottom:-8px;
     width:1px;
     background:linear-gradient(to bottom, var(--border-strong), transparent);
   }
@@ -182,19 +182,21 @@
     .layout-main .border-r{ border-right:none; border-bottom:1px solid var(--border-soft); }
     .layout-main > section{ overflow:visible; }
   }
+  #empty-state .mobile-only{ display:none; }
   @media (max-width:640px){
     body{ overflow-x:hidden; }
-    main .grid-cols-2{ grid-template-columns:1fr; }
-    .step-rail.pl-10{ padding-left:32px; }
-    .step-rail::before{ left:11px; }
+    .step-rail.pl-10{ padding-left:44px; }
+    .step-rail::before{ left:16px; }
     .flex-row.gap-2.mb-2{ flex-direction:column; }
     header p.text-\[11px\]{ display:none; }
     #carousel-track{ display:none; }
     #slides-area .flex.items-center.justify-between p:last-child{ display:none; }
+    #empty-state .desktop-only{ display:none; }
+    #empty-state .mobile-only{ display:inline; }
   }
   .color-swatch-btn{
-    width:40px; height:40px;
-    min-width:40px; min-height:40px;
+    width:40px; height:34px;
+    min-width:40px; min-height:34px;
     padding:2px;
   }
   .color-swatch-btn::-webkit-color-swatch-wrapper{ padding:0; }
@@ -230,7 +232,7 @@
     .modal-row .input-field{ width:100%; }
     .carousel-card.w-44{ width:140px; }
     .color-swatch-btn{
-      width:48px; height:48px;
-      min-width:48px; min-height:48px;
+      width:48px; height:40px;
+      min-width:48px; min-height:40px;
     }
   }
