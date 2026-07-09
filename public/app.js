@@ -295,6 +295,8 @@ function renderUserMenu() {
     aiBtn?.classList.add("hidden");
     adminBtn?.classList.add("hidden");
   }
+  const welcome = document.getElementById("welcome-user-name");
+  if (welcome) welcome.textContent = u ? u.name : "User";
 }
 
 async function renderUserList() {

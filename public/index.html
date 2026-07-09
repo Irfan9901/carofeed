@@ -303,12 +303,22 @@
     <section class="overflow-y-auto px-6 lg:px-10 py-7 flex flex-col gap-6" style="min-height:0">
 
       <!-- empty state -->
-      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-20">
+      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center py-16 px-6">
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 border" style="background:var(--bg-card); border-color:var(--border-soft)">
-          <i class="ti ti-photo-plus text-2xl" style="color:var(--ink-faint)"></i>
+          <i class="ti ti-sparkles text-2xl" style="color:var(--amber)"></i>
         </div>
-        <h3 class="font-display text-lg mb-1.5" style="color:var(--cream)">Slide carousel kamu muncul di sini</h3>
-        <p class="text-sm max-w-xs" style="color:var(--ink-faint)"><span class="desktop-only">Isi brief di panel kiri, lalu kartu slide akan tampil dan bisa kamu sesuaikan satu per satu.</span><span class="mobile-only">Isi brief di atas, lalu kartu slide akan tampil dan bisa kamu sesuaikan satu per satu.</span></p>
+        <h3 class="font-display text-lg mb-1" style="color:var(--cream)">Selamat Datang, <span id="welcome-user-name">User</span></h3>
+        <div class="text-xs max-w-md text-left mt-3 leading-relaxed" style="color:var(--ink-soft)">
+          <p class="mb-2 font-medium" style="color:var(--cream)">Berikut adalah cara penggunaan Carousel Studio:</p>
+          <ol class="list-decimal list-inside space-y-1.5">
+            <li><strong style="color:var(--cream)">Pilih Niche dan Subniche</strong> (opsional, anda bisa pilih atau tidak). Atau langsung isi Topik, Tujuan, dan Target Audiens di panel kiri.</li>
+            <li><strong style="color:var(--cream)">Atur Jumlah Slide</strong> dan rasio aspek yang diinginkan.</li>
+            <li><strong style="color:var(--cream)">Pilih Gaya Visual &amp; Palet Warna</strong> sesuai brand anda. Anda juga bisa menambahkan catatan gaya khusus.</li>
+            <li><strong style="color:var(--cream)">Generate Slide</strong> — klik tombol "Hasilkan Slide" dan AI akan menyusun konten tiap slide secara otomatis.</li>
+            <li><strong style="color:var(--cream)">Edit Setiap Slide</strong> — kartu slide bisa diklik untuk mengubah headline, body teks, dan ide visual. Tambah atau hapus slide sesuai kebutuhan.</li>
+            <li><strong style="color:var(--cream)">Copy / Download JSON</strong> — setelah puas, buka panel JSON prompt dan salin atau unduh untuk digunakan di image generator favoritmu.</li>
+          </ol>
+        </div>
       </div>
 
       <!-- slides area (hidden until topic+count set) -->
