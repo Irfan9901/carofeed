@@ -385,6 +385,43 @@
     </div>
 
     <div id="user-list" class="flex flex-col gap-1.5 overflow-y-auto min-h-0 flex-1"></div>
+    <button id="btn-prompt-ai" class="w-full mt-3 rounded-lg px-3 py-2 text-xs font-medium" style="background:var(--amber-dim); color:var(--cream)">Kelola Prompt AI</button>
+  </div>
+</div>
+
+<!-- PROMPT MODAL -->
+<div id="prompt-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-lg mx-4 p-5 max-h-[85vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Prompt AI</h3>
+      <button id="btn-close-prompt" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="flex flex-col gap-3 overflow-y-auto min-h-0 flex-1">
+      <div>
+        <label class="block text-xs mb-1" style="color:var(--ink-soft)">System Prompt — Ide dari Niche</label>
+        <textarea id="prompt-system-idea" class="input-field w-full rounded-lg px-3 py-2 text-xs" rows="4" style="resize:vertical"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs mb-1" style="color:var(--ink-soft)">User Prompt — Ide dari Niche <span class="text-[10px]" style="color:var(--ink-faint)">({{niche}})</span></label>
+        <textarea id="prompt-user-idea" class="input-field w-full rounded-lg px-3 py-2 text-xs" rows="2" style="resize:vertical"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs mb-1" style="color:var(--ink-soft)">System Prompt — Generate Slide</label>
+        <textarea id="prompt-system-slide" class="input-field w-full rounded-lg px-3 py-2 text-xs" rows="6" style="resize:vertical"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs mb-1" style="color:var(--ink-soft)">User Prompt — Generate Slide <span class="text-[10px]" style="color:var(--ink-faint)">({{topic}}, {{purpose}}, {{audience}}, {{slideCount}}, {{customStyle}})</span></label>
+        <textarea id="prompt-user-slide" class="input-field w-full rounded-lg px-3 py-2 text-xs" rows="4" style="resize:vertical"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs mb-1" style="color:var(--ink-soft)">Negative Prompt Default</label>
+        <textarea id="prompt-negative" class="input-field w-full rounded-lg px-3 py-2 text-xs" rows="2" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button id="btn-reset-prompts" class="rounded-lg px-3 py-2 text-xs" style="background:var(--bg-card-hover); color:var(--ink-soft)">Reset ke Default</button>
+      <button id="btn-save-prompts" class="rounded-lg px-4 py-2 text-xs font-medium flex-1" style="background:var(--amber); color:#1a1a1a">Simpan</button>
+    </div>
   </div>
 </div>
 

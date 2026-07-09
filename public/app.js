@@ -124,6 +124,18 @@ const STYLE_PALETTES = {
 
 const DEFAULT_NEGATIVE = "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides";
 
+const DEFAULT_PROMPTS = {
+  system_idea: "Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel max 10 kata, gunakan bahasa yang sama dengan bahasa topik\"}. Jangan tambahkan teks lain.",
+  user_idea: "Niche: {{niche}}",
+  system_slide: "Kamu adalah asisten penyusun konten carousel Instagram. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik max 8 kata, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung max 18 kata, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator, max 15 kata\"}. Slide pertama harus jadi cover/hook pembuka yang kuat. Buat kalimat pembuka pada slide pertama dengan hook yang emosional dan memikat audiens. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
+  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nJumlah slide: {{slideCount}}{{customStyleNote}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
+  negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides"
+};
+
+function replacePromptVars(tpl, vars) {
+  return tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] !== undefined ? vars[k] : `{{${k}}}`);
+}
+
 const NICHE_MAP = {
   "Kesehatan": { purpose: "edukasi", audience: "umum" },
   "Keuangan": { purpose: "edukasi", audience: "profesional" },
@@ -222,6 +234,7 @@ const state = {
   _abortController: null,
   authToken: sessionStorage.getItem("cps_auth_token") || localStorage.getItem("cps_auth_token") || "",
   currentUser: null,
+  prompts: null,
 };
 
 // ── API client ──
@@ -851,6 +864,14 @@ async function fetchFreeModels() {
   } catch { showToast("Gagal memuat daftar model", "error"); }
 }
 
+async function loadPrompts() {
+  try {
+    const data = await api("/api/ai/prompts");
+    state.prompts = data.prompts;
+    state.negativePrompt = data.prompts.negative_prompt;
+  } catch { state.prompts = { ...DEFAULT_PROMPTS }; }
+}
+
 function getActiveModels() {
   return state.activeModels.filter((id) => state.allModels.some((m) => m.id === id));
 }
@@ -967,10 +988,10 @@ async function generateIdeaFromNiche() {
 
   try {
     const defaults = NICHE_MAP[evergreen] || { purpose: "edukasi", audience: "umum" };
-    const text = await doAiRequest(
-      `Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {"topic": "string judul carousel max 10 kata, gunakan bahasa yang sama dengan bahasa topik"}. Jangan tambahkan teks lain.`,
-      `Niche: ${niche}`
-    );
+    const p = state.prompts || DEFAULT_PROMPTS;
+    const systemPrompt = p.system_idea;
+    const userPrompt = replacePromptVars(p.user_idea, { niche });
+    const text = await doAiRequest(systemPrompt, userPrompt);
     let cleaned = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
     const result = JSON.parse(cleaned);
     const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
@@ -1020,14 +1041,17 @@ async function aiGenerateSlideContent() {
   btn.disabled = true;
   const originalLabel = label.textContent;
 
-  const systemPrompt = `Kamu adalah asisten penyusun konten carousel Instagram. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {"headline": "string pendek menarik max 8 kata, bahasa sesuai topik", "body": "string 1 kalimat pendukung max 18 kata, bahasa sesuai topik", "visualIdea": "string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator, max 15 kata"}. Slide pertama harus jadi cover/hook pembuka yang kuat. Buat kalimat pembuka pada slide pertama dengan hook yang emosional dan memikat audiens. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.`;
-
-  const userPrompt = `Topik: ${state.topic}
-Tujuan: ${state.purpose}
-Target audiens: ${state.audience}
-Jumlah slide: ${state.slideCount}${state.customStyle.trim() ? `\nAturan tambahan: ${state.customStyle.trim()}` : ""}
- 
-Susun ${state.slideCount} slide untuk carousel ini.`;
+  const p = state.prompts || DEFAULT_PROMPTS;
+  const systemPrompt = p.system_slide;
+  const customStyleNote = state.customStyle.trim() ? `\nAturan tambahan: ${state.customStyle.trim()}` : "";
+  const userPrompt = replacePromptVars(p.user_slide, {
+    topic: state.topic,
+    purpose: state.purpose,
+    audience: state.audience,
+    slideCount: String(state.slideCount),
+    customStyle: state.customStyle,
+    customStyleNote,
+  });
 
   const modelsToTry = getActiveModels();
   let lastError = null;
@@ -1542,6 +1566,59 @@ function bindInputs() {
   document.getElementById("admin-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) document.getElementById("admin-modal").classList.add("hidden");
   });
+  // -- Prompt AI Modal --
+  async function openPromptModal() {
+    document.getElementById("admin-modal").classList.add("hidden");
+    document.getElementById("prompt-modal").classList.remove("hidden");
+    try {
+      const data = await api("/api/ai/prompts");
+      const p = data.prompts;
+      document.getElementById("prompt-system-idea").value = p.system_idea;
+      document.getElementById("prompt-user-idea").value = p.user_idea;
+      document.getElementById("prompt-system-slide").value = p.system_slide;
+      document.getElementById("prompt-user-slide").value = p.user_slide;
+      document.getElementById("prompt-negative").value = p.negative_prompt;
+    } catch (err) { showToast("Gagal memuat prompts", "error"); }
+  }
+  document.getElementById("btn-prompt-ai").addEventListener("click", openPromptModal);
+  document.getElementById("btn-close-prompt").addEventListener("click", () => {
+    document.getElementById("prompt-modal").classList.add("hidden");
+  });
+  document.getElementById("prompt-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) document.getElementById("prompt-modal").classList.add("hidden");
+  });
+  document.getElementById("btn-save-prompts").addEventListener("click", async () => {
+    const prompts = {
+      system_idea: document.getElementById("prompt-system-idea").value.trim(),
+      user_idea: document.getElementById("prompt-user-idea").value.trim(),
+      system_slide: document.getElementById("prompt-system-slide").value.trim(),
+      user_slide: document.getElementById("prompt-user-slide").value.trim(),
+      negative_prompt: document.getElementById("prompt-negative").value.trim(),
+    };
+    try {
+      await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
+      state.prompts = prompts;
+      state.negativePrompt = prompts.negative_prompt;
+      showToast("Prompt berhasil disimpan", "success");
+      document.getElementById("prompt-modal").classList.add("hidden");
+    } catch (err) { showToast(err.message, "error"); }
+  });
+  document.getElementById("btn-reset-prompts").addEventListener("click", async () => {
+    if (!confirm("Reset semua prompt ke default?")) return;
+    const prompts = { ...DEFAULT_PROMPTS };
+    document.getElementById("prompt-system-idea").value = prompts.system_idea;
+    document.getElementById("prompt-user-idea").value = prompts.user_idea;
+    document.getElementById("prompt-system-slide").value = prompts.system_slide;
+    document.getElementById("prompt-user-slide").value = prompts.user_slide;
+    document.getElementById("prompt-negative").value = prompts.negative_prompt;
+    try {
+      await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
+      state.prompts = prompts;
+      state.negativePrompt = prompts.negative_prompt;
+      showToast("Prompt direset ke default", "success");
+    } catch (err) { showToast(err.message, "error"); }
+  });
+  // -- AI Modal --
   document.getElementById("btn-ai-panel").addEventListener("click", async () => {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("inp-ai-api-key").value = "";
@@ -1806,6 +1883,7 @@ async function init() {
       renderUserMenu();
       applyRoleVisibility();
       await loadApiKeyAndModels();
+      await loadPrompts();
       if (state.openCodeApiKey) fetchFreeModels();
     } catch {
       clearToken();
