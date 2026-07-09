@@ -123,7 +123,7 @@ router.delete('/custom-models/:id', requireAdmin, async (req, res) => {
 router.get('/api-key', requireAuth, async (req, res) => {
   try {
     const cfg = await getConfig();
-    res.json({ hasKey: !!cfg.apiKeyEncrypted });
+    res.json({ hasKey: !!cfg.apiKeyEncrypted, keyPrefix: cfg.apiKeyEncrypted ? cfg.apiKeyEncrypted.substring(0, 12) + '...' : null });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -133,11 +133,15 @@ router.get('/api-key', requireAuth, async (req, res) => {
 router.put('/api-key', requireAdmin, async (req, res) => {
   try {
     const { apiKey } = req.body;
-    if (!apiKey || typeof apiKey !== 'string') {
-      return res.status(400).json({ error: 'API key required' });
-    }
     const cfg = await getConfig();
-    cfg.apiKeyEncrypted = encryptApiKey(apiKey);
+    if (apiKey) {
+      if (typeof apiKey !== 'string') {
+        return res.status(400).json({ error: 'API key must be a string' });
+      }
+      cfg.apiKeyEncrypted = encryptApiKey(apiKey);
+    } else {
+      cfg.apiKeyEncrypted = null;
+    }
     await saveConfig(cfg);
     res.json({ success: true });
   } catch (err) {

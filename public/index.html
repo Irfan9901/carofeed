@@ -402,7 +402,10 @@
         <button id="btn-toggle-ai-key" class="btn-ghost rounded-lg px-2.5 py-2.5 text-sm" title="Tampilkan/sembunyikan key">
           <i class="ti ti-eye text-base"></i>
         </button>
-        <span id="ai-key-status" class="text-xs flex-shrink-0" style="color:var(--ink-faint)"></span>
+        <div class="flex flex-col gap-1 flex-shrink-0">
+          <span id="ai-key-status" class="text-xs" style="color:var(--ink-faint)"></span>
+          <button id="btn-delete-api-key" class="text-[10px] text-left hidden hover:text-rose-400" style="color:var(--ink-faint)">Hapus API Key</button>
+        </div>
       </div>
     </div>
 

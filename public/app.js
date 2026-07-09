@@ -1529,12 +1529,22 @@ function bindInputs() {
   document.getElementById("admin-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) document.getElementById("admin-modal").classList.add("hidden");
   });
-  document.getElementById("btn-ai-panel").addEventListener("click", () => {
+  document.getElementById("btn-ai-panel").addEventListener("click", async () => {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("inp-ai-api-key").value = "";
+    document.getElementById("btn-delete-api-key").classList.add("hidden");
     document.getElementById("ai-key-status").textContent = "";
     document.getElementById("ai-modal").classList.remove("hidden");
     renderAIModelList();
+    try {
+      const keyStatus = await api("/api/ai/api-key");
+      if (keyStatus.hasKey) {
+        document.getElementById("ai-key-status").textContent = "✓ API Key tersimpan";
+        document.getElementById("btn-delete-api-key").classList.remove("hidden");
+      } else {
+        document.getElementById("ai-key-status").textContent = "Belum ada API Key";
+      }
+    } catch {}
   });
   document.getElementById("btn-close-ai").addEventListener("click", () => {
     document.getElementById("ai-modal").classList.add("hidden");
@@ -1565,12 +1575,25 @@ function bindInputs() {
         await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({ apiKey: val }) });
         state.openCodeApiKey = "(terpasang)";
         document.getElementById("ai-key-status").textContent = "✓ Tersimpan";
+        document.getElementById("btn-delete-api-key").classList.remove("hidden");
         showToast("API Key disimpan di server", "success");
       } catch (err) { showToast(err.message, "error"); }
     } else {
       document.getElementById("ai-key-status").textContent = "";
+      document.getElementById("btn-delete-api-key").classList.add("hidden");
     }
     });
+  document.getElementById("btn-delete-api-key").addEventListener("click", async () => {
+    if (!confirm("Hapus API Key yang tersimpan?")) return;
+    try {
+      await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({}) });
+      state.openCodeApiKey = "";
+      document.getElementById("inp-ai-api-key").value = "";
+      document.getElementById("ai-key-status").textContent = "Belum ada API Key";
+      document.getElementById("btn-delete-api-key").classList.add("hidden");
+      showToast("API Key dihapus", "success");
+    } catch (err) { showToast(err.message, "error"); }
+  });
   document.getElementById("btn-toggle-ai-key").addEventListener("click", () => {
     const inp = document.getElementById("inp-ai-api-key");
     const icon = document.querySelector("#btn-toggle-ai-key i");
@@ -1618,7 +1641,16 @@ function bindInputs() {
   document.getElementById("inp-custom-model")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") addCustomModel();
   });
-  document.getElementById("btn-refresh-ai-models")?.addEventListener("click", fetchFreeModels);
+  document.getElementById("btn-refresh-ai-models")?.addEventListener("click", async () => {
+    await fetchFreeModels();
+    try {
+      const keyStatus = await api("/api/ai/api-key");
+      if (keyStatus.hasKey) {
+        document.getElementById("ai-key-status").textContent = "✓ API Key tersimpan";
+        document.getElementById("btn-delete-api-key").classList.remove("hidden");
+      }
+    } catch {}
+  });
   // Enter to add user
   document.getElementById("inp-user-email").addEventListener("keydown", (e) => {
     if (e.key === "Enter") addUser();
