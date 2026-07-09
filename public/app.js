@@ -857,7 +857,7 @@ function renderAIModelList() {
     return `<div class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-card-hover)] group" style="color:var(--ink-soft)">
       <input type="checkbox" data-toggle-model="${m.id}" ${checked ? "checked" : ""} class="rounded flex-shrink-0" style="accent-color:var(--amber)">
       ${isCustom
-        ? `<input id="model-name-${m.id}" type="text" value="${m.name || m.id}" class="flex-1 bg-transparent text-xs px-1.5 py-0.5 rounded" style="border:1px solid transparent; outline:none; color:var(--cream); min-width:0" data-model-id="${m.id}" spellcheck="false">
+        ? `<input id="model-name-${m.id}" type="text" value="${m.name || m.id}" class="flex-1 text-xs px-1.5 py-0.5 rounded" style="background:#100E0A; border:1px solid var(--border-soft); color:var(--cream); min-width:0; outline:none" data-model-id="${m.id}" spellcheck="false">
            <span class="text-[10px] opacity-50 flex-shrink-0">kustom</span>`
         : `<span class="flex-1 text-xs">${m.name || m.id}</span>`
       }
