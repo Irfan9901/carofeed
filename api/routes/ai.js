@@ -16,7 +16,7 @@ const FREE_MODELS = [
 async function getConfig() {
   let cfg = await get('config');
   if (!cfg) {
-    cfg = { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [] };
+    cfg = { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [], archivedModels: [] };
     await set('config', cfg);
   }
   return cfg;
@@ -29,8 +29,10 @@ async function saveConfig(cfg) {
 router.get('/models', requireAuth, async (req, res) => {
   try {
     const cfg = await getConfig();
+    const archived = cfg.archivedModels || [];
+    const filteredFree = FREE_MODELS.filter((m) => !archived.includes(m.id));
     const customModels = (cfg.customModels || []).map((id) => ({ id, custom: true }));
-    const allModels = [...FREE_MODELS, ...customModels];
+    const allModels = [...filteredFree, ...customModels];
     res.json({
       models: allModels,
       activeModels: cfg.activeModels || allModels.map((m) => m.id),
@@ -112,6 +114,25 @@ router.delete('/custom-models/:id', requireAdmin, async (req, res) => {
     const cfg = await getConfig();
     cfg.customModels = (cfg.customModels || []).filter((m) => m !== req.params.id);
     cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== req.params.id);
+    await saveConfig(cfg);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.delete('/models/:id', requireAdmin, async (req, res) => {
+  try {
+    const cfg = await getConfig();
+    const id = req.params.id;
+    if (FREE_MODELS.some((m) => m.id === id)) {
+      cfg.archivedModels = [...new Set([...(cfg.archivedModels || []), id])];
+      cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== id);
+    } else {
+      cfg.customModels = (cfg.customModels || []).filter((m) => m !== id);
+      cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== id);
+    }
     await saveConfig(cfg);
     res.json({ success: true });
   } catch (err) {

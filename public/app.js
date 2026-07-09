@@ -861,7 +861,7 @@ function renderAIModelList() {
            <span class="text-[10px] opacity-50 flex-shrink-0">kustom</span>`
         : `<span class="flex-1 text-xs">${m.name || m.id}</span>`
       }
-      ${isCustom ? `<button data-remove-model="${m.id}" class="flex-shrink-0 text-rose-400 hover:text-rose-300 text-sm p-1" title="Hapus model"><i class="ti ti-trash"></i></button>` : ""}
+      ${`<button data-remove-model="${m.id}" class="flex-shrink-0 text-rose-400 hover:text-rose-300 text-sm p-1 opacity-60 hover:opacity-100" title="Hapus model"><i class="ti ti-trash"></i></button>`}
     </div>`;
   }).join("");
   // Inline rename on blur/Enter
@@ -1620,8 +1620,11 @@ function bindInputs() {
   document.getElementById("ai-model-list")?.addEventListener("click", async (e) => {
     const btn = e.target.closest("[data-remove-model]");
     if (btn) {
+      const modelId = btn.getAttribute("data-remove-model");
+      if (!confirm(`Hapus model "${modelId}"?`)) return;
       try {
-        await api(`/api/ai/custom-models/${btn.getAttribute("data-remove-model")}`, { method: "DELETE" });
+        await api(`/api/ai/models/${encodeURIComponent(modelId)}`, { method: "DELETE" });
+        showToast(`Model "${modelId}" dihapus`, "success");
         fetchFreeModels();
       } catch (err) { showToast(err.message, "error"); }
     }
