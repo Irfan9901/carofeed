@@ -860,12 +860,47 @@ function renderAIModelList() {
   list.innerHTML = state.allModels.map((m) => {
     const checked = state.activeModels.includes(m.id);
     const isCustom = state.customModels.includes(m.id);
-    return `<label class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs hover:bg-[var(--bg-card-hover)] cursor-pointer" style="color:var(--ink-soft)">
-      <input type="checkbox" data-toggle-model="${m.id}" ${checked ? "checked" : ""} class="rounded" style="accent-color:var(--amber)">
-      <span class="flex-1">${m.name || m.id}${isCustom ? ' <span class="text-[10px] opacity-50">(kustom)</span>' : ""}</span>
-      ${isCustom ? `<button data-remove-model="${m.id}" class="text-rose-400 hover:text-rose-300 text-sm p-0.5"><i class="ti ti-trash"></i></button>` : ""}
-    </label>`;
+    return `<div class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-card-hover)] group" style="color:var(--ink-soft)">
+      <input type="checkbox" data-toggle-model="${m.id}" ${checked ? "checked" : ""} class="rounded flex-shrink-0" style="accent-color:var(--amber)">
+      ${isCustom
+        ? `<input id="model-name-${m.id}" type="text" value="${m.name || m.id}" class="flex-1 bg-transparent text-xs px-1.5 py-0.5 rounded" style="border:1px solid transparent; outline:none; color:var(--cream); min-width:0" data-model-id="${m.id}" spellcheck="false">
+           <span class="text-[10px] opacity-50 flex-shrink-0">kustom</span>`
+        : `<span class="flex-1 text-xs">${m.name || m.id}</span>`
+      }
+      ${isCustom ? `<button data-remove-model="${m.id}" class="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-rose-400 hover:text-rose-300 text-sm p-1" title="Hapus model"><i class="ti ti-trash"></i></button>` : ""}
+    </div>`;
   }).join("");
+  // Inline rename on blur/Enter
+  list.querySelectorAll("[data-field-id]").forEach((input) => {
+    const id = input.getAttribute("data-field-id");
+    const save = async () => {
+      const val = input.value.trim();
+      if (!val || val === id) return;
+      try {
+        await api(`/api/ai/custom-models/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ id: val }) });
+        await fetchFreeModels();
+        showToast(`Model diubah menjadi "${val}"`, "success");
+      } catch (err) { showToast(err.message, "error"); }
+    };
+    input.addEventListener("blur", save);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { input.blur(); } });
+  });
+  // Also support the simpler data-model-id attribute used above
+  list.querySelectorAll("[data-model-id]").forEach((input) => {
+    const origId = input.getAttribute("data-model-id");
+    const save = async () => {
+      const val = input.value.trim();
+      if (!val || val === origId) return;
+      try {
+        await api(`/api/ai/custom-models/${encodeURIComponent(origId)}`, { method: "PUT", body: JSON.stringify({ id: val }) });
+        input.setAttribute("data-model-id", val);
+        await fetchFreeModels();
+        showToast(`Model diubah menjadi "${val}"`, "success");
+      } catch (err) { showToast(err.message, "error"); }
+    };
+    input.addEventListener("blur", save);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { input.blur(); } });
+  });
 }
 
 async function callOpenCode(systemPrompt, userPrompt, signal) {
@@ -1525,6 +1560,7 @@ function bindInputs() {
   document.getElementById("btn-ai-panel").addEventListener("click", () => {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("inp-ai-api-key").value = "";
+    document.getElementById("ai-key-status").textContent = "";
     document.getElementById("ai-modal").classList.remove("hidden");
     renderAIModelList();
   });
@@ -1556,8 +1592,11 @@ function bindInputs() {
       try {
         await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({ apiKey: val }) });
         state.openCodeApiKey = "(terpasang)";
+        document.getElementById("ai-key-status").textContent = "✓ Tersimpan";
         showToast("API Key disimpan di server", "success");
       } catch (err) { showToast(err.message, "error"); }
+    } else {
+      document.getElementById("ai-key-status").textContent = "";
     }
     const mainKeyInput = document.getElementById("inp-api-key");
     if (mainKeyInput) mainKeyInput.value = val ? "(tersimpan di server)" : "";

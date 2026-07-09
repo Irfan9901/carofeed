@@ -80,6 +80,33 @@ router.post('/custom-models', requireAdmin, async (req, res) => {
   }
 });
 
+router.put('/custom-models/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id: newId } = req.body;
+    if (!newId || typeof newId !== 'string') {
+      return res.status(400).json({ error: 'New model ID required' });
+    }
+    if (FREE_MODELS.some((m) => m.id === newId)) {
+      return res.status(409).json({ error: 'Model ID already exists in free list' });
+    }
+    const cfg = await getConfig();
+    const oldId = req.params.id;
+    if (!(cfg.customModels || []).includes(oldId)) {
+      return res.status(404).json({ error: 'Custom model not found' });
+    }
+    if ((cfg.customModels || []).includes(newId) && oldId !== newId) {
+      return res.status(409).json({ error: 'New model ID already exists' });
+    }
+    cfg.customModels = (cfg.customModels || []).map((m) => (m === oldId ? newId : m));
+    cfg.activeModels = (cfg.activeModels || []).map((m) => (m === oldId ? newId : m));
+    await saveConfig(cfg);
+    res.json({ success: true, id: newId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.delete('/custom-models/:id', requireAdmin, async (req, res) => {
   try {
     const cfg = await getConfig();
