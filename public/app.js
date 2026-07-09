@@ -1468,6 +1468,7 @@ function bindInputs() {
     showLoginModal();
   });
   document.getElementById("btn-logout").addEventListener("click", () => {
+    if (!confirm("Yakin ingin logout?")) return;
     resetApp(true);
     clearToken();
     state.currentUser = null;
