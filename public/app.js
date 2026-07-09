@@ -1652,6 +1652,17 @@ function bindInputs() {
   document.getElementById("inp-login-password").addEventListener("keydown", (e) => {
     if (e.key === "Enter") doLogin();
   });
+  document.getElementById("btn-toggle-login-pw").addEventListener("click", () => {
+    const inp = document.getElementById("inp-login-password");
+    const icon = document.querySelector("#btn-toggle-login-pw i");
+    if (inp.type === "password") {
+      inp.type = "text";
+      icon.className = "ti ti-eye-off text-lg";
+    } else {
+      inp.type = "password";
+      icon.className = "ti ti-eye text-lg";
+    }
+  });
   document.getElementById("login-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) e.stopPropagation();
   });
