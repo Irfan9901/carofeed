@@ -323,12 +323,6 @@ function applyRoleVisibility() {
   const isUserAdmin = isAdmin();
   document.getElementById("admin-only-section")?.classList.toggle("hidden", !isUserAdmin);
   document.getElementById("btn-admin-panel")?.classList.toggle("hidden", !isUserAdmin);
-  if (isUserAdmin) {
-    const apiKeyInput = document.getElementById("inp-api-key");
-    if (apiKeyInput && !apiKeyInput.value && state.openCodeApiKey) {
-      apiKeyInput.value = state.openCodeApiKey;
-    }
-  }
 }
 
 async function addUser() {
@@ -1421,30 +1415,8 @@ function bindInputs() {
   document.getElementById("btn-generate-idea").addEventListener("click", generateIdeaFromNiche);
   updateNicheGenerateBtn();
 
-  document.getElementById("inp-api-key").addEventListener("input", async (e) => {
-    const val = e.target.value;
-    if (val) {
-      try {
-        await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({ apiKey: val }) });
-        state.openCodeApiKey = "(terpasang)";
-      } catch (err) { showToast(err.message, "error"); }
-    }
-  });
-
   document.getElementById("inp-model").addEventListener("change", (e) => {
     state.openCodeModel = e.target.value;
-  });
-
-  document.getElementById("btn-toggle-key-visibility").addEventListener("click", () => {
-    const inp = document.getElementById("inp-api-key");
-    const icon = document.querySelector("#btn-toggle-key-visibility i");
-    if (inp.type === "password") {
-      inp.type = "text";
-      icon.className = "ti ti-eye-off text-base";
-    } else {
-      inp.type = "password";
-      icon.className = "ti ti-eye text-base";
-    }
   });
 
   document.getElementById("btn-refresh-models").addEventListener("click", fetchFreeModels);
@@ -1598,9 +1570,7 @@ function bindInputs() {
     } else {
       document.getElementById("ai-key-status").textContent = "";
     }
-    const mainKeyInput = document.getElementById("inp-api-key");
-    if (mainKeyInput) mainKeyInput.value = val ? "(tersimpan di server)" : "";
-  });
+    });
   document.getElementById("btn-toggle-ai-key").addEventListener("click", () => {
     const inp = document.getElementById("inp-ai-api-key");
     const icon = document.querySelector("#btn-toggle-ai-key i");
@@ -1762,9 +1732,8 @@ async function loadApiKeyAndModels() {
         .map((m) => `<option value="${m.id}" ${m.id === state.openCodeModel ? "selected" : ""}>${m.name || m.id}</option>`)
         .join("");
     }
-    if (isAdmin()) {
-      const apiKeyInput = document.getElementById("inp-api-key");
-      if (apiKeyInput && keyStatus.hasKey) apiKeyInput.value = "(tersimpan di server)";
+    if (isAdmin() && keyStatus.hasKey) {
+      document.getElementById("ai-key-status").textContent = "✓ Terpasang";
     }
   } catch {}
 }
