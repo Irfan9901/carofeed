@@ -221,6 +221,7 @@ const state = {
   lightingNote: "soft even lighting, no harsh shadows",
   compositionNote: "centered composition, balanced margins",
   negativePrompt: DEFAULT_NEGATIVE,
+  layout: "",
   slides: [],
   aiLoading: false,
   jsonGenerated: false,
@@ -453,6 +454,7 @@ function composeMainPrompt(slide) {
   if (state.lightingNote) parts.push(state.lightingNote + ".");
   if (state.compositionNote) parts.push(state.compositionNote + ".");
   if (state.brandNote) parts.push(state.brandNote + ".");
+  if (state.layout) parts.push(`Layout: ${state.layout.replace(/-/g, " ")}.`);
   parts.push("No watermark, no extra logos, leave clear space for overlay text if needed.");
   return parts.join(" ");
 }
@@ -813,6 +815,7 @@ function resetApp(silent) {
   state.brandNote = "";
   state.visualCategory = "";
   state.stylePreset = "";
+  state.layout = "";
   state.aspectRatio = "";
   state.customRatioW = "";
   state.customRatioH = "";
@@ -823,6 +826,7 @@ function resetApp(silent) {
   document.getElementById("inp-purpose").value = "";
   document.getElementById("inp-audience").value = "";
   document.getElementById("inp-visual-category").value = "";
+  document.getElementById("inp-layout").value = "";
   document.getElementById("inp-count").value = "";
   document.getElementById("inp-ratio").value = "";
   document.getElementById("inp-customstyle").value = "";
@@ -1147,6 +1151,7 @@ function buildSingleSlideJson(slide, idx) {
     aspect_ratio: getAspectRatioValue(),
     global_style: {
       preset: state.stylePreset,
+      layout: state.layout || null,
       style_tags: activeStyleTags(),
       palette: getPaletteString() || "konsisten di semua slide, pilih warna yang harmonis",
       lighting: state.lightingNote,
@@ -1169,6 +1174,7 @@ function buildJsonOutput() {
     aspect_ratio: getAspectRatioValue(),
     global_style: {
       preset: state.stylePreset,
+      layout: state.layout || null,
       style_tags: activeStyleTags(),
       palette: getPaletteString() || "konsisten di semua slide, pilih warna yang harmonis",
       lighting: state.lightingNote,
@@ -1448,6 +1454,9 @@ function bindInputs() {
     state.visualCategory = e.target.value;
     state.stylePreset = "";
     renderStylePresets();
+  });
+  document.getElementById("inp-layout").addEventListener("change", (e) => {
+    state.layout = e.target.value;
   });
 
   document.getElementById("btn-generate-idea").addEventListener("click", generateIdeaFromNiche);
