@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const { get, set } = require('../../lib/db');
 const { hashPassword, verifyPassword } = require('../../lib/crypto');
 const { generateToken, requireAuth } = require('../middleware/auth');
+const { normalizePhone } = require('../../lib/phone');
 
 const router = express.Router();
 
@@ -15,13 +16,6 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-function normalizePhone(phone) {
-  const digits = (phone || '').replace(/[^0-9]/g, '');
-  if (digits.startsWith('0')) return '62' + digits.slice(1);
-  if (digits.startsWith('8')) return '62' + digits;
-  return digits;
-}
 
 async function ensureAdminExists() {
   let users = await get('users');

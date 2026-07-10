@@ -3,15 +3,9 @@ const { v4: uuidv4 } = require('uuid');
 const { get, set } = require('../../lib/db');
 const { hashPassword } = require('../../lib/crypto');
 const { requireAdmin } = require('../middleware/auth');
+const { normalizePhone } = require('../../lib/phone');
 
 const router = express.Router();
-
-function normalizePhone(phone) {
-  const digits = (phone || '').replace(/[^0-9]/g, '');
-  if (digits.startsWith('0')) return '62' + digits.slice(1);
-  if (digits.startsWith('8')) return '62' + digits;
-  return digits;
-}
 
 router.get('/', requireAdmin, async (req, res) => {
   try {
