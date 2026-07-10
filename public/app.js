@@ -1591,6 +1591,8 @@ function bindInputs() {
     if (e.target === e.currentTarget) document.getElementById("prompt-modal").classList.add("hidden");
   });
   document.getElementById("btn-save-prompts").addEventListener("click", async () => {
+    const ok = await showConfirm("Simpan perubahan prompt?");
+    if (!ok) return;
     const prompts = {
       system_idea: document.getElementById("prompt-system-idea").value.trim(),
       user_idea: document.getElementById("prompt-user-idea").value.trim(),
@@ -1607,7 +1609,8 @@ function bindInputs() {
     } catch (err) { showToast(err.message, "error"); }
   });
   document.getElementById("btn-reset-prompts").addEventListener("click", async () => {
-    if (!confirm("Reset semua prompt ke default?")) return;
+    const ok = await showConfirm("Reset semua prompt ke default?");
+    if (!ok) return;
     const prompts = { ...DEFAULT_PROMPTS };
     document.getElementById("prompt-system-idea").value = prompts.system_idea;
     document.getElementById("prompt-user-idea").value = prompts.user_idea;
@@ -1677,7 +1680,8 @@ function bindInputs() {
     }
     });
   document.getElementById("btn-delete-api-key").addEventListener("click", async () => {
-    if (!confirm("Hapus API Key yang tersimpan?")) return;
+    const ok = await showConfirm("Hapus API Key yang tersimpan?");
+    if (!ok) return;
     try {
       await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({}) });
       state.openCodeApiKey = "";
@@ -1714,7 +1718,8 @@ function bindInputs() {
     const btn = e.target.closest("[data-remove-model]");
     if (btn) {
       const modelId = btn.getAttribute("data-remove-model");
-      if (!confirm(`Hapus model "${modelId}"?`)) return;
+      const ok = await showConfirm(`Hapus model "${modelId}"?`);
+      if (!ok) return;
       try {
         await api(`/api/ai/models/${encodeURIComponent(modelId)}`, { method: "DELETE" });
         showToast(`Model "${modelId}" dihapus`, "success");
