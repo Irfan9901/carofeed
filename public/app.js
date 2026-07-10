@@ -987,7 +987,7 @@ async function generateIdeaFromNiche() {
   const label = document.getElementById("btn-idea-label");
   btn.disabled = true;
   const originalLabel = label.innerHTML;
-  label.innerHTML = `<span class="inline-flex items-center gap-2"><i class="ti ti-loader-2 spin"></i> Menggali ide… <span class="text-[10px] ml-1 opacity-60">Tekan Escape batal</span></span>`;
+  label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> Menggali ide… <span class="text-[10px] ml-1 opacity-60">Tekan Escape batal</span></span>`;
 
   try {
     const defaults = NICHE_MAP[evergreen] || { purpose: "edukasi", audience: "umum" };
@@ -1065,7 +1065,7 @@ async function aiGenerateSlideContent() {
     state.openCodeModel = modelId;
     const select = document.getElementById("inp-model");
     if (select) select.value = modelId;
-    label.innerHTML = `<span class="inline-flex items-center gap-2"><i class="ti ti-loader-2 spin"></i> AI menyusun slide… <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
+    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> AI menyusun slide… <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
     setSlideListSkeleton(true);
 
     try {
