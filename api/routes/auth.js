@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const rateLimit = require('express-rate-limit');
@@ -151,15 +152,56 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Phone number does not match' });
     }
 
-    const newPassword = Math.random().toString(36).slice(2, 8);
-    user.password = await hashPassword(newPassword);
-    await set('users', users);
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    let resetTokens = await get('resetTokens') || [];
+    resetTokens.push({
+      token: resetToken,
+      userId: user.id,
+      expiresAt: Date.now() + 60 * 60 * 1000,
+      used: false,
+    });
+    await set('resetTokens', resetTokens);
 
     res.json({
       success: true,
-      resetPassword: newPassword,
+      resetToken,
       waNumber: storedPhone || normalizePhone(phone),
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ error: 'Token and new password required' });
+    }
+    if (newPassword.length < 4) {
+      return res.status(400).json({ error: 'Password must be at least 4 characters' });
+    }
+
+    let resetTokens = await get('resetTokens') || [];
+    const entry = resetTokens.find(
+      (t) => t.token === token && !t.used && t.expiresAt > Date.now()
+    );
+    if (!entry) {
+      return res.status(400).json({ error: 'Invalid or expired reset token' });
+    }
+
+    let users = await get('users');
+    if (!users) users = [];
+    const idx = users.findIndex((u) => u.id === entry.userId);
+    if (idx === -1) return res.status(404).json({ error: 'User not found' });
+
+    users[idx].password = await hashPassword(newPassword);
+    entry.used = true;
+    await set('resetTokens', resetTokens);
+    await set('users', users);
+
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

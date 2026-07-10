@@ -1821,10 +1821,12 @@ function bindInputs() {
   });
 
   // FORGOT PASSWORD
-  document.getElementById("btn-show-forgot").addEventListener("click", () => {
+  function showForgotForm() {
     document.getElementById("login-form").classList.add("hidden");
+    document.getElementById("reset-form").classList.add("hidden");
     document.getElementById("forgot-form").classList.remove("hidden");
-  });
+  }
+  document.getElementById("btn-show-forgot").addEventListener("click", showForgotForm);
   document.getElementById("btn-back-login").addEventListener("click", () => {
     document.getElementById("forgot-form").classList.add("hidden");
     document.getElementById("login-form").classList.remove("hidden");
@@ -1839,13 +1841,12 @@ function bindInputs() {
         method: "POST",
         body: JSON.stringify({ email, phone }),
       });
-      const waMsg = encodeURIComponent(`Carousel Prompt Studio - Password baru Anda: ${result.resetPassword}`);
+      const waMsg = encodeURIComponent(`Carousel Prompt Studio - Token reset Anda: ${result.resetToken}\n\nToken berlaku 1 jam. Jangan bagikan token ini kepada siapa pun.`);
       window.open(`https://wa.me/${result.waNumber}?text=${waMsg}`, "_blank");
-      showToast(`Password baru dikirim ke ${result.waNumber}`, "success");
-      document.getElementById("inp-forgot-email").value = "";
-      document.getElementById("inp-forgot-phone").value = "";
+      showToast(`Token reset dikirim ke ${result.waNumber}`, "success");
       document.getElementById("forgot-form").classList.add("hidden");
-      document.getElementById("login-form").classList.remove("hidden");
+      document.getElementById("reset-form").classList.remove("hidden");
+      document.getElementById("inp-reset-token").value = result.resetToken;
     } catch (err) { showToast(err.message, "error"); }
   });
   document.getElementById("inp-forgot-email").addEventListener("keydown", (e) => {
@@ -1853,6 +1854,36 @@ function bindInputs() {
   });
   document.getElementById("inp-forgot-phone").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("btn-forgot").click();
+  });
+
+  // RESET PASSWORD
+  document.getElementById("btn-back-login-2").addEventListener("click", () => {
+    document.getElementById("reset-form").classList.add("hidden");
+    document.getElementById("login-form").classList.remove("hidden");
+  });
+  document.getElementById("btn-reset-password").addEventListener("click", async () => {
+    const token = document.getElementById("inp-reset-token").value.trim();
+    const newPass = document.getElementById("inp-reset-password").value;
+    const confirm = document.getElementById("inp-reset-confirm").value;
+    if (!token) { showToast("Masukkan token reset", "error"); return; }
+    if (!newPass) { showToast("Masukkan password baru", "error"); return; }
+    if (newPass.length < 4) { showToast("Password minimal 4 karakter", "error"); return; }
+    if (newPass !== confirm) { showToast("Konfirmasi password tidak cocok", "error"); return; }
+    try {
+      await api("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ token, newPassword: newPass }),
+      });
+      showToast("Password berhasil direset. Silakan login.", "success");
+      document.getElementById("reset-form").classList.add("hidden");
+      document.getElementById("login-form").classList.remove("hidden");
+      document.getElementById("inp-reset-token").value = "";
+      document.getElementById("inp-reset-password").value = "";
+      document.getElementById("inp-reset-confirm").value = "";
+    } catch (err) { showToast(err.message, "error"); }
+  });
+  document.getElementById("inp-reset-confirm").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("btn-reset-password").click();
   });
 }
 
