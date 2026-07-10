@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'cps-dev-jwt-secret-change-in-production';
+if (!process.env.JWT_SECRET && process.env.VERCEL === '1') {
+  console.error('WARNING: JWT_SECRET is not set in production environment! Using insecure fallback. Set JWT_SECRET in Vercel env vars.');
+}
 
 function generateToken(user) {
   return jwt.sign(
