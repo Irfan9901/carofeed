@@ -70,6 +70,7 @@ const VISUAL_CATEGORIES = {
 };
 
 const ALL_STYLES = Object.values(VISUAL_CATEGORIES).flat();
+const BUILT_IN_CATEGORIES = Object.keys(VISUAL_CATEGORIES);
 
 const STYLE_PALETTES = {
   minimalist: ["#F5F5F0", "#2D2D2D", "#A8A8A8"],
@@ -430,8 +431,16 @@ function reconcileSlideCount(newCount) {
   });
 }
 
+function findStyleById(id) {
+  for (const styles of Object.values(VISUAL_CATEGORIES)) {
+    const found = styles.find((s) => s.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
 function activeStyleTags() {
-  const preset = ALL_STYLES.find((s) => s.id === state.stylePreset);
+  const preset = findStyleById(state.stylePreset);
   const base = preset ? [...preset.tags] : [];
   if (state.customStyle.trim()) {
     state.customStyle.split(",").map((t) => t.trim()).filter(Boolean).forEach((t) => base.push(t));
@@ -916,6 +925,17 @@ async function loadCategoryImages() {
   } catch { state.categoryImages = {}; }
 }
 
+async function loadCustomCategories() {
+  try {
+    const data = await api("/api/custom-categories");
+    if (data.categories) {
+      Object.entries(data.categories).forEach(([catName, styles]) => {
+        VISUAL_CATEGORIES[catName] = styles;
+      });
+    }
+  } catch {}
+}
+
 function openImageModal() {
   document.getElementById("img-modal").classList.remove("hidden");
   document.getElementById("img-modal").scrollTop = 0;
@@ -930,17 +950,32 @@ function closeImageModal() {
 
 function renderCategoryImageManager() {
   const list = document.getElementById("category-image-list");
-  const allStyles = ALL_STYLES;
   const cats = Object.keys(VISUAL_CATEGORIES);
-  list.innerHTML = cats.map((cat) => {
+
+  list.innerHTML = `
+    <div class="flex gap-2 mb-2">
+      <button id="btn-add-cat" class="btn-ghost text-[10px] rounded-md px-2 py-1 flex items-center gap-1" style="flex-shrink:0">
+        <i class="ti ti-plus text-xs"></i> Tambah Kategori
+      </button>
+    </div>
+    ${cats.map((cat) => {
     const styles = VISUAL_CATEGORIES[cat];
+    const isBuiltIn = BUILT_IN_CATEGORIES.includes(cat);
     return `
       <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
-        <div class="text-xs font-medium mb-2" style="color:var(--cream)">${cat}</div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-medium" style="color:var(--cream)">${cat}</div>
+          <div class="flex gap-1">
+            <button data-add-style="${cat}" class="btn-ghost text-[10px] rounded-md px-1.5 py-0.5 flex items-center gap-0.5" title="Tambah sub-kategori">
+              <i class="ti ti-plus text-xs"></i>
+            </button>
+            ${isBuiltIn ? "" : `<button data-del-cat="${cat}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" title="Hapus kategori"><i class="ti ti-trash"></i></button>`}
+          </div>
+        </div>
         <div class="flex flex-col gap-2">
           ${styles.map((s) => {
-            const img = state.categoryImages[s.id] || "";
-            return `
+      const img = state.categoryImages[s.id] || "";
+      return `
             <div class="flex items-center gap-3 rounded-lg px-3 py-2" style="background:var(--bg-card)">
               <div class="flex-1 min-w-0">
                 <div class="text-xs" style="color:var(--cream)">${s.label}</div>
@@ -951,19 +986,21 @@ function renderCategoryImageManager() {
                 ${img ? "Ganti" : "Upload"}
                 <input type="file" accept="image/*" data-upload-img="${s.id}" class="hidden">
               </label>
-              ${img ? `<button data-del-img="${s.id}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)"><i class="ti ti-trash"></i></button>` : ""}
+              ${img ? `<button data-del-img="${s.id}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" title="Hapus gambar"><i class="ti ti-photo-off"></i></button>` : ""}
+              <button data-del-style="${cat}|${s.id}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" title="Hapus sub-kategori"><i class="ti ti-trash"></i></button>
             </div>`;
-          }).join("")}
+    }).join("")}
         </div>
       </div>`;
-  }).join("");
+  }).join("")}
+  `;
 
+  // Upload handler
   list.querySelectorAll("[data-upload-img]").forEach((inp) => {
     inp.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const styleId = e.target.getAttribute("data-upload-img");
-
       const reader = new FileReader();
       reader.onload = async (ev) => {
         const imageData = ev.target.result;
@@ -981,6 +1018,7 @@ function renderCategoryImageManager() {
     });
   });
 
+  // Delete image handler
   list.querySelectorAll("[data-del-img]").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       const styleId = e.currentTarget.getAttribute("data-del-img");
@@ -992,6 +1030,107 @@ function renderCategoryImageManager() {
         showToast(`Gambar ${styleId} dihapus`, "success");
       } catch (err) {
         showToast("Gagal hapus: " + (err.message || ""), "error");
+      }
+    });
+  });
+
+  // Delete style handler
+  list.querySelectorAll("[data-del-style]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const val = e.currentTarget.getAttribute("data-del-style");
+      const [catName, styleId] = val.split("|");
+      const ok = await showConfirm(`Hapus sub-kategori "${styleId}" dari "${catName}"?`);
+      if (!ok) return;
+      try {
+        await api(`/api/custom-categories/${encodeURIComponent(catName)}/styles/${encodeURIComponent(styleId)}`, { method: "DELETE" });
+        // If built-in, remove locally without API (just reset on reload)
+        if (!BUILT_IN_CATEGORIES.includes(catName)) {
+          VISUAL_CATEGORIES[catName] = VISUAL_CATEGORIES[catName].filter((s) => s.id !== styleId);
+        } else {
+          // For built-in, just delete the image
+          delete state.categoryImages[styleId];
+        }
+        renderCategoryImageManager();
+        renderStylePresets();
+        showToast(`Sub-kategori ${styleId} dihapus`, "success");
+      } catch (err) {
+        showToast("Gagal hapus: " + (err.message || ""), "error");
+      }
+    });
+  });
+
+  // Delete category handler
+  list.querySelectorAll("[data-del-cat]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const catName = e.currentTarget.getAttribute("data-del-cat");
+      const ok = await showConfirm(`Hapus seluruh kategori "${catName}" beserta sub-kategori dan gambarnya?`);
+      if (!ok) return;
+      try {
+        await api(`/api/custom-categories/${encodeURIComponent(catName)}`, { method: "DELETE" });
+        delete VISUAL_CATEGORIES[catName];
+        renderCategoryImageManager();
+        renderStylePresets();
+        // refresh visual category dropdown
+        populateVisualCategory();
+        showToast(`Kategori "${catName}" dihapus`, "success");
+      } catch (err) {
+        showToast("Gagal hapus: " + (err.message || ""), "error");
+      }
+    });
+  });
+
+  // Add category handler
+  const addCatBtn = document.getElementById("btn-add-cat");
+  if (addCatBtn) {
+    // Remove old listener by cloning
+    const newBtn = addCatBtn.cloneNode(true);
+    addCatBtn.parentNode.replaceChild(newBtn, addCatBtn);
+    newBtn.addEventListener("click", async () => {
+      const name = prompt("Nama kategori baru:");
+      if (!name || !name.trim()) return;
+      const trimmed = name.trim();
+      if (VISUAL_CATEGORIES[trimmed]) {
+        showToast("Kategori sudah ada", "error");
+        return;
+      }
+      try {
+        await api("/api/custom-categories", { method: "POST", body: JSON.stringify({ name: trimmed }) });
+        VISUAL_CATEGORIES[trimmed] = [];
+        renderCategoryImageManager();
+        populateVisualCategory();
+        showToast(`Kategori "${trimmed}" ditambahkan`, "success");
+      } catch (err) {
+        showToast("Gagal: " + (err.message || ""), "error");
+      }
+    });
+  }
+
+  // Add style handler
+  list.querySelectorAll("[data-add-style]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const catName = e.currentTarget.getAttribute("data-add-style");
+      const id = prompt("ID sub-kategori (tanpa spasi, contoh: my-style):");
+      if (!id || !id.trim()) return;
+      const idTrimmed = id.trim();
+      const label = prompt("Nama label sub-kategori (contoh: My Style):");
+      if (!label || !label.trim()) return;
+      const labelTrimmed = label.trim();
+      const desc = prompt("Deskripsi singkat (opsional):") || "";
+      const icon = "ti-star";
+      const isBuiltIn = BUILT_IN_CATEGORIES.includes(catName);
+      try {
+        if (!isBuiltIn) {
+          await api(`/api/custom-categories/${encodeURIComponent(catName)}/styles`, {
+            method: "POST",
+            body: JSON.stringify({ id: idTrimmed, label: labelTrimmed, desc, icon }),
+          });
+        }
+        VISUAL_CATEGORIES[catName].push({ id: idTrimmed, label: labelTrimmed, desc, icon, tags: [] });
+        renderCategoryImageManager();
+        renderStylePresets();
+        showToast(`Sub-kategori "${labelTrimmed}" ditambahkan`, "success");
+      } catch (err) {
+        showToast("Gagal: " + (err.message || ""), "error");
       }
     });
   });
@@ -2170,6 +2309,7 @@ async function init() {
       await loadApiKeyAndModels();
       await loadPrompts();
       await loadCategoryImages();
+      await loadCustomCategories();
       if (state.openCodeApiKey) fetchFreeModels();
     } catch {
       clearToken();
