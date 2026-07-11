@@ -1597,12 +1597,12 @@ function bindInputs() {
     renderCarouselTrack();
   });
 
-  document.getElementById("inp-customstyle").addEventListener("input", (e) => { state.customStyle = e.target.value; });
+  document.getElementById("inp-customstyle").addEventListener("input", (e) => { state.customStyle = e.target.value; refreshJsonOutput(); });
   document.getElementById("inp-color-1").addEventListener("click", () => openColorPicker("color1"));
   document.getElementById("inp-color-2").addEventListener("click", () => openColorPicker("color2"));
   document.getElementById("inp-color-3").addEventListener("click", () => openColorPicker("color3"));
   document.getElementById("inp-palette").addEventListener("input", (e) => { state.palette = e.target.value; });
-  document.getElementById("inp-brand").addEventListener("input", (e) => { state.brandNote = e.target.value; });
+  document.getElementById("inp-brand").addEventListener("input", (e) => { state.brandNote = e.target.value; refreshJsonOutput(); });
 
   // ── Color Picker Modal ──
   const canvas = document.getElementById("color-canvas");
