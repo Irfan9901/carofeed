@@ -205,6 +205,15 @@
   .role-badge-isi{ background:#19170F; color:var(--ink-soft); border-color:var(--border-soft); }
   .role-badge-penutup{ background:#2E1A16; color:var(--coral); border-color:#5A2E20; }
 
+  #user-dropdown button{
+    color:var(--ink-soft);
+    transition:background .15s ease, color .15s ease;
+  }
+  #user-dropdown button:hover{
+    background:var(--amber-soft);
+    color:var(--amber);
+  }
+
 
 
   @media (min-width:1024px){
