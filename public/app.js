@@ -487,6 +487,7 @@ function applyStylePalette(styleId) {
   state.color2 = palette[1] || state.color2;
   state.color3 = palette[2] || state.color3;
   updateColorSwatches();
+  refreshJsonOutput();
 }
 
 // ── Color Picker ──
@@ -601,6 +602,7 @@ function applyColor() {
   if (hex.length === 7) {
     state[_cpTarget] = hex;
     updateColorSwatches();
+    refreshJsonOutput();
   }
   document.getElementById("color-modal").classList.add("hidden");
   _cpTarget = null;
@@ -1296,6 +1298,15 @@ function buildJsonOutput() {
       aspect_ratio: getAspectRatioValue(),
     })),
   };
+}
+
+function refreshJsonOutput() {
+  if (!state.jsonGenerated) return;
+  if (!state.topic.trim()) return;
+  const hasEmptyHeadline = state.slides.some((s) => !s.headline.trim());
+  if (hasEmptyHeadline) return;
+  const json = buildJsonOutput();
+  document.getElementById("json-output").textContent = JSON.stringify(json, null, 2);
 }
 
 function handleGenerateJson() {

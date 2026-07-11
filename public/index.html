@@ -304,11 +304,20 @@
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Palet warna</label>
+              <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Ubah Palet Warna</label>
               <div class="flex gap-2 items-center">
-                <button id="inp-color-1" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
-                <button id="inp-color-2" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
-                <button id="inp-color-3" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                <span class="relative inline-flex">
+                  <button id="inp-color-1" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                  <span class="color-swatch-dot">1</span>
+                </span>
+                <span class="relative inline-flex">
+                  <button id="inp-color-2" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                  <span class="color-swatch-dot">2</span>
+                </span>
+                <span class="relative inline-flex">
+                  <button id="inp-color-3" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+                  <span class="color-swatch-dot">3</span>
+                </span>
                 <input id="inp-palette" type="text" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm hidden" placeholder="navy, putih, emas">
               </div>
             </div>
