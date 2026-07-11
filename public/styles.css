@@ -328,7 +328,7 @@
     body{ overflow-x:hidden; }
     header{ padding-left:16px; padding-right:16px; }
     .layout-main > section{ padding-left:16px; padding-right:16px; }
-    #empty-state{ padding-top:2rem; }
+    #empty-state{ padding-top:2rem; padding-bottom:2rem; }
     .carousel-card.w-44{ width:140px; }
     .color-swatch-btn{
       width:48px; height:40px;
