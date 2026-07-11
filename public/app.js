@@ -1319,6 +1319,7 @@ function handleDownloadJson() {
 }
 
 function copySlideJson(slideId, btn) {
+  const orig = btn.innerHTML;
   btn.innerHTML = '<i class="ti ti-clipboard text-sm"></i> Menyalin…';
 
   try {
@@ -1327,7 +1328,6 @@ function copySlideJson(slideId, btn) {
     const idx = state.slides.indexOf(slide);
     const json = buildSingleSlideJson(slide, idx);
     const text = JSON.stringify(json, null, 2);
-    const orig = btn.innerHTML;
 
     let settled = false;
     function done(ok) {
