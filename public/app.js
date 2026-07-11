@@ -543,6 +543,20 @@ function drawColorField() {
       ctx.fillRect(x, y, 1, 1);
     }
   }
+
+  // Indikator posisi warna (circle)
+  const cx = (_cpS / 100) * w;
+  const cy = (1 - _cpV / 100) * h;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#fff";
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = "#1A1408";
+  ctx.stroke();
 }
 
 function getColorFromCanvas(x, y) {
@@ -1088,44 +1102,73 @@ async function generateIdeaFromNiche() {
 
   const keyStatus = await api("/api/ai/api-key");
   if (!keyStatus.hasKey) { showToast("API Key belum diatur. Minta Admin untuk mengatur API Key.", "error"); return; }
-  if (!state.openCodeModel) { showToast("Model AI belum dipilih.", "error"); return; }
+  if (!getActiveModels().length) { showToast("Model AI belum dipilih.", "error"); return; }
 
   resetApp(true);
+  state._aborted = false;
+  state._abortController = new AbortController();
+  const signal = state._abortController.signal;
+
   const btn = document.getElementById("btn-generate-idea");
   const label = document.getElementById("btn-idea-label");
   btn.disabled = true;
   const originalLabel = label.innerHTML;
-  label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> Menggali ide… <span class="text-[10px] ml-1 opacity-60">Tekan Escape batal</span></span>`;
 
-  try {
-    const defaults = NICHE_MAP[evergreen] || { purpose: "edukasi", audience: "umum" };
-    const p = state.prompts || DEFAULT_PROMPTS;
-    const systemPrompt = p.system_idea;
-    const userPrompt = replacePromptVars(p.user_idea, { niche });
-    const text = await doAiRequest(systemPrompt, userPrompt);
-    let cleaned = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
-    const result = JSON.parse(cleaned);
-    const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
+  const defaults = NICHE_MAP[evergreen] || { purpose: "edukasi", audience: "umum" };
+  const p = state.prompts || DEFAULT_PROMPTS;
+  const systemPrompt = p.system_idea;
+  const userPrompt = replacePromptVars(p.user_idea, { niche });
 
-    document.getElementById("inp-topic").value = topic;
-    state.topic = topic;
-    document.getElementById("inp-purpose").value = defaults.purpose;
-    state.purpose = defaults.purpose;
-    document.getElementById("inp-audience").value = defaults.audience;
-    state.audience = defaults.audience;
+  const modelsToTry = getActiveModels();
+  let lastError = null;
 
-    if (state.slides.length === 0 && state.topic.trim()) state.slides = buildDefaultSlides(state.slideCount);
-    renderSlidesArea();
-    showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
-  } catch (err) {
-    if (err.name === "AbortError" || state._aborted) showToast("Proses dibatalkan", "error");
-    else if (err.message?.includes("429")) showToast("Kuota harian AI habis.", "error");
-    else { console.error(err); showToast("Gagal generate ide. Coba lagi nanti.", "error"); }
-  } finally {
-    btn.disabled = false;
-    label.innerHTML = originalLabel;
-    state._abortController = null;
-    state._aborted = false;
+  for (let i = 0; i < modelsToTry.length; i++) {
+    if (state._aborted) break;
+    const modelId = modelsToTry[i];
+    state.openCodeModel = modelId;
+    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> Menggali ide… ${modelId} <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
+
+    try {
+      const text = await callOpenCode(systemPrompt, userPrompt, signal);
+      if (state._aborted) throw new DOMException("Aborted", "AbortError");
+
+      let cleaned = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
+      const result = JSON.parse(cleaned);
+      const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
+
+      document.getElementById("inp-topic").value = topic;
+      state.topic = topic;
+      document.getElementById("inp-purpose").value = defaults.purpose;
+      state.purpose = defaults.purpose;
+      document.getElementById("inp-audience").value = defaults.audience;
+      state.audience = defaults.audience;
+
+      if (state.slides.length === 0 && state.topic.trim()) state.slides = buildDefaultSlides(state.slideCount);
+      renderSlidesArea();
+      showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
+
+      btn.disabled = false;
+      label.innerHTML = originalLabel;
+      state._abortController = null;
+      state._aborted = false;
+      return;
+    } catch (err) {
+      lastError = err;
+      if (err.name === "AbortError" || state._aborted) break;
+      if (err.message?.includes("429")) break;
+      if (isAdmin() && i < modelsToTry.length - 1) showToast(`Model ${modelId} gagal, coba model lain…`, "warning");
+    }
+  }
+
+  btn.disabled = false;
+  label.innerHTML = originalLabel;
+  state._abortController = null;
+  state._aborted = false;
+
+  if (lastError) {
+    if (lastError.name === "AbortError" || state._aborted) showToast("Proses dibatalkan", "error");
+    else if (lastError.message?.includes("429")) showToast("Kuota harian AI habis.", "error");
+    else { console.error(lastError); showToast("Gagal generate ide. Coba lagi nanti.", "error"); }
   }
 }
 
@@ -1640,9 +1683,11 @@ function bindInputs() {
     state.visualCategory = e.target.value;
     state.stylePreset = "";
     renderStylePresets();
+    refreshJsonOutput();
   });
   document.getElementById("inp-layout").addEventListener("change", (e) => {
     state.layout = e.target.value;
+    refreshJsonOutput();
   });
 
   document.getElementById("btn-generate-idea").addEventListener("click", generateIdeaFromNiche);
