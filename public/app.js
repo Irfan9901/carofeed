@@ -733,8 +733,8 @@ function renderSlideList() {
       <label class="block text-[11px] mb-1" style="color:var(--ink-soft)">Ide visual utama</label>
       <textarea data-field="visualIdea" data-id="${s.id}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="contoh: ilustrasi celengan dan grafik naik" rows="1">${escapeHtml(s.visualIdea)}</textarea>
 
-      <button data-copy-json="${s.id}" class="btn-ghost w-full rounded-lg py-2 text-xs flex items-center justify-center gap-1.5 opacity-70 hover:opacity-100">
-        <i class="ti ti-code text-sm"></i> Copy JSON slide ini
+      <button data-copy-json="${s.id}" class="btn-ghost btn-slide-copy w-full rounded-lg py-2 text-xs flex items-center justify-center gap-1.5">
+        <i class="ti ti-code text-sm" style="pointer-events:none"></i> Copy JSON slide ini
       </button>
     </div>
   `).join("");
@@ -773,7 +773,6 @@ function renderSlideList() {
 
   list.querySelectorAll("[data-copy-json]").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      e.stopPropagation();
       copySlideJson(btn.getAttribute("data-copy-json"), btn);
     });
   });
@@ -1354,6 +1353,7 @@ function showCopySlideFailed(text) {
   textarea.style.top = "0";
   textarea.style.left = "0";
   textarea.style.opacity = "0";
+  textarea.readOnly = true;
   document.body.appendChild(textarea);
   textarea.focus();
   textarea.select();
@@ -1364,6 +1364,7 @@ function showCopySlideFailed(text) {
     const isMac = navigator.platform.toUpperCase().includes("MAC");
     showToast(`Gagal salin otomatis. Tekan ${isMac ? "Cmd" : "Ctrl"}+C`, "error");
   }
+  setTimeout(() => document.body.removeChild(textarea), 5000);
 }
 
 // ---------- INIT / BIND ----------

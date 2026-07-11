@@ -88,9 +88,20 @@
     border:1px solid #ffbe0b;
     color:#ffbe0b;
     transition:all .15s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn-ghost:active{
+    background:rgba(255,190,11,.2);
+    transform:scale(.97);
+  }
+  .btn-slide-copy{ opacity:.7; }
+  .btn-slide-copy:active{ opacity:1; }
+  @media (hover: hover){
+    .btn-slide-copy:hover{ opacity:1; }
   }
   @media (hover: hover){
     .btn-ghost:hover{ border-color:#ffbe0b; color:#1A1408; background:#ffbe0b; }
+    .btn-ghost:active{ transform:scale(.97); }
   }
 
   .btn-ai{
@@ -105,15 +116,15 @@
   .btn-ai:disabled{ opacity:.5; cursor:not-allowed; }
 
   @media (hover: none) and (pointer: coarse) {
-    .btn-ghost:hover, .btn-ghost:active {
+    .btn-ghost:hover {
       background:transparent;
       color:#ffbe0b;
       border-color:#ffbe0b;
     }
-    .btn-primary:hover, .btn-primary:active {
+    .btn-primary:hover {
       filter:none;
     }
-    .btn-ai:hover, .btn-ai:active {
+    .btn-ai:hover {
       filter:none;
     }
   }
