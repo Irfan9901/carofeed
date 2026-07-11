@@ -77,10 +77,10 @@
     font-weight:600;
     transition:filter .15s ease, transform .1s ease;
   }
+  .btn-primary:active{ filter:brightness(1.15); transform:scale(.98); }
   @media (hover: hover){
     .btn-primary:hover{ filter:brightness(1.15); }
   }
-  .btn-primary:active{ transform:scale(.98); }
   .btn-primary:disabled{ opacity:.4; cursor:not-allowed; filter:none; }
 
   .btn-ghost{
@@ -91,17 +91,22 @@
     -webkit-tap-highlight-color:transparent;
   }
   .btn-ghost:active{
-    background:rgba(255,190,11,.2);
+    border-color:#ffbe0b;
+    color:#1A1408;
+    background:#ffbe0b;
     transform:scale(.97);
+  }
+  @media (hover: hover){
+    .btn-ghost:hover{
+      border-color:#ffbe0b;
+      color:#1A1408;
+      background:#ffbe0b;
+    }
   }
   .btn-slide-copy{ opacity:.7; }
   .btn-slide-copy:active{ opacity:1; }
   @media (hover: hover){
     .btn-slide-copy:hover{ opacity:1; }
-  }
-  @media (hover: hover){
-    .btn-ghost:hover{ border-color:#ffbe0b; color:#1A1408; background:#ffbe0b; }
-    .btn-ghost:active{ transform:scale(.97); }
   }
 
   .btn-ai{
@@ -110,24 +115,11 @@
     color:#1A1408;
     transition:all .15s ease;
   }
+  .btn-ai:active{ filter:brightness(1.15); }
   @media (hover: hover){
     .btn-ai:hover{ filter:brightness(1.15); }
   }
   .btn-ai:disabled{ opacity:.5; cursor:not-allowed; }
-
-  @media (hover: none) and (pointer: coarse) {
-    .btn-ghost:hover {
-      background:transparent;
-      color:#ffbe0b;
-      border-color:#ffbe0b;
-    }
-    .btn-primary:hover {
-      filter:none;
-    }
-    .btn-ai:hover {
-      filter:none;
-    }
-  }
 
   .carousel-card{
     scroll-snap-align:center;
