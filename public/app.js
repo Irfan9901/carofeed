@@ -274,41 +274,54 @@ function renderUserMenu() {
   const u = state.currentUser;
   const label = document.getElementById("user-menu-label");
   const info = document.getElementById("dropdown-user-info");
-  const switchBtn = document.getElementById("btn-switch-user");
-  const passwordBtn = document.getElementById("btn-change-password");
-  const loginBtn = document.getElementById("btn-login-dropdown");
-  const logoutBtn = document.getElementById("btn-logout");
-  const aiBtn = document.getElementById("btn-ai-panel");
-  const promptBtn = document.getElementById("btn-prompt-ai");
-  const adminBtn = document.getElementById("btn-admin-panel");
-  const imgBtn = document.getElementById("btn-category-images");
-  const adminSection = document.getElementById("admin-only-section");
+  const welcome = document.getElementById("welcome-user-name");
   if (label) label.textContent = u ? "Welcome, " + u.name : "Guest";
   if (info) info.textContent = u ? `${u.name} (${u.role})` : "Belum login";
-  const admin = u?.role === "admin";
-  if (u) {
-    switchBtn?.classList.toggle("hidden", !admin);
-    passwordBtn?.classList.remove("hidden");
-    loginBtn?.classList.add("hidden");
-    logoutBtn?.classList.remove("hidden");
-    aiBtn?.classList.toggle("hidden", !admin);
-    promptBtn?.classList.toggle("hidden", !admin);
-    adminBtn?.classList.toggle("hidden", !admin);
-    imgBtn?.classList.toggle("hidden", !admin);
-    adminSection?.classList.toggle("hidden", !admin);
-  } else {
-    switchBtn?.classList.add("hidden");
-    passwordBtn?.classList.add("hidden");
-    loginBtn?.classList.remove("hidden");
-    logoutBtn?.classList.add("hidden");
-    aiBtn?.classList.add("hidden");
-    promptBtn?.classList.add("hidden");
-    adminBtn?.classList.add("hidden");
-    imgBtn?.classList.add("hidden");
-    adminSection?.classList.add("hidden");
-  }
-  const welcome = document.getElementById("welcome-user-name");
   if (welcome) welcome.textContent = u ? u.name : "User";
+
+  const admin = u?.role === "admin";
+  const els = [
+    "btn-switch-user",
+    "btn-change-password",
+    "btn-login-dropdown",
+    "btn-logout",
+    "btn-ai-panel",
+    "btn-prompt-ai",
+    "btn-admin-panel",
+    "btn-category-images",
+    "admin-only-section",
+  ];
+  const visibility = {
+    btnSwitchUser: { guest: false, user: false, admin: true },
+    btnChangePassword: { guest: false, user: true, admin: true },
+    btnLoginDropdown: { guest: true, user: false, admin: false },
+    btnLogout: { guest: false, user: true, admin: true },
+    btnAiPanel: { guest: false, user: false, admin: true },
+    btnPromptAi: { guest: false, user: false, admin: true },
+    btnAdminPanel: { guest: false, user: false, admin: true },
+    btnCategoryImages: { guest: false, user: false, admin: true },
+    adminOnlySection: { guest: false, user: false, admin: true },
+  };
+
+  const idMap = [
+    ["btn-switch-user", "btnSwitchUser"],
+    ["btn-change-password", "btnChangePassword"],
+    ["btn-login-dropdown", "btnLoginDropdown"],
+    ["btn-logout", "btnLogout"],
+    ["btn-ai-panel", "btnAiPanel"],
+    ["btn-prompt-ai", "btnPromptAi"],
+    ["btn-admin-panel", "btnAdminPanel"],
+    ["btn-category-images", "btnCategoryImages"],
+    ["admin-only-section", "adminOnlySection"],
+  ];
+
+  const role = u ? (admin ? "admin" : "user") : "guest";
+  for (const [id, key] of idMap) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (visibility[key][role]) el.classList.remove("hidden");
+    else el.classList.add("hidden");
+  };
 }
 
 async function renderUserList() {
