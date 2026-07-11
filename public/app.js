@@ -1319,55 +1319,84 @@ function handleDownloadJson() {
 }
 
 function copySlideJson(slideId, btn) {
-  const slide = state.slides.find((s) => s.id === slideId);
-  if (!slide) return;
-  const idx = state.slides.indexOf(slide);
-  const json = buildSingleSlideJson(slide, idx);
-  const text = JSON.stringify(json, null, 2);
-  const orig = btn.innerHTML;
-
-  // Immediate feedback — user tahu tombolnya merespons
   btn.innerHTML = '<i class="ti ti-clipboard text-sm"></i> Menyalin…';
 
-  function done(ok) {
-    if (ok) {
-      btn.innerHTML = '<i class="ti ti-check text-sm"></i> Tersalin';
-      showToast(`JSON slide ${idx + 1} disalin`, "success");
-      setTimeout(() => { btn.innerHTML = orig; }, 1800);
-    } else {
-      btn.innerHTML = orig;
-      showCopySlideFailed(text);
-    }
-  }
+  try {
+    const slide = state.slides.find((s) => s.id === slideId);
+    if (!slide) { btn.innerHTML = '<i class="ti ti-alert-circle text-sm"></i> Gagal'; setTimeout(() => renderSlideList(), 1500); return; }
+    const idx = state.slides.indexOf(slide);
+    const json = buildSingleSlideJson(slide, idx);
+    const text = JSON.stringify(json, null, 2);
+    const orig = btn.innerHTML;
 
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(() => done(true)).catch(() => done(false));
-  } else if (legacyCopyFallback(text)) {
-    done(true);
-  } else {
-    done(false);
+    let settled = false;
+    function done(ok) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(safety);
+      if (ok) {
+        btn.innerHTML = '<i class="ti ti-check text-sm"></i> Tersalin';
+        showToast(`JSON slide ${idx + 1} disalin`, "success");
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+      } else {
+        btn.innerHTML = orig;
+        showCopySlideFailed(text);
+      }
+    }
+
+    const safety = setTimeout(() => done(false), 3000);
+
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+      navigator.clipboard.writeText(text).then(() => done(true)).catch(() => done(false));
+    } else if (legacyCopyFallback(text)) {
+      done(true);
+    } else {
+      done(false);
+    }
+  } catch (err) {
+    btn.innerHTML = '<i class="ti ti-alert-circle text-sm"></i> Gagal';
+    setTimeout(() => renderSlideList(), 2000);
+    showToast("Gagal menyalin: " + (err.message || ""), "error");
   }
 }
 
 function showCopySlideFailed(text) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  textarea.style.position = "fixed";
-  textarea.style.top = "0";
-  textarea.style.left = "0";
-  textarea.style.opacity = "0";
-  textarea.readOnly = true;
-  document.body.appendChild(textarea);
-  textarea.focus();
-  textarea.select();
-  textarea.setSelectionRange(0, text.length);
   if (isIOS()) {
-    showToast("Ketuk dan tahan teks di area gelap, lalu pilih Salin", "error");
+    // Tampilkan textarea visible di bawah tombol agar user bisa long-press
+    const wrapper = document.createElement("div");
+    wrapper.id = "slide-copy-fallback";
+    wrapper.style.cssText = "position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px";
+    wrapper.addEventListener("click", (e) => { if (e.target === wrapper) wrapper.remove(); });
+    const box = document.createElement("div");
+    box.style.cssText = "background:#1C1A14;border:1px solid #4A4533;border-radius:12px;padding:16px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column";
+    box.innerHTML = '<p style="color:#E8A33D;font-size:13px;margin-bottom:10px">⚠️ Salin otomatis gagal. Salin manual:</p>';
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.readOnly = true;
+    ta.style.cssText = "background:#100E0A;color:#D8CFA8;border:1px solid #4A4533;border-radius:8px;padding:12px;font:12px monospace;width:100%;min-height:120px;resize:vertical;outline:none;flex:1";
+    box.appendChild(ta);
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:8px;margin-top:10px;justify-content:flex-end";
+    btnRow.innerHTML = '<button class="btn-ghost" style="padding:6px 14px;font-size:12px;border-radius:8px">Tutup</button>';
+    btnRow.querySelector("button").addEventListener("click", () => wrapper.remove());
+    box.appendChild(btnRow);
+    wrapper.appendChild(box);
+    document.body.appendChild(wrapper);
+    setTimeout(() => { ta.focus(); ta.select(); ta.setSelectionRange(0, text.length); }, 100);
+    showToast("Ketuk & tahan teks, lalu pilih Salin", "error");
   } else {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    textarea.readOnly = true;
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
     const isMac = navigator.platform.toUpperCase().includes("MAC");
     showToast(`Gagal salin otomatis. Tekan ${isMac ? "Cmd" : "Ctrl"}+C`, "error");
+    setTimeout(() => document.body.removeChild(textarea), 5000);
   }
-  setTimeout(() => document.body.removeChild(textarea), 5000);
 }
 
 // ---------- INIT / BIND ----------
