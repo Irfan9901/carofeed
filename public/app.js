@@ -947,7 +947,7 @@ async function loadCustomCategories() {
         VISUAL_CATEGORIES[catName] = styles;
       });
     }
-  } catch {}
+  } catch (e) { console.warn('Gagal memuat kategori kustom:', e); }
 }
 
 function openImageModal() {
@@ -1986,7 +1986,7 @@ function bindInputs() {
       } else {
         document.getElementById("ai-key-status").textContent = "Belum ada API Key";
       }
-    } catch {}
+    } catch (e) { console.warn('Gagal cek status API Key:', e); }
   });
   document.getElementById("btn-close-ai").addEventListener("click", () => {
     document.getElementById("ai-modal").classList.add("hidden");
@@ -2003,7 +2003,7 @@ function bindInputs() {
           method: "PUT",
           body: JSON.stringify({ phone: normalizePhone(input.value) }),
         });
-      } catch {}
+      } catch (e) { console.warn('Gagal menyimpan nomor telepon:', e); }
     }
   });
   document.getElementById("user-list").addEventListener("click", (e) => {
@@ -2057,7 +2057,7 @@ function bindInputs() {
       } else {
         state.activeModels = state.activeModels.filter((id) => id !== modelId);
       }
-      try { await api("/api/ai/models", { method: "PUT", body: JSON.stringify({ activeModels: state.activeModels }) }); } catch {}
+      try { await api("/api/ai/models", { method: "PUT", body: JSON.stringify({ activeModels: state.activeModels }) }); } catch (e) { console.warn('Gagal menyimpan model aktif:', e); }
     }
   });
   document.getElementById("ai-model-list")?.addEventListener("click", async (e) => {
@@ -2096,7 +2096,7 @@ function bindInputs() {
         document.getElementById("ai-key-status").textContent = "✓ API Key tersimpan";
         document.getElementById("btn-delete-api-key").classList.remove("hidden");
       }
-    } catch {}
+    } catch (e) { console.warn('Gagal cek status API Key:', e); }
   });
   // Enter to add user
   document.getElementById("inp-user-email").addEventListener("keydown", (e) => {
@@ -2178,7 +2178,7 @@ function bindInputs() {
         method: "POST",
         body: JSON.stringify({ email, phone }),
       });
-      const waMsg = encodeURIComponent(`Carousel Prompt Studio - Token reset Anda: ${result.resetToken}\n\nToken berlaku 1 jam. Jangan bagikan token ini kepada siapa pun.`);
+      const waMsg = encodeURIComponent(`Carousel Studio - Token reset Anda: ${result.resetToken}\n\nToken berlaku 1 jam. Jangan bagikan token ini kepada siapa pun.`);
       window.open(`https://wa.me/${result.waNumber}?text=${waMsg}`, "_blank");
       showToast(`Token reset dikirim ke ${result.waNumber}`, "success");
       document.getElementById("forgot-form").classList.add("hidden");
@@ -2245,7 +2245,7 @@ async function loadApiKeyAndModels() {
     if (isAdmin() && keyStatus.hasKey) {
       document.getElementById("ai-key-status").textContent = "✓ Terpasang";
     }
-  } catch {}
+  } catch (e) { console.warn('Gagal memuat data awal:', e); }
 }
 
 async function init() {
@@ -2275,7 +2275,8 @@ async function init() {
       await loadCategoryImages();
       await loadCustomCategories();
       if (state.openCodeApiKey) fetchFreeModels();
-    } catch {
+    } catch (e) {
+      console.error('Init gagal, session tidak valid:', e);
       clearToken();
       state.currentUser = null;
       renderUserMenu();

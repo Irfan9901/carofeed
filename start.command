@@ -9,7 +9,7 @@ if [ ! -d "node_modules" ]; then
   npm install 2>&1 | tail -3
 fi
 
-echo "🚀 Starting Carousel Prompt Studio at http://localhost:$PORT"
+echo "🚀 Starting Carousel Studio at http://localhost:$PORT"
 echo "   Password default: admin / admin@cps.local"
 echo "   Tekan Ctrl+C untuk berhenti"
 

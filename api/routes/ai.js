@@ -223,7 +223,7 @@ router.post('/chat', requireAuth, async (req, res) => {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
-          'User-Agent': 'CarouselPromptStudio/2.0',
+          'User-Agent': 'CarouselStudio/2.0',
         },
         signal: controller.signal,
         body: JSON.stringify({

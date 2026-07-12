@@ -16,7 +16,8 @@ function generateToken(user) {
 function verifyToken(token) {
   try {
     return jwt.verify(token, JWT_SECRET);
-  } catch {
+  } catch (e) {
+    console.error('auth: invalid or expired token:', e.message);
     return null;
   }
 }
