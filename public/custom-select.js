@@ -96,14 +96,14 @@
         .join('');
 
       this._opts = Array.from(this.menu.children);
-      this._opts.forEach(function (el) {
-        el.addEventListener('click', function (e) {
+      this._opts.forEach((el) => {
+        el.addEventListener('click', (e) => {
           e.stopPropagation();
           if (el.getAttribute('aria-disabled') === 'true') return;
           this.selectOption(el.getAttribute('data-value'));
           this.close();
         });
-      }, this);
+      });
     }
 
     /* ---- value sync (select → UI) ---- */
@@ -127,20 +127,20 @@
 
     /* ---- events ---- */
     _bindEvents() {
-      this.trig.addEventListener('click', function (e) {
+      this.trig.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggle();
       });
 
-      document.addEventListener('click', function (e) {
+      document.addEventListener('click', (e) => {
         if (!this.wrap.contains(e.target)) this.close();
       });
 
-      this.trig.addEventListener('keydown', function (e) {
+      this.trig.addEventListener('keydown', (e) => {
         this._onTriggerKey(e);
       });
 
-      this.menu.addEventListener('keydown', function (e) {
+      this.menu.addEventListener('keydown', (e) => {
         this._onMenuKey(e);
       });
     }
@@ -200,10 +200,9 @@
 
     /* ---- observe option mutations ---- */
     _watchOptions() {
-      this._mo = new MutationObserver(function () {
+      this._mo = new MutationObserver(() => {
         var prev = this.select.value;
         this._syncOptions();
-        // restore value if it still exists (options may have been replaced)
         try {
           this.select.value = prev;
         } catch (e) {
