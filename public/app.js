@@ -591,6 +591,7 @@ function getColorFromCanvas(x, y) {
   const hex = hsvToHex(_cpH, _cpS, _cpV);
   document.getElementById("color-preview").style.background = hex;
   document.getElementById("color-hex").value = hex.slice(1);
+  drawColorField();
 }
 
 function handleColorEvent(e) {
