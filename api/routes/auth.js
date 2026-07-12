@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 const rateLimit = require('express-rate-limit');
 const { get, set } = require('../../lib/db');
 const { hashPassword, verifyPassword } = require('../../lib/crypto');
@@ -58,45 +57,6 @@ router.post('/login', authLimiter, async (req, res) => {
     res.json({
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-router.post('/register', authLimiter, async (req, res) => {
-  try {
-    const { name, email, password, phone, role } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password required' });
-    }
-
-    let users = await get('users');
-    if (!users) users = [];
-
-    if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-      return res.status(409).json({ error: 'Email already registered' });
-    }
-
-    const hashed = await hashPassword(password);
-    const newUser = {
-      id: 's-' + uuidv4().slice(0, 7),
-      name,
-      email,
-      phone: normalizePhone(phone || ''),
-      password: hashed,
-      role: role === 'admin' ? 'admin' : 'user',
-      createdAt: Date.now(),
-    };
-
-    users.push(newUser);
-    await set('users', users);
-
-    const token = generateToken(newUser);
-    res.status(201).json({
-      token,
-      user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
     });
   } catch (err) {
     console.error(err);

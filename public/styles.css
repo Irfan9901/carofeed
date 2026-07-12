@@ -33,7 +33,7 @@
     width:1px;
     background:linear-gradient(to bottom, var(--border-strong), transparent);
   }
-  .step-rail:last-child::before{ display:none; }
+
 
   .input-field{
     background:#100E0A;
@@ -155,13 +155,6 @@
   .z-10{ z-index:10; }
   .whitespace-nowrap{ white-space:nowrap; }
 
-  .glow-dot{
-    box-shadow:0 0 8px 1px currentColor;
-  }
-
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-  .spin{ animation:spin 0.8s linear infinite; }
-
   @keyframes pulse-soft{
     0%,100%{ opacity:1; }
     50%{ opacity:.5; }
@@ -183,17 +176,6 @@
     background-size:200% 100%;
     animation:shimmer 1.4s ease-in-out infinite;
   }
-
-  .tag-pill{
-    background:#19170F;
-    border:1px solid var(--border-soft);
-    color:var(--ink-soft);
-    font-size:11px;
-  }
-
-  .json-line-number{ color:#4A4533; user-select:none; }
-
-  .progress-fill{ transition:width .3s ease; }
 
   textarea.input-field{ resize:vertical; }
 

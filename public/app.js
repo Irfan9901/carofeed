@@ -69,7 +69,6 @@ const VISUAL_CATEGORIES = {
   ],
 };
 
-const ALL_STYLES = Object.values(VISUAL_CATEGORIES).flat();
 const BUILT_IN_CATEGORIES = Object.keys(VISUAL_CATEGORIES);
 
 const STYLE_PALETTES = {
@@ -1175,22 +1174,7 @@ function renderAIModelList() {
       ${`<button data-remove-model="${m.id}" class="flex-shrink-0 text-rose-400 hover:text-rose-300 text-sm p-1 opacity-60 hover:opacity-100" title="Hapus model"><i class="ti ti-trash"></i></button>`}
     </div>`;
   }).join("");
-  // Inline rename on blur/Enter
-  list.querySelectorAll("[data-field-id]").forEach((input) => {
-    const id = input.getAttribute("data-field-id");
-    const save = async () => {
-      const val = input.value.trim();
-      if (!val || val === id) return;
-      try {
-        await api(`/api/ai/custom-models/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ id: val }) });
-        await fetchFreeModels();
-        showToast(`Model diubah menjadi "${val}"`, "success");
-      } catch (err) { showToast(err.message, "error"); }
-    };
-    input.addEventListener("blur", save);
-    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { input.blur(); } });
-  });
-  // Also support the simpler data-model-id attribute used above
+  // Rename on blur/Enter
   list.querySelectorAll("[data-model-id]").forEach((input) => {
     const origId = input.getAttribute("data-model-id");
     const save = async () => {
@@ -1232,20 +1216,6 @@ async function callOpenCode(systemPrompt, userPrompt, signal) {
 }
 
 // ---------- AI GENERATION ----------
-
-async function doAiRequest(systemPrompt, userPrompt) {
-  if (!state.openCodeModel) throw new Error("Pilih model AI terlebih dahulu");
-  state._aborted = false;
-  state._abortController = new AbortController();
-  const signal = state._abortController.signal;
-  try {
-    const text = await callOpenCode(systemPrompt, userPrompt, signal);
-    return text;
-  } catch (err) {
-    if (err.name === "AbortError" || state._aborted) throw new DOMException("Aborted", "AbortError");
-    throw err;
-  }
-}
 
 async function generateIdeaFromNiche() {
   if (!getCurrentUser()) { showToast("Lakukan Login untuk melanjutkan proses", "error"); return; }
@@ -1506,27 +1476,6 @@ function refreshJsonOutput() {
   if (hasEmptyHeadline) return;
   const json = buildJsonOutput();
   document.getElementById("json-output").textContent = JSON.stringify(json, null, 2);
-}
-
-function handleGenerateJson() {
-  if (!state.topic.trim()) {
-    showToast("Isi topik carousel dulu", "error");
-    return;
-  }
-  const hasEmptyHeadline = state.slides.some((s) => !s.headline.trim());
-  if (hasEmptyHeadline) {
-    showToast("Pastikan semua slide punya headline", "error");
-    return;
-  }
-
-  const json = buildJsonOutput();
-  const jsonString = JSON.stringify(json, null, 2);
-  document.getElementById("json-output").textContent = jsonString;
-  document.getElementById("json-panel").classList.remove("hidden");
-  document.getElementById("json-panel").classList.add("flex");
-  state.jsonGenerated = true;
-  document.getElementById("json-panel").scrollIntoView({ behavior: "smooth", block: "start" });
-  showToast("JSON berhasil dibuat", "success");
 }
 
 function selectJsonOutputText() {

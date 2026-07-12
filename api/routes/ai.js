@@ -121,19 +121,6 @@ router.put('/custom-models/:id', requireAdmin, async (req, res) => {
   }
 });
 
-router.delete('/custom-models/:id', requireAdmin, async (req, res) => {
-  try {
-    const cfg = await getConfig();
-    cfg.customModels = (cfg.customModels || []).filter((m) => m !== req.params.id);
-    cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== req.params.id);
-    await saveConfig(cfg);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
 router.delete('/models/:id', requireAdmin, async (req, res) => {
   try {
     const cfg = await getConfig();
