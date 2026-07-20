@@ -4,7 +4,7 @@
 <base href="/">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Carousel Studio</title>
+<title>Carofeed</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
         <i class="ti ti-layout-grid text-[#1A1408] text-lg"></i>
       </div>
       <div>
-        <h1 class="font-display text-lg leading-none" style="color:var(--cream)">Carousel Studio</h1>
+        <h1 class="font-display text-lg leading-none" style="color:var(--cream)">Carofeed</h1>
         <p class="text-[11px] mt-1" style="color:var(--ink-faint)">Mengubah Ide Menjadi Carousel Profesional</p>
       </div>
     </div>
@@ -60,6 +60,16 @@
         <button id="btn-category-images" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
           <i class="ti ti-photo text-sm"></i> Kelola Gambar Kategori
         </button>
+        <button id="btn-niche-management" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
+          <i class="ti ti-tags text-sm"></i> Kelola Niche
+        </button>
+        <button id="btn-guide" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
+          <i class="ti ti-book text-sm"></i> Kelola Panduan
+        </button>
+        <hr class="my-2" style="border-color:var(--border-soft)">
+        <button id="btn-settings" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2">
+          <i class="ti ti-adjustments text-sm"></i> Personalisasi
+        </button>
       </div>
     </div>
   </header>
@@ -70,7 +80,7 @@
     <!-- LEFT: WIZARD -->
     <section class="border-r border-[var(--border-soft)] overflow-y-auto px-6 lg:px-8 py-7" style="background:var(--bg-panel); min-height:0">
 
-      <div class="mx-auto flex flex-col gap-7" style="max-width:480px">
+      <div class="mx-auto flex flex-col gap-7" style="max-width:580px">
         <!-- STEP 1 -->
         <div class="relative pl-10 step-rail">
           <div class="absolute left-0 top-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border" style="background:var(--bg-card); border-color:var(--border-strong); color:var(--amber)">1</div>
@@ -82,45 +92,34 @@
           </div>
           <p class="text-xs mb-4" style="color:var(--ink-faint)">Ceritakan topik dan tujuannya, AI akan bantu menyusun isi tiap slide.</p>
 
+          <!-- Preset -->
+          <div id="preset-bar" class="flex items-center gap-2 mb-4 hidden">
+            <div class="relative flex-1">
+              <select id="preset-select" class="input-field w-full rounded-lg px-2.5 py-1.5 text-xs">
+                <option value="">Muat preset...</option>
+              </select>
+              <div id="preset-empty-overlay" class="hidden absolute inset-0 rounded-lg cursor-pointer z-10"></div>
+            </div>
+            <button id="btn-save-preset" class="btn-ghost rounded-lg px-2.5 py-2 text-xs flex items-center gap-1 whitespace-nowrap">
+              <i class="ti ti-device-floppy text-sm"></i> Simpan
+            </button>
+            <button id="btn-delete-preset" class="rounded-lg px-2 py-1.5 text-xs flex items-center" style="color:var(--ink-faint)" title="Hapus preset">
+              <i class="ti ti-trash text-sm"></i>
+            </button>
+          </div>
+
+          <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Catatan / Brand</label>
+          <textarea id="inp-brand" autocomplete="off" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4" rows="2" placeholder="Nama Brand Kamu" style="resize:vertical; min-height:38px"></textarea>
+
           <!-- Generate ide dari niche -->
           <div class="mb-4">
             <div class="flex items-center gap-2 mb-2.5">
               <i class="ti ti-sparkles text-sm" style="color:var(--amber)"></i>
               <span class="text-xs font-medium" style="color:var(--cream)">Generate ide dari niche</span>
             </div>
-            <div class="flex flex-row gap-2 mb-2">
+            <div id="niche-row" class="flex flex-row gap-2 mb-2">
               <select id="inp-evergreen-niche" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm">
                 <option value="">Pilih niche</option>
-                <option value="Kesehatan">Kesehatan</option>
-                <option value="Keuangan">Keuangan</option>
-                <option value="Bisnis">Bisnis</option>
-                <option value="Karier">Karier</option>
-                <option value="Pendidikan">Pendidikan</option>
-                <option value="Teknologi">Teknologi</option>
-                <option value="Artificial Intelligence">Artificial Intelligence</option>
-                <option value="Digital Marketing">Digital Marketing</option>
-                <option value="Media Sosial">Media Sosial</option>
-                <option value="Content Creator">Content Creator</option>
-                <option value="Branding">Branding</option>
-                <option value="Produktivitas">Produktivitas</option>
-                <option value="Parenting">Parenting</option>
-                <option value="Hubungan">Hubungan</option>
-                <option value="Pengembangan Diri">Pengembangan Diri</option>
-                <option value="Hobi">Hobi</option>
-                <option value="Kuliner">Kuliner</option>
-                <option value="Rumah & Taman">Rumah & Taman</option>
-                <option value="Hewan Peliharaan">Hewan Peliharaan</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Kecantikan">Kecantikan</option>
-                <option value="Otomotif">Otomotif</option>
-                <option value="Travel">Travel</option>
-                <option value="Spiritual">Spiritual</option>
-                <option value="Hukum & Administrasi">Hukum & Administrasi</option>
-                <option value="Seni & Kreativitas">Seni & Kreativitas</option>
-                <option value="Lingkungan">Lingkungan</option>
-                <option value="Sains">Sains</option>
-                <option value="Gaming">Gaming</option>
-                <option value="Hiburan">Hiburan</option>
               </select>
               <select id="inp-subniche" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm">
                 <option value="">Pilih subniche (opsional)</option>
@@ -249,13 +248,13 @@
           <p class="text-xs mb-4" style="color:var(--ink-faint)">Berlaku untuk semua slide supaya carousel terlihat satu set.</p>
 
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Kategori visual</label>
-          <select id="inp-visual-category" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-3">
+          <select id="inp-visual-category" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4">
             <option value="">Pilih kategori visual</option>
           </select>
           <div id="style-grid" class="grid grid-cols-2 gap-2.5 mb-4"></div>
 
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Layout slide</label>
-          <select id="inp-layout" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-3">
+          <select id="inp-layout" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4">
             <option value="">Pilih layout</option>
             <option value="hero-center">Hero Center — pusat perhatian di tengah</option>
             <option value="left-focus">Left Focus — visual kiri, teks kanan</option>
@@ -300,21 +299,15 @@
           </select>
 
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Intruksi Tambahan (opsional)</label>
-          <input id="inp-customstyle" type="text" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4" placeholder="contoh: hand-drawn texture, maskot lucu">
+          <textarea id="inp-customstyle" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4" rows="2" placeholder="contoh: hand-drawn texture, maskot lucu" style="resize:vertical; min-height:38px"></textarea>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Ubah Palet Warna</label>
-              <div class="flex gap-2 items-center">
-                <button id="inp-color-1" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
-                <button id="inp-color-2" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
-                <button id="inp-color-3" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
-                <input id="inp-palette" type="text" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm hidden" placeholder="navy, putih, emas">
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Catatan / Brand</label>
-              <input id="inp-brand" type="text" autocomplete="off" class="input-field w-full rounded-lg px-3 py-2.5 text-sm" placeholder="Nama Brand Kamu">
+          <div>
+            <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Ubah Palet Warna</label>
+            <div class="flex gap-2 items-center">
+              <button id="inp-color-1" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+              <button id="inp-color-2" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+              <button id="inp-color-3" class="color-swatch-btn rounded-lg border cursor-pointer" style="background:var(--bg-card); border-color:var(--border-soft)"></button>
+              <input id="inp-palette" type="text" class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm hidden" placeholder="navy, putih, emas">
             </div>
           </div>
         </div>
@@ -348,7 +341,7 @@
     </section>
 
     <!-- RIGHT: PREVIEW + OUTPUT -->
-    <section class="overflow-y-auto px-6 lg:px-10 pt-3 pb-7 flex flex-col gap-6" style="min-height:0">
+    <section id="panel-right" class="overflow-y-auto px-6 lg:px-10 pt-3 pb-7 flex flex-col gap-6" style="min-height:0">
 
       <!-- empty state -->
       <div id="empty-state" class="flex-1 flex flex-col items-center justify-start text-center pb-6 px-6" style="padding-top:5rem">
@@ -356,66 +349,9 @@
           <i class="ti ti-sparkles text-2xl" style="color:var(--amber)"></i>
         </div>
         <h3 class="font-display text-lg mb-1" style="color:var(--cream)">Selamat Datang, <span id="welcome-user-name" class="font-display">User</span></h3>
-        <div class="w-full max-w-md mt-5">
-          <p class="lg:text-sm text-xs font-medium mb-3 text-center" style="color:var(--cream)">Cara penggunaan Carousel Studio:</p>
-          <div class="grid grid-cols-2 gap-2 text-left">
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">1</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Pilih Niche</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Pilih niche & subniche yang sesuai</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">2</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Isi Topik / Judul</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Klik Generate untuk memanfaatkan AI atau bisa langsung isi secara manual sesuai niche</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">3</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Tujuan & Audiens</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Tentukan tujuan konten dan target audiens</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">4</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Slide & Rasio</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Atur jumlah slide dan aspek rasio</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">5</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Gaya Visual</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Pilih gaya, layout, dan palet warna. Berikan instruksi tambahan yang ingin diterapkan bila perlu. Isi Nama Brand atau akun anda pada Catatan Brand.</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">6</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Generate AI</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">AI menyusun headline & isi tiap slide</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">7</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Edit Slide</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Sesuaikan teks, tambah atau hapus slide</p>
-              </div>
-            </div>
-            <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5 col-span-2" style="background:var(--bg-card); border-color:var(--border-soft)">
-              <span class="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center lg:text-xs text-[10px] font-semibold" style="background:var(--amber-soft); color:var(--amber)">8</span>
-              <div>
-                <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">Copy JSON Prompt</p>
-                <p class="lg:text-xs text-[10px] mt-0.5" style="color:var(--ink-soft)">Salin JSON prompt dengan mengklik tombol copy JSON slide ini lalu paste di image generator seperti ChatGPT (sangat direkomendasikan), atau yang lainnya.</p>
-              </div>
-            </div>
-          </div>
+        <div class="w-full mt-5">
+          <p class="lg:text-sm text-xs font-medium mb-6 text-center" style="color:var(--cream);" id="guide-title">Cara penggunaan Carofeed:</p>
+          <div id="guide-steps" class="grid grid-cols-2 gap-2 text-left"></div>
         </div>
       </div>
 
@@ -465,7 +401,7 @@
 </div>
 
 <!-- ADMIN MODAL -->
-<div id="admin-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="admin-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Kelola User</h3>
@@ -473,8 +409,8 @@
     </div>
 
     <div class="flex flex-wrap gap-2 mb-2">
-      <input id="inp-user-name" class="input-field flex-1 rounded-lg px-3 py-2 text-xs min-w-0" placeholder="Nama">
-      <input id="inp-user-email" class="input-field flex-1 rounded-lg px-3 py-2 text-xs min-w-0" placeholder="Email">
+      <input id="inp-user-name" autocomplete="off" class="input-field flex-1 rounded-lg px-3 py-2 text-xs min-w-0" placeholder="Nama">
+      <input id="inp-user-email" autocomplete="off" class="input-field flex-1 rounded-lg px-3 py-2 text-xs min-w-0" placeholder="Email">
     </div>
     <div class="flex flex-col gap-2 mb-2">
       <div class="flex flex-wrap gap-2">
@@ -485,7 +421,7 @@
         </select>
       </div>
       <div class="flex items-center rounded-lg" style="background:#100E0A; border:1px solid var(--border-soft)">
-        <input id="inp-user-password" type="password" class="flex-1 min-w-0" placeholder="Password" style="border:none; outline:none; background:transparent; color:var(--cream); padding:6px 12px; font-size:12px">
+        <input id="inp-user-password" type="password" autocomplete="new-password" class="flex-1 min-w-0" placeholder="Password" style="border:none; outline:none; background:transparent; color:var(--cream); padding:6px 12px; font-size:12px">
         <button data-toggle-pw="inp-user-password" type="button" class="flex-shrink-0 flex items-center justify-center mr-0.5 rounded-md hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:26px; height:26px">
           <i class="ti ti-eye text-sm"></i>
         </button>
@@ -500,7 +436,7 @@
 </div>
 
 <!-- CATEGORY IMAGES MODAL -->
-<div id="img-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="img-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Gambar Kategori</h3>
@@ -512,7 +448,7 @@
 </div>
 
 <!-- PROMPT MODAL -->
-<div id="prompt-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="prompt-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[85vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Prompt AI</h3>
@@ -548,7 +484,7 @@
 </div>
 
 <!-- AI MODAL -->
-<div id="ai-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="ai-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Kelola AI</h3>
@@ -595,26 +531,26 @@
 </div>
 
 <!-- CHANGE PASSWORD MODAL -->
-<div id="password-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="password-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-sm mx-4 p-5" style="background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Ganti Password</h3>
       <button id="btn-close-password" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
     </div>
     <div class="flex items-center rounded-lg mb-2" style="background:#100E0A; border:1px solid var(--border-soft)">
-      <input id="inp-password-current" type="password" class="flex-1" placeholder="Password saat ini" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
+      <input id="inp-password-current" type="password" autocomplete="current-password" class="flex-1" placeholder="Password saat ini" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
       <button data-toggle-pw="inp-password-current" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-md hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:32px; height:32px">
         <i class="ti ti-eye"></i>
       </button>
     </div>
     <div class="flex items-center rounded-lg mb-2" style="background:#100E0A; border:1px solid var(--border-soft)">
-      <input id="inp-password-new" type="password" class="flex-1" placeholder="Password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
+      <input id="inp-password-new" type="password" autocomplete="new-password" class="flex-1" placeholder="Password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
       <button data-toggle-pw="inp-password-new" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-md hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:32px; height:32px">
         <i class="ti ti-eye"></i>
       </button>
     </div>
     <div class="flex items-center rounded-lg mb-3" style="background:#100E0A; border:1px solid var(--border-soft)">
-      <input id="inp-password-confirm" type="password" class="flex-1" placeholder="Konfirmasi password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
+      <input id="inp-password-confirm" type="password" autocomplete="new-password" class="flex-1" placeholder="Konfirmasi password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0; padding:10px 12px; font-size:14px">
       <button data-toggle-pw="inp-password-confirm" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-md hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:32px; height:32px">
         <i class="ti ti-eye"></i>
       </button>
@@ -624,16 +560,16 @@
 </div>
 
 <!-- NICHE ALERT MODAL -->
-<div id="niche-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="niche-alert-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-xs mx-4 p-6 text-center" style="background:var(--bg-card); border-color:var(--border-strong)">
     <i class="ti ti-alert-circle text-2xl mb-3" style="color:var(--amber)"></i>
     <p class="text-sm mb-4" style="color:var(--cream)">Pilih niche terlebih dahulu</p>
-    <button id="btn-close-niche" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--amber);color:#1a1a1a">Tutup</button>
+    <button id="btn-close-niche-alert" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--amber);color:#1a1a1a">Tutup</button>
   </div>
 </div>
 
 <!-- COLOR PICKER MODAL -->
-<div id="color-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="color-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full mx-4 p-5" style="max-width:340px; background:var(--bg-card); border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-3">
       <h3 class="font-display text-sm" style="color:var(--cream)">Pilih Warna</h3>
@@ -659,7 +595,7 @@
 </div>
 
 <!-- LOGIN PAGE -->
-<div id="login-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" style="background:var(--bg-canvas)">
+<div id="login-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 overflow-y-auto" style="background:var(--bg-canvas)">
   <div class="min-h-screen flex items-center justify-center px-5 py-10">
     <div class="w-full max-w-sm">
 
@@ -668,24 +604,24 @@
         <div class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg" style="background:linear-gradient(160deg,#FFBE0B,#D49A08)">
           <i class="ti ti-layout-grid text-[#1A1408] text-xl"></i>
         </div>
-        <h1 class="font-display text-2xl mb-1" style="color:var(--cream)">Carousel Studio</h1>
-        <p class="text-sm" style="color:var(--ink-faint)">Buat konten carousel dengan AI</p>
+        <h1 class="font-display text-2xl mb-1" style="color:var(--cream)">Carofeed</h1>
+        <p class="text-sm" style="color:var(--ink-faint)">Carousel Feed Builder</p>
       </div>
 
       <!-- Login form -->
       <div id="login-form" class="rounded-2xl border p-6" style="background:var(--bg-card); border-color:var(--border-soft)">
         <div class="mb-4">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Nama</label>
-          <input id="inp-login-name" type="text" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="Nama kamu">
+          <input id="inp-login-name" type="text" autocomplete="name" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="Nama kamu">
         </div>
         <div class="mb-4">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Email</label>
-          <input id="inp-login-email" type="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
+          <input id="inp-login-email" type="email" autocomplete="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
         </div>
         <div class="mb-10">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Password</label>
           <div class="flex items-center rounded-xl" style="background:#100E0A; border:1px solid var(--border-soft)">
-            <input id="inp-login-password" type="password" class="flex-1 px-4 py-3 text-sm" placeholder="Masukkan password" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
+            <input id="inp-login-password" type="password" autocomplete="current-password" class="flex-1 px-4 py-3 text-sm" placeholder="Masukkan password" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
             <button data-toggle-pw="inp-login-password" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-lg hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:36px; height:36px">
               <i class="ti ti-eye text-lg"></i>
             </button>
@@ -700,7 +636,7 @@
         <p class="text-xs mb-4 text-center" style="color:var(--ink-faint)">Masukkan email & nomor WA untuk dapatkan token reset</p>
         <div class="mb-3">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Email</label>
-          <input id="inp-forgot-email" type="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
+          <input id="inp-forgot-email" type="email" autocomplete="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
         </div>
         <div class="mb-4">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">No. WhatsApp</label>
@@ -712,15 +648,20 @@
 
       <!-- Reset form -->
       <div id="reset-form" class="hidden rounded-2xl border p-6" style="background:var(--bg-card); border-color:var(--border-soft)">
-        <p class="text-xs mb-4 text-center" style="color:var(--ink-faint)">Masukkan token dari WhatsApp & password baru</p>
+        <p class="text-xs mb-4 text-center" style="color:var(--ink-faint)">Masukkan token & password baru</p>
+        <div id="token-display-area" class="hidden mb-3 rounded-lg p-3 text-center overflow-x-auto" style="background:var(--amber-soft); border:1px solid var(--amber-dim)">
+          <p class="text-[10px] mb-1" style="color:var(--ink-faint)">Token reset Anda:</p>
+          <p id="token-display" class="font-mono text-sm font-bold" style="color:var(--amber); word-break:break-all"></p>
+          <p class="text-[10px] mt-1" style="color:var(--ink-faint)">Salin token ini atau masukkan manual. Berlaku 1 jam.</p>
+        </div>
         <div class="mb-3">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Token Reset</label>
-          <input id="inp-reset-token" type="text" class="input-field w-full rounded-xl px-4 py-3 text-sm font-mono" placeholder="tempel token dari WA">
+          <input id="inp-reset-token" type="text" class="input-field w-full rounded-xl px-4 py-3 text-sm font-mono" placeholder="tempel token dari WA" style="word-break:break-all;overflow-x:auto">
         </div>
         <div class="mb-3">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Password Baru</label>
           <div class="flex items-center rounded-xl" style="background:#100E0A; border:1px solid var(--border-soft)">
-            <input id="inp-reset-password" type="password" class="flex-1 px-4 py-3 text-sm" placeholder="min 4 karakter" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
+            <input id="inp-reset-password" type="password" autocomplete="new-password" class="flex-1 px-4 py-3 text-sm" placeholder="min 4 karakter" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
             <button data-toggle-pw="inp-reset-password" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-lg hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:36px; height:36px">
               <i class="ti ti-eye text-lg"></i>
             </button>
@@ -729,7 +670,7 @@
         <div class="mb-4">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Konfirmasi Password</label>
           <div class="flex items-center rounded-xl" style="background:#100E0A; border:1px solid var(--border-soft)">
-            <input id="inp-reset-confirm" type="password" class="flex-1 px-4 py-3 text-sm" placeholder="ulangi password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
+            <input id="inp-reset-confirm" type="password" autocomplete="new-password" class="flex-1 px-4 py-3 text-sm" placeholder="ulangi password baru" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
             <button data-toggle-pw="inp-reset-confirm" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-lg hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:36px; height:36px">
               <i class="ti ti-eye text-lg"></i>
             </button>
@@ -743,14 +684,88 @@
   </div>
 </div>
 
+<!-- GUIDE MODAL -->
+<div id="settings-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-sm mx-4 p-5" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Personalisasi</h3>
+      <button id="btn-close-settings" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-medium" style="color:var(--cream)">Tema Tampilan</div>
+          <div class="text-xs mt-0.5" style="color:var(--ink-faint)">Gelap / Terang</div>
+        </div>
+        <div class="flex items-center gap-1.5 rounded-lg p-1" style="background:var(--bg-canvas); border:1px solid var(--border-soft)">
+          <button id="btn-theme-dark" class="theme-opt rounded-md px-3 py-1.5 text-xs font-medium" style="color:var(--ink-faint)">Gelap</button>
+          <button id="btn-theme-light" class="theme-opt rounded-md px-3 py-1.5 text-xs font-medium" style="color:var(--ink-faint)">Terang</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="guide-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Panduan Penggunaan</h3>
+      <button id="btn-close-guide" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <p class="text-xs mb-3" style="color:var(--ink-faint)">Atur langkah-langkah panduan yang tampil di halaman awal.</p>
+    <div id="guide-list" class="flex flex-col gap-2 overflow-y-auto min-h-0 flex-1 mb-3"></div>
+    <button id="btn-add-guide-step" class="btn-ghost w-full rounded-lg py-2 text-xs flex items-center justify-center gap-1.5 mb-3">
+      <i class="ti ti-plus text-sm"></i> Tambah Langkah
+    </button>
+    <div class="flex gap-2">
+      <button id="btn-reset-guide" class="rounded-lg px-3 py-2 text-xs" style="background:var(--bg-card-hover); color:var(--ink-soft)">Reset ke Default</button>
+      <button id="btn-save-guide" class="rounded-lg px-4 py-2 text-xs font-medium flex-1" style="background:var(--amber); color:#1a1a1a">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
-<div id="confirm-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+<div id="preset-name-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-xs mx-4 p-5" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <p class="text-sm mb-3" style="color:var(--cream)" id="preset-name-msg">Nama preset:</p>
+    <input id="preset-name-input" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-4" placeholder="cth: Kesehatan Mental" autocomplete="off">
+    <div class="flex gap-3 justify-end">
+      <button id="preset-name-cancel" class="rounded-lg px-4 py-2 text-xs font-medium" style="background:var(--bg-card-hover); color:var(--ink-soft)">Batal</button>
+      <button id="preset-name-ok" class="rounded-lg px-4 py-2 text-xs font-medium" style="background:var(--amber); color:#1a1a1a">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- NICHE MODAL -->
+<div id="niche-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Niche & Subniche</h3>
+      <button id="btn-close-niche" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="flex gap-2 mb-3">
+      <input id="inp-new-niche" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="Nama niche baru" autocomplete="off">
+      <button id="btn-add-niche" class="btn-ghost rounded-lg px-3 py-2 text-xs whitespace-nowrap">+ Tambah</button>
+    </div>
+    <div id="niche-list" class="flex flex-col gap-3 overflow-y-auto min-h-0 flex-1 mb-3"></div>
+    <button id="btn-save-niches" class="rounded-lg px-4 py-2 text-xs font-medium w-full" style="background:var(--amber); color:#1a1a1a">Simpan Semua</button>
+  </div>
+</div>
+
+<div id="confirm-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
   <div class="rounded-xl border w-full max-w-xs mx-4 p-5 text-center" style="background:var(--bg-card); border-color:var(--border-strong)">
     <p id="confirm-msg" class="text-sm mb-5" style="color:var(--cream)"></p>
     <div class="flex gap-3 justify-center">
       <button id="confirm-cancel" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--bg-card-hover); color:var(--ink-soft)">Batal</button>
       <button id="confirm-ok" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--amber); color:#1a1a1a">Yakin</button>
     </div>
+  </div>
+</div>
+
+<div id="alert-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-xs mx-4 p-5 text-center" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <p id="alert-msg" class="text-sm mb-5 leading-relaxed" style="color:var(--cream)"></p>
+    <button id="alert-ok" class="rounded-lg px-6 py-2 text-xs font-medium" style="background:var(--amber); color:#1a1a1a">OK</button>
   </div>
 </div>
 <!-- toast -->
