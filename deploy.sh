@@ -1,3 +1,6 @@
 #!/bin/bash
-vercel --prod --yes
-vercel alias rm carousel-studio-app.vercel.app --yes
+set -e
+MSG="${1:-deploy}"
+git add -A
+git commit -m "$MSG"
+git push
