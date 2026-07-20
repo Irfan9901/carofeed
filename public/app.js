@@ -1287,6 +1287,7 @@ function applyPresetData(data) {
     }
   }
 
+  document.querySelectorAll("[data-enhanced]").forEach(el => el._enhancedRefresh?.());
   updateColorSwatches();
   renderStylePresets();
   renderSlidesArea();
