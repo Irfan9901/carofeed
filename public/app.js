@@ -71,6 +71,10 @@ let VISUAL_CATEGORIES = {
 
 let BUILT_IN_CATEGORIES = [];
 
+function truncate(str, max) {
+  return str.length > max ? str.slice(0, max) + "…" : str;
+}
+
 let STYLE_PALETTES = {
   minimalist: ["#F5F5F0", "#2D2D2D", "#A8A8A8"],
   modern: ["#1A1A2E", "#E8E8E8", "#C69749"],
@@ -1278,7 +1282,7 @@ function applyPresetData(data) {
     if (subEl) {
       subEl.innerHTML = "";
       const items = SUBNICHE_MAP[nicheEl.value] || [];
-      subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+      subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}" title="${i}">${truncate(i, 25)}</option>`).join("");
       subEl.value = data.subniche || "";
     }
   }
@@ -1600,7 +1604,7 @@ async function saveNicheChanges() {
     const el = document.getElementById("inp-evergreen-niche");
     const sub = document.getElementById("inp-subniche");
     const items = SUBNICHE_MAP[el.value] || [];
-    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}" title="${i}">${truncate(i, 25)}</option>`).join("");
     sub.value = "";
   } catch (err) {
     showToast("Gagal menyimpan: " + err.message, "error");
@@ -2428,7 +2432,7 @@ function bindInputs() {
     const el = document.getElementById("inp-evergreen-niche");
     const sub = document.getElementById("inp-subniche");
     const items = SUBNICHE_MAP[el.value] || [];
-    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}" title="${i}">${truncate(i, 25)}</option>`).join("");
     sub.value = "";
   }
   function updateNicheGenerateBtn() {
