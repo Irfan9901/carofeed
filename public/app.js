@@ -71,10 +71,6 @@ let VISUAL_CATEGORIES = {
 
 let BUILT_IN_CATEGORIES = [];
 
-function truncate(str, max) {
-  return str.length > max ? str.slice(0, max) + "…" : str;
-}
-
 let STYLE_PALETTES = {
   minimalist: ["#F5F5F0", "#2D2D2D", "#A8A8A8"],
   modern: ["#1A1A2E", "#E8E8E8", "#C69749"],
