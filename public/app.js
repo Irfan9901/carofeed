@@ -3066,8 +3066,6 @@ async function init() {
   renderSlidesArea();
   renderEmptyState();
 
-  window.customSubnicheSelect = new CustomSelect("inp-subniche");
-
   loadStaticData().then(() => { populateVisualCategory(); populateNicheDropdown(); });
 
   // Aktifkan :active pseudo-class di iOS Safari (tanpa ini :active tidak bekerja di <button>)
