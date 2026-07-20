@@ -66,7 +66,7 @@ class CustomSelect {
     let fs = 14;
     if (maxTextWidth > available) {
       const scaled = (available / maxTextWidth) * 14;
-      fs = Math.max(10, Math.floor(scaled * 10) / 10);
+      fs = Math.max(11, Math.floor(scaled * 10) / 10);
     }
 
     this.panel.innerHTML = "";
