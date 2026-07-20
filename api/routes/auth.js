@@ -16,12 +16,29 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+async function pruneExpiredTokens() {
+  try {
+    let resetTokens = await get('resetTokens') || [];
+    if (!Array.isArray(resetTokens)) resetTokens = [];
+    const before = resetTokens.length;
+    resetTokens = resetTokens.filter(t => t && !t.used && t.expiresAt > Date.now());
+    if (resetTokens.length < before) {
+      await set('resetTokens', resetTokens);
+    }
+    return before - resetTokens.length;
+  } catch { return 0; }
+}
+
 async function ensureAdminExists() {
   let users = await get('users');
-  if (!users) users = [];
-  const hasAdmin = users.some((u) => u.role === 'admin');
+  if (!Array.isArray(users)) users = [];
+  const hasAdmin = users.some((u) => u && typeof u === 'object' && u.role === 'admin');
   if (!hasAdmin) {
-    const adminPassword = await hashPassword('admin');
+    if (process.env.VERCEL === '1' && !process.env.ADMIN_SEED_PASSWORD) {
+      throw new Error('ADMIN_SEED_PASSWORD env var required on Vercel to seed admin. Set it and redeploy.');
+    }
+    const adminPwPlain = process.env.ADMIN_SEED_PASSWORD || crypto.randomBytes(4).toString('hex');
+    const adminPassword = await hashPassword(adminPwPlain);
     users.push({
       id: 's-admin-001',
       name: 'Admin',
@@ -32,6 +49,12 @@ async function ensureAdminExists() {
       createdAt: Date.now(),
     });
     await set('users', users);
+    if (process.env.VERCEL !== '1') {
+      console.log('========================================================================');
+      console.log(` Admin seeded — login: admin@cps.local / ${adminPwPlain}`);
+      console.log(` Change password immediately after first login.`);
+      console.log('========================================================================');
+    }
   }
   return users;
 }
@@ -99,17 +122,19 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
     let users = await get('users');
     if (!users) users = [];
     const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (!user) return res.status(404).json({ error: 'Email not registered' });
+    if (!user) return res.status(404).json({ error: 'Email anda belum terdaftar, segera hubungi admin' });
 
     const storedPhone = normalizePhone(user.phone || '');
     if (storedPhone && storedPhone !== normalizePhone(phone)) {
       return res.status(401).json({ error: 'Phone number does not match' });
     }
 
+    await pruneExpiredTokens();
     const resetToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
     let resetTokens = await get('resetTokens') || [];
     resetTokens.push({
-      token: resetToken,
+      tokenHash,
       userId: user.id,
       expiresAt: Date.now() + 60 * 60 * 1000,
       used: false,
@@ -137,9 +162,10 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 4 characters' });
     }
 
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
     let resetTokens = await get('resetTokens') || [];
     const entry = resetTokens.find(
-      (t) => t.token === token && !t.used && t.expiresAt > Date.now()
+      (t) => t.tokenHash === tokenHash && !t.used && t.expiresAt > Date.now()
     );
     if (!entry) {
       return res.status(400).json({ error: 'Invalid or expired reset token' });
@@ -152,8 +178,8 @@ router.post('/reset-password', async (req, res) => {
 
     users[idx].password = await hashPassword(newPassword);
     entry.used = true;
-    await set('resetTokens', resetTokens);
     await set('users', users);
+    await pruneExpiredTokens();
 
     res.json({ success: true });
   } catch (err) {
@@ -168,4 +194,26 @@ router.get('/me', requireAuth, (req, res) => {
   });
 });
 
-module.exports = router;
+// Reset admin password via ADMIN_RESET_KEY env var
+router.post('/reset-admin', async (req, res) => {
+  try {
+    const { resetKey, newPassword } = req.body;
+    const expectedKey = process.env.ADMIN_RESET_KEY;
+    if (!expectedKey) return res.status(400).json({ error: 'ADMIN_RESET_KEY not configured on server' });
+    if (!resetKey || resetKey !== expectedKey) return res.status(403).json({ error: 'Invalid reset key' });
+    if (!newPassword || newPassword.length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
+
+    let users = await get('users');
+    if (!Array.isArray(users)) users = [];
+    const idx = users.findIndex(u => u && u.role === 'admin');
+    if (idx === -1) return res.status(404).json({ error: 'No admin found' });
+
+    users[idx].password = await hashPassword(newPassword);
+    await set('users', users);
+    res.json({ success: true, email: users[idx].email });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+module.exports = { router, pruneExpiredTokens };

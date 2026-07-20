@@ -1,0 +1,165 @@
+{
+  "hero": {
+    "badge": "🚀 Baru dirilis — AI Carousel Generator",
+    "titleMain": "Buat Carousel Instagram",
+    "titleGradient": "10x Lebih Cepat dengan AI",
+    "subtitle": "Dari ide sampai slide siap posting dalam hitungan menit. Tinggal pilih niche, AI kita yang bikin konten + visualnya.",
+    "stats": [
+      { "num": "200+", "label": "Pengguna Aktif" },
+      { "num": "5.000+", "label": "Carousel Terbuat" },
+      { "num": "10", "label": "Template Visual" }
+    ]
+  },
+  "features": [
+    { "icon": "🤖", "gradient": "var(--grad-purple)", "title": "AI Content Generator", "desc": "Generate ide, headline, body text, dan visual description otomatis berdasarkan niche yang kamu pilih." },
+    { "icon": "🎨", "gradient": "var(--grad-teal)", "title": "50+ Visual Style", "desc": "Dari minimalis, 3D, watercolor, sampe cyberpunk. Pilih gaya visual yang cocok dengan brand kamu." },
+    { "icon": "📱", "gradient": "var(--grad-pink)", "title": "Output Siap Posting", "desc": "JSON prompt siap pakai buat Midjourney / DALL-E / AI image generator lainnya." },
+    { "icon": "⚡", "gradient": "var(--grad-orange)", "title": "Super Cepat", "desc": "Ide + konten + visual dalam 1-2 menit. Bandingin sama bikin manual yang bisa sejam lebih." },
+    { "icon": "🎯", "gradient": "var(--grad-blue)", "title": "50+ Niche Siap Pakai", "desc": "Dari kesehatan, bisnis, teknologi, sampe parenting. Lengkap dengan subniche yang spesifik." },
+    { "icon": "💾", "gradient": "var(--grad-cyan)", "title": "Simpan & Muat Ulang", "desc": "Preset system — simpan konfigurasi carousel favorit kamu dan muat kapan aja." }
+  ],
+  "steps": [
+    { "num": "1", "title": "Pilih Niche & Gaya", "desc": "Pilih topik + subniche yang mau dibahas. Atur jumlah slide dan gaya visual." },
+    { "num": "2", "title": "AI Generate", "desc": "Tekan tombol, AI kita bikin headline, teks, dan deskripsi visual tiap slide." },
+    { "num": "3", "title": "Copy & Posting", "desc": "Copy JSON prompt, tempel ke AI image generator, upload ke Instagram. Selesai!" }
+  ],
+  "pricing": [
+    {
+      "name": "Starter",
+      "price": "Gratis",
+      "period": null,
+      "badge": null,
+      "features": [
+        "5 carousel/bulan",
+        "Semua visual style",
+        "Semua niche",
+        "Export JSON",
+        "Custom categories",
+        "Tim multi-user"
+      ],
+      "buttonLabel": "Mulai",
+      "featured": false,
+      "enabled": [true, true, true, true, false, false]
+    },
+    {
+      "name": "Creator",
+      "price": "Rp 50rb",
+      "period": "/bln",
+      "badge": "POPULER",
+      "features": [
+        "50 carousel/bulan",
+        "Semua visual style",
+        "Semua niche",
+        "Export JSON",
+        "Custom categories",
+        "Custom model AI"
+      ],
+      "buttonLabel": "Pilih Paket",
+      "featured": true,
+      "enabled": [true, true, true, true, true, true]
+    },
+    {
+      "name": "Agency",
+      "price": "Rp 150rb",
+      "period": "/bln",
+      "badge": null,
+      "features": [
+        "Unlimited carousel",
+        "Semua visual style",
+        "Semua niche",
+        "Export JSON",
+        "Custom categories",
+        "5 user tim"
+      ],
+      "buttonLabel": "Pilih Paket",
+      "featured": false,
+      "enabled": [true, true, true, true, true, true]
+    }
+  ],
+  "testimonials": [
+    {
+      "stars": 5,
+      "text": "\"Dulu bikin 1 carousel bisa 2 jam. Sekarang 10 menit udah jadi. Ini game changer banget buat konten kreator.\"",
+      "name": "Rina Wijaya",
+      "role": "Content Creator, 25K followers",
+      "initial": "R",
+      "gradient": "var(--grad-purple)"
+    },
+    {
+      "stars": 5,
+      "text": "\"Fitur niche-nya lengkap banget. Tinggal pilih topik, AI langsung kasih ide slide yang relevan. Sangat membantu!\"",
+      "name": "Andi Pratama",
+      "role": "Digital Marketer",
+      "initial": "A",
+      "gradient": "var(--grad-teal)"
+    },
+    {
+      "stars": 5,
+      "text": "\"Output JSON-nya bikin kerja tim jadi lebih efisien. Tinggal copy, tempel ke AI image generator, jadi.\"",
+      "name": "Sari Dewi",
+      "role": "Agency Owner",
+      "initial": "S",
+      "gradient": "var(--grad-orange)"
+    }
+  ],
+  "faq": [
+    { "q": "Apakah benar-benar gratis?", "a": "Aplikasi gratis dipake. Kamu cuma bayar biaya API AI yang kamu pake (misal OpenAI atau provider lain). Rata-rata Rp 500 - 2000 per carousel tergantung model AI." },
+    { "q": "Apakah hasilnya bisa langsung diposting?", "a": "Output berupa JSON prompt yang bisa langsung dipake di Midjourney, DALL-E, atau AI image generator lain. Tinggal copy-paste." },
+    { "q": "Bisa untuk niche spesifik / custom?", "a": "Tentu. Ada 50+ niche yang siap pakai, plus kamu bisa tambah niche dan subniche sendiri lewat panel admin. Cocok buat bisnis dengan topik yang sangat spesifik." },
+    { "q": "Apakah ada batasan jumlah carousel?", "a": "Tergantung paket. Starter: 5 carousel/bulan. Creator: 50 carousel/bulan. Agency: unlimited. Hitungannya per series carousel, bukan per slide." },
+    { "q": "Bisa dipake tim / agency?", "a": "Ya. Paket Agency support sampai 5 user dalam satu akun. Cocok buat agency yang handle banyak client." }
+  ],
+  "blog": [
+    {
+      "tag": "Tutorial",
+      "title": "Cara Bikin Carousel Instagram yang Viral di 2026",
+      "desc": "Strategi lengkap dari riset topik sampe optimasi engagement untuk carousel Instagram.",
+      "icon": "📊",
+      "gradient": "var(--grad-purple)"
+    },
+    {
+      "tag": "AI",
+      "title": "Prompt Engineering untuk Carousel: Panduan Pemula",
+      "desc": "Gimana cara nulis prompt AI yang bener biar hasil carousel-nya konsisten dan engaging.",
+      "icon": "🤖",
+      "gradient": "var(--grad-teal)"
+    },
+    {
+      "tag": "Tips",
+      "title": "5 Niche Carousel dengan Engagement Tertinggi",
+      "desc": "Data terbaru 2026: topik apa aja yang paling banyak dapet share dan simpan di Instagram.",
+      "icon": "📈",
+      "gradient": "var(--grad-orange)"
+    }
+  ],
+  "cta": {
+    "titleMain": "Siap Bikin Carousel",
+    "titleGradient": "10x Lebih Cepat?",
+    "desc": "Gak perlu trial & error. Langsung jadi. Gratis mulai sekarang.",
+    "buttonLabel": "Mulai Gratis →"
+  },
+  "customSections": [],
+  "settings": {
+    "navLogin": "Masuk",
+    "navRegister": "Coba Gratis",
+    "heroPrimary": "Mulai Gratis",
+    "heroSecondary": "Lihat Fitur ↓",
+    "btnSize": "sm",
+    "adminFontSize": "medium"
+  },
+  "appUrl": "https://carofeed.vercel.app",
+  "labels": {
+    "featuresTitle": "Semua yang Kamu Butuh buat<br>Bikin Carousel Viral",
+    "featuresDesc": "Gak perlu jadi desainer atau copywriter. Cukup kasih ide, AI kita kerja.",
+    "stepsTitle": "3 Langkah Gampang",
+    "stepsDesc": "Gak butuh skill desain atau nulis. Serius.",
+    "pricingTitle": "Mulai Gratis,<br>Scale Kapan Aja",
+    "pricingDesc": "Gak ada biaya tersembunyi. Hanya bayar AI API yang kamu pake.",
+    "testimonialsTitle": "Apa Kata Mereka?",
+    "testimonialsDesc": "Udah dipake content creator, UMKM, sampe agency.",
+    "faqTitle": "Pertanyaan Umum",
+    "faqDesc": "Yang sering ditanyain pengguna baru.",
+    "blogTitle": "Tips & Tutorial<br>Carousel Marketing",
+    "blogDesc": "Dapetin insight dan strategi konten Instagram dari para ahli."
+  }
+}

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Carofeed Landing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',-apple-system,sans-serif;background:#07080a;color:#e0e4ed;line-height:1.6;-webkit-font-smoothing:antialiased}
+    input,textarea,select{font-family:inherit;background:#0e1015;border:1px solid rgba(255,255,255,.08);color:#e0e4ed;border-radius:8px;padding:8px 12px;font-size:13px;width:100%;outline:none;transition:border-color .2s}
+    input:focus,textarea:focus,select:focus{border-color:rgba(124,58,237,.4)}
+    textarea{resize:vertical;min-height:56px}
+    label{display:block;font-size:11px;color:#989eae;margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
+    .hidden{display:none!important}
+    /* Login */
+    .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .login-card{background:#0e1015;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:40px 32px;width:100%;max-width:380px;text-align:center}
+    .login-card h1{font-size:20px;font-weight:700;margin-bottom:6px}
+    .login-card p{font-size:13px;color:#5c6378;margin-bottom:24px}
+    .login-card .logo{font-size:22px;font-weight:800;margin-bottom:16px;display:block}
+    .login-card .logo span{background:linear-gradient(135deg,#7c3aed,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .login-card .error{font-size:12px;color:#ef4444;margin-top:8px;min-height:18px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:8px;font-weight:600;font-size:13px;padding:10px 20px;border:none;cursor:pointer;font-family:inherit;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff}
+    .btn-primary:hover{box-shadow:0 4px 20px rgba(124,58,237,.3)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.1);color:#c8ced8;border-radius:6px;cursor:pointer}
+    .btn-ghost:hover{background:rgba(255,255,255,.06)}
+    .btn-amber{background:#d4a047;color:#1a1a1a}
+    .btn-amber:hover{opacity:.9}
+    .btn-sm{padding:6px 14px;font-size:12px}
+    .w-full{width:100%}
+    /* Sidebar Layout */
+    .admin-layout{min-height:100vh;padding-left:200px;display:flex;justify-content:center;align-items:center}
+    .sidebar{width:200px;flex-shrink:0;background:#0a0c10;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:16px;position:fixed;left:0;top:0;height:100vh;overflow-y:auto}
+    .sidebar .logo{font-size:15px;font-weight:800;margin-bottom:16px;display:block}
+    .sidebar .logo span{background:linear-gradient(135deg,#7c3aed,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sidebar .tabs{display:flex;flex-direction:column;gap:2px;flex:1}
+    .sidebar .tab{padding:8px 12px;font-size:12px;font-weight:500;border-radius:6px;border:none;cursor:pointer;font-family:inherit;transition:all .2s;background:transparent;color:#5c6378;text-align:left;width:100%}
+    .sidebar .tab:hover{color:#e0e4ed;background:rgba(255,255,255,.04)}
+    .sidebar .tab.active{background:rgba(124,58,237,.15);color:#a78bfa}
+    .sidebar .sidebar-actions{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+    .sidebar .sidebar-actions a,.sidebar .sidebar-actions button{background:none;border:1px solid rgba(255,255,255,.08);color:#989eae;font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;text-decoration:none;display:block}
+    .sidebar .sidebar-actions a:hover,.sidebar .sidebar-actions button:hover{border-color:rgba(239,68,68,.3);color:#ef4444}
+    .sidebar .font-info{padding-top:10px;margin-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#5c6378;line-height:1.5;text-align:center}
+    @media(max-width:640px){.sidebar .font-info{display:none}}
+    body[data-admin-font="small"]{font-size:12px}
+    body[data-admin-font="small"] input,body[data-admin-font="small"] textarea,body[data-admin-font="small"] select{font-size:12px}
+    body[data-admin-font="large"]{font-size:15px}
+    body[data-admin-font="large"] input,body[data-admin-font="large"] textarea,body[data-admin-font="large"] select{font-size:14px}
+    .main-content{width:100%;max-width:720px;padding:24px 32px;overflow-y:auto}
+    /* Panel */
+    .panel{display:flex;flex-direction:column;gap:14px}
+    .panel-card{background:#0e1015;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:16px}
+    .panel-card-title{font-size:12px;font-weight:600;color:#989eae;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+    .flex-row{display:flex;gap:8px;align-items:center}
+    .flex-row>*{flex:1}
+    .flex-row .w-auto{flex:0 0 auto}
+    .mt-12{margin-top:12px}
+    .mb-12{margin-bottom:12px}
+    .text-xs{font-size:12px;color:#5c6378}
+    .text-center{text-align:center}
+    .toast{position:fixed;bottom:20px;right:20px;background:#0e1015;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 20px;font-size:13px;z-index:999;box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:360px;animation:fadeIn .3s}
+    .toast.success{border-color:rgba(16,185,129,.3)}
+    .toast.error{border-color:rgba(239,68,68,.3);color:#fca5a5}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .save-bar{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+    .checkbox-label{display:flex;align-items:center;gap:6px;font-size:12px;color:#989eae;text-transform:none;letter-spacing:0;cursor:pointer}
+    .checkbox-label input{width:auto}
+    select{appearance:auto}
+    a{color:#a78bfa;text-decoration:none}
+    a:hover{color:#c4b5fd}
+    @media(max-width:640px){.sidebar{width:56px;padding:12px 8px}.sidebar .logo{font-size:0}.sidebar .logo::after{content:'◆';font-size:18px}.sidebar .tab span{display:none}.sidebar .tab{text-align:center;padding:8px}.main-content{padding:16px}.admin-layout{padding-left:56px}}
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="login-page" class="login-page">
+    <div class="login-card">
+      <div class="logo"><span>◆ Carofeed</span></div>
+      <h1>Admin Landing Page</h1>
+      <p>Masuk dengan akun admin untuk mengelola konten landing page</p>
+      <form id="login-form" style="text-align:left">
+        <div style="margin-bottom:12px">
+          <label>Email</label>
+          <input id="login-email" type="email" autocomplete="email" placeholder="admin@example.com">
+        </div>
+        <div style="margin-bottom:4px">
+          <label>Password</label>
+          <input id="login-password" type="password" autocomplete="current-password" placeholder="Password">
+        </div>
+        <div class="error" id="login-error"></div>
+        <button type="submit" class="btn btn-primary mt-12">Masuk</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin -->
+  <div id="admin-page" class="hidden">
+    <div class="admin-layout">
+      <div class="sidebar">
+        <div class="logo"><span>◆ Kelola Landing</span></div>
+        <div class="tabs" id="tab-bar">
+          <button class="tab active" data-tab="hero"><span>Hero</span></button>
+          <button class="tab" data-tab="features"><span>Fitur</span></button>
+          <button class="tab" data-tab="steps"><span>Steps</span></button>
+          <button class="tab" data-tab="pricing"><span>Harga</span></button>
+          <button class="tab" data-tab="testimonials"><span>Testi</span></button>
+          <button class="tab" data-tab="faq"><span>FAQ</span></button>
+          <button class="tab" data-tab="blog"><span>Blog</span></button>
+          <button class="tab" data-tab="cta"><span>CTA</span></button>
+          <button class="tab" data-tab="labels"><span>Label</span></button>
+          <button class="tab" data-tab="custom"><span>Kustom</span></button>
+          <button class="tab" data-tab="settings"><span>Pengaturan</span></button>
+        </div>
+        <div class="sidebar-actions">
+          <a href="https://cs-landing-ten.vercel.app" target="_blank">Lihat Halaman</a>
+          <button id="btn-logout">Logout</button>
+          <div class="font-info">
+            <span style="color:#3b3f4e">Font:</span> Inter<br>
+            <span style="font-size:10px;color:#3b3f4e">400 · 500 · 600 · 700 · 800</span>
+          </div>
+        </div>
+      </div>
+      <div class="main-content">
+        <div id="form-area">
+          <!-- Hero -->
+          <div class="panel" data-panel="hero">
+            <div><label>Badge</label><input id="f-hero-badge"></div>
+            <div><label>Judul (main)</label><input id="f-hero-title-main"></div>
+            <div><label>Judul (gradient)</label><input id="f-hero-title-grad"></div>
+            <div><label>Subtitle</label><textarea id="f-hero-sub" rows="2"></textarea></div>
+            <div class="panel-card">
+              <div class="panel-card-title">Statistik (3)</div>
+              <div id="f-hero-stats"></div>
+            </div>
+          </div>
+          <!-- Features -->
+          <div class="panel hidden" data-panel="features">
+            <div id="f-features-list"></div>
+          </div>
+          <!-- Steps -->
+          <div class="panel hidden" data-panel="steps">
+            <div id="f-steps-list"></div>
+          </div>
+          <!-- Pricing -->
+          <div class="panel hidden" data-panel="pricing">
+            <div id="f-pricing-list"></div>
+          </div>
+          <!-- Testimonials -->
+          <div class="panel hidden" data-panel="testimonials">
+            <div id="f-testimonials-list"></div>
+          </div>
+          <!-- FAQ -->
+          <div class="panel hidden" data-panel="faq">
+            <div id="f-faq-list"></div>
+          </div>
+          <!-- Blog -->
+          <div class="panel hidden" data-panel="blog">
+            <div id="f-blog-list"></div>
+          </div>
+          <!-- CTA -->
+          <div class="panel hidden" data-panel="cta">
+            <div><label>Judul (main)</label><input id="f-cta-title-main"></div>
+            <div><label>Judul (gradient)</label><input id="f-cta-title-grad"></div>
+            <div><label>Deskripsi</label><textarea id="f-cta-desc" rows="2"></textarea></div>
+            <div><label>Tombol</label><input id="f-cta-btn"></div>
+            <div><label>App URL</label><input id="f-app-url" placeholder="https://carofeed.vercel.app"></div>
+          </div>
+          <!-- Labels -->
+          <div class="panel hidden" data-panel="labels">
+            <div class="panel-card">
+              <div class="panel-card-title">Section Titles & Descriptions</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><label>Judul Fitur</label><input id="f-label-featuresTitle"></div>
+                <div><label>Deskripsi Fitur</label><textarea id="f-label-featuresDesc" rows="2"></textarea></div>
+                <div><label>Judul Steps</label><input id="f-label-stepsTitle"></div>
+                <div><label>Deskripsi Steps</label><textarea id="f-label-stepsDesc" rows="2"></textarea></div>
+                <div><label>Judul Harga</label><input id="f-label-pricingTitle"></div>
+                <div><label>Deskripsi Harga</label><textarea id="f-label-pricingDesc" rows="2"></textarea></div>
+                <div><label>Judul Testimonial</label><input id="f-label-testimonialsTitle"></div>
+                <div><label>Deskripsi Testimonial</label><textarea id="f-label-testimonialsDesc" rows="2"></textarea></div>
+                <div><label>Judul FAQ</label><input id="f-label-faqTitle"></div>
+                <div><label>Deskripsi FAQ</label><textarea id="f-label-faqDesc" rows="2"></textarea></div>
+                <div><label>Judul Blog</label><input id="f-label-blogTitle"></div>
+                <div><label>Deskripsi Blog</label><textarea id="f-label-blogDesc" rows="2"></textarea></div>
+              </div>
+            </div>
+          </div>
+          <!-- Custom Sections -->
+          <div class="panel hidden" data-panel="custom">
+            <div style="display:flex;gap:8px;margin-bottom:12px">
+              <button id="btn-add-section" class="btn btn-primary" style="flex:1;padding:8px;font-size:12px">+ Tambah Section</button>
+            </div>
+            <div id="f-custom-sections" style="display:flex;flex-direction:column;gap:12px"></div>
+          </div>
+          <!-- Settings -->
+          <div class="panel hidden" data-panel="settings">
+            <div class="panel-card">
+              <div class="panel-card-title">Tombol Navigasi</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><label>Login</label><input id="f-set-nav-login" placeholder="Masuk"></div>
+                <div><label>Daftar / Coba Gratis</label><input id="f-set-nav-register" placeholder="Coba Gratis"></div>
+              </div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-title">Tombol Hero</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div><label>Tombol Utama</label><input id="f-set-hero-primary" placeholder="Mulai Gratis"></div>
+                <div><label>Tombol Sekunder</label><input id="f-set-hero-secondary" placeholder="Lihat Fitur ↓"></div>
+              </div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-title">Ukuran Tombol</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <label class="checkbox-label"><input type="radio" name="btn-size" value="sm" id="f-set-btn-size-sm"> Small</label>
+                <label class="checkbox-label"><input type="radio" name="btn-size" value="md" id="f-set-btn-size-md" checked> Medium</label>
+                <label class="checkbox-label"><input type="radio" name="btn-size" value="lg" id="f-set-btn-size-lg"> Large</label>
+              </div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-card-title">Ukuran Font Admin</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <label class="checkbox-label"><input type="radio" name="admin-font-size" value="small" id="f-set-admin-font-small"> Kecil</label>
+                <label class="checkbox-label"><input type="radio" name="admin-font-size" value="medium" id="f-set-admin-font-medium" checked> Sedang</label>
+                <label class="checkbox-label"><input type="radio" name="admin-font-size" value="large" id="f-set-admin-font-large"> Besar</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="save-bar">
+          <button id="btn-save" class="btn btn-amber w-full">Simpan Landing Page</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="admin.js"></script>
+</body>
+</html>

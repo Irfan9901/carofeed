@@ -1,4 +1,4 @@
-const VISUAL_CATEGORIES = {
+let VISUAL_CATEGORIES = {
   "Modern": [
     { id: "minimalist", label: "Minimalist", desc: "Bersih, simpel, banyak ruang kosong", icon: "ti-square-rounded", tags: ["minimalist", "clean composition", "ample negative space", "simple shapes", "understated"] },
     { id: "modern", label: "Modern", desc: "Kontemporer, garis bersih, elegan", icon: "ti-arrows-split-2", tags: ["modern style", "clean lines", "contemporary", "sleek", "refined"] },
@@ -69,9 +69,9 @@ const VISUAL_CATEGORIES = {
   ],
 };
 
-const BUILT_IN_CATEGORIES = Object.keys(VISUAL_CATEGORIES);
+let BUILT_IN_CATEGORIES = [];
 
-const STYLE_PALETTES = {
+let STYLE_PALETTES = {
   minimalist: ["#F5F5F0", "#2D2D2D", "#A8A8A8"],
   modern: ["#1A1A2E", "#E8E8E8", "#C69749"],
   "flat-design": ["#FF6B6B", "#4ECDC4", "#1A1A2E"],
@@ -122,21 +122,21 @@ const STYLE_PALETTES = {
   fantasy: ["#6C5CE7", "#FF9EC4", "#00CED1"],
 };
 
-const DEFAULT_NEGATIVE = "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides";
+let DEFAULT_NEGATIVE = "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character";
 
-const DEFAULT_PROMPTS = {
-  system_idea: "Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel max 10 kata, gunakan bahasa yang sama dengan bahasa topik\"}. Jangan tambahkan teks lain.",
+let DEFAULT_PROMPTS = {
+  system_idea: "Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel, gunakan bahasa yang sama dengan bahasa topik\"}. Jangan tambahkan teks lain.",
   user_idea: "Niche: {{niche}}",
-  system_slide: "Kamu adalah asisten penyusun konten carousel Instagram. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik max 8 kata, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung max 18 kata, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator, max 15 kata\"}. Slide pertama harus jadi cover/hook pembuka yang kuat. Buat kalimat pembuka pada slide pertama dengan hook yang emosional dan memikat audiens. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Jika Brand/Catatan diberikan, visualIdea harus menyebutnya sebagai 'text overlay' (contoh: 'brand name text overlay at top left'), jangan pernah menggunakan kata 'logo'. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
-  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nJumlah slide: {{slideCount}}{{customStyleNote}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
-  negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides"
+  system_slide: "Kamu adalah asisten penyusun konten carousel Instagram. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat. Buat kalimat pembuka pada slide pertama dengan hook yang emosional dan memikat audiens. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Jika Brand/Catatan diberikan, visualIdea harus menyebutnya sebagai 'text overlay' (contoh: 'brand name text overlay at top left'), jangan pernah menggunakan kata 'logo'. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
+  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
+  negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
 function replacePromptVars(tpl, vars) {
   return tpl.replace(/\{\{(\w+)\}\}/g, (_, k) => vars[k] !== undefined ? vars[k] : `{{${k}}}`);
 }
 
-const NICHE_MAP = {
+let NICHE_MAP = {
   "Kesehatan": { purpose: "edukasi", audience: "umum" },
   "Keuangan": { purpose: "edukasi", audience: "profesional" },
   "Bisnis": { purpose: "edukasi", audience: "pebisnis" },
@@ -169,7 +169,7 @@ const NICHE_MAP = {
   "Hiburan": { purpose: "storytelling", audience: "umum" },
 };
 
-const SUBNICHE_MAP = {
+let SUBNICHE_MAP = {
   "Kesehatan": ["Olahraga & Fitness","Diet & Nutrisi","Kesehatan Mental","Kesehatan Kulit","Kesehatan Jantung","Tidur & Istirahat","Kesehatan Anak","Kesehatan Wanita","Kesehatan Pria","Kesehatan Gigi","Kesehatan Mata","Imunitas & Vitamin","Kesehatan Usus","Kesehatan Tulang","Detoks & Pembersihan","Obat Herbal","Kesehatan Seksual","Kesehatan Lansia","Cek Kesehatan Rutin","Pertolongan Pertama"],
   "Keuangan": ["Investasi Saham","Reksadana","Cryptocurrency","Tabungan & Dana Darurat","Utang & Pinjaman","Asuransi","Pajak Pribadi","Dana Pensiun","Passive Income","Anggaran Bulanan","Kartu Kredit","Cicilan & KPR","Trading Forex","Emas & Logam Mulia","Fintech & E-Wallet","Literasi Keuangan Anak","Side Hustle","Manajemen Risiko","Valuasi Aset","Perencanaan Warisan"],
   "Bisnis": ["Startup & Venture","UMKM & Toko Kecil","Strategi Pemasaran","Manajemen Tim","E-commerce","Bisnis Online","Franchise","Negosiasi & Penjualan","Business Plan","Branding Bisnis","Customer Service","Supply Chain","Bisnis F&B","Bisnis Fashion","Bisnis Digital","Co-working & Kantor","Legalitas Bisnis","Skalasi Bisnis","Inovasi Produk","Bisnis Franchise"],
@@ -288,6 +288,9 @@ function renderUserMenu() {
     "btn-prompt-ai",
     "btn-admin-panel",
     "btn-category-images",
+    "btn-niche-management",
+    "btn-guide",
+    "btn-settings",
     "admin-only-section",
   ];
   const visibility = {
@@ -299,6 +302,9 @@ function renderUserMenu() {
     btnPromptAi: { guest: false, user: false, admin: true },
     btnAdminPanel: { guest: false, user: false, admin: true },
     btnCategoryImages: { guest: false, user: false, admin: true },
+    btnNicheManagement: { guest: false, user: false, admin: true },
+    btnGuide: { guest: false, user: false, admin: true },
+    btnSettings: { guest: true, user: true, admin: true },
     adminOnlySection: { guest: false, user: false, admin: true },
   };
 
@@ -311,6 +317,9 @@ function renderUserMenu() {
     ["btn-prompt-ai", "btnPromptAi"],
     ["btn-admin-panel", "btnAdminPanel"],
     ["btn-category-images", "btnCategoryImages"],
+    ["btn-niche-management", "btnNicheManagement"],
+    ["btn-guide", "btnGuide"],
+    ["btn-settings", "btnSettings"],
     ["admin-only-section", "adminOnlySection"],
   ];
 
@@ -345,6 +354,13 @@ async function renderUserList() {
   } catch { showToast("Gagal memuat daftar user", "error"); }
 }
 
+let _scrollLockDepth = 0;
+function lockScroll() { _scrollLockDepth++; document.body.style.overflow = 'hidden'; }
+function unlockScroll() {
+  _scrollLockDepth = Math.max(0, _scrollLockDepth - 1);
+  if (_scrollLockDepth === 0) document.body.style.overflow = '';
+}
+
 function showLoginModal() {
   document.getElementById("login-form").classList.remove("hidden");
   document.getElementById("forgot-form").classList.add("hidden");
@@ -360,6 +376,15 @@ function showLoginModal() {
 
 function applyRoleVisibility() {
   renderUserMenu();
+  const bar = document.getElementById("preset-bar");
+  if (bar) {
+    if (getCurrentUser()) {
+      bar.classList.remove("hidden");
+      loadPresets();
+    } else {
+      bar.classList.add("hidden");
+    }
+  }
 }
 
 async function addUser() {
@@ -473,18 +498,58 @@ function getPaletteString() {
 
 function composeMainPrompt(slide) {
   const parts = [];
-  parts.push(`Slide carousel design, role: ${slide.role}.`);
-  parts.push(`Overlay headline text: "${slide.headline}".`);
-  if (slide.body) parts.push(`Overlay supporting text: "${slide.body}".`);
-  if (slide.visualIdea) parts.push(`Main visual subject: ${slide.visualIdea}.`);
-  parts.push(activeStyleTags().join(", ") + ".");
-  if (getPaletteString()) parts.push(`Color palette: ${getPaletteString()}.`);
-  if (state.lightingNote) parts.push(state.lightingNote + ".");
-  if (state.compositionNote) parts.push(state.compositionNote + ".");
-  if (state.brandNote) parts.push(`Brand name as text overlay at top-left: "${state.brandNote}".`);
-  if (state.layout) parts.push(`Layout: ${state.layout.replace(/-/g, " ")}.`);
-  parts.push("No watermark, no logo, leave clear space for overlay text if needed.");
-  return parts.join(" ");
+
+  const ratio = getAspectRatioValue();
+  parts.push(`A premium Instagram carousel ${slide.role} in ${ratio} portrait format. Highly detailed, professional quality, sharp focus, rich textures, cinematic lighting.`);
+
+  const preset = findStyleById(state.stylePreset);
+  if (preset) {
+    parts.push(` ${preset.label} aesthetic with ${preset.tags.slice(0, 3).join(", ")}.`);
+  }
+
+  if (slide.visualIdea) {
+    parts.push(` The visual scene: ${slide.visualIdea}.`);
+  }
+
+  if (slide.headline) {
+    parts.push(` Text overlay reads "${slide.headline}".`);
+    if (slide.body) {
+      parts.push(` Supporting text: "${slide.body}".`);
+    }
+  }
+
+  const layout = state.layout ? state.layout.replace(/-/g, " ") : "";
+  if (layout) {
+    parts.push(` Layout: ${layout}.`);
+  }
+
+  const tags = activeStyleTags();
+  if (tags.length) {
+    parts.push(` Style direction: ${tags.join(", ")}.`);
+  }
+
+  const pal = getPaletteString();
+  if (pal) {
+    parts.push(` Color palette: ${pal}.`);
+  }
+
+  if (state.lightingNote && state.lightingNote !== "—") {
+    parts.push(` Lighting: ${state.lightingNote}.`);
+  }
+
+  if (state.compositionNote && state.compositionNote !== "—") {
+    parts.push(` Composition: ${state.compositionNote}.`);
+  }
+
+  if (state.brandNote) {
+    parts.push(` Brand: ${state.brandNote}.`);
+  }
+
+  let prompt = parts.join("") + " STRICT NON-NEGOTIABLE RULE: Absolutely NO living beings, people, characters, animals, creatures, humans, faces, body parts, or any biological entity. No mascots, no cartoon characters, no people. Only objects, text, abstract shapes, buildings, nature without living beings.";
+
+  prompt += `\n\nNegative prompt: ${state.negativePrompt || DEFAULT_NEGATIVE}`;
+
+  return prompt;
 }
 
 // ---------- RENDER ----------
@@ -494,6 +559,13 @@ function populateVisualCategory() {
   const cats = Object.keys(VISUAL_CATEGORIES);
   el.innerHTML = '<option value="">Pilih kategori visual</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join("");
   el.value = state.visualCategory;
+}
+
+function populateNicheDropdown(selected) {
+  const el = document.getElementById("inp-evergreen-niche");
+  const keys = Object.keys(NICHE_MAP).sort();
+  el.innerHTML = '<option value="">Pilih niche</option>' + keys.map(k => `<option value="${k}">${k}</option>`).join("");
+  if (selected && NICHE_MAP[selected]) el.value = selected;
 }
 
 function updateColorSwatches() {
@@ -517,6 +589,41 @@ function applyStylePalette(styleId) {
 
 let _cpTarget = null;
 let _cpH = 0, _cpS = 100, _cpV = 100;
+let _cpCache = null;
+
+function hsvToRgb(h, s, v) {
+  s /= 100; v /= 100;
+  const c = v * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = v - c;
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; }
+  else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  return [(r + m) * 255 | 0, (g + m) * 255 | 0, (b + m) * 255 | 0];
+}
+
+function buildColorCache(w, h, hue) {
+  try {
+    if (!w || !h) return null;
+    const canvas = document.getElementById("color-canvas");
+    if (!canvas) return null;
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(w, h);
+    const d = imageData.data;
+    for (let py = 0; py < h; py++) {
+      for (let px = 0; px < w; px++) {
+        const s = (px / w) * 100;
+        const v = (1 - py / h) * 100;
+        const [r, g, b] = hsvToRgb(hue, s, v);
+        const i = (py * w + px) * 4;
+        d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = 255;
+      }
+    }
+    return imageData;
+  } catch (e) { console.error('cp:buildColorCache', e); return null; }
+}
 
 function hsvToHex(h, s, v) {
   s /= 100; v /= 100;
@@ -548,38 +655,62 @@ function hexToHsv(hex) {
 }
 
 function drawColorField() {
-  const canvas = document.getElementById("color-canvas");
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * 2;
-  canvas.height = rect.height * 2;
-  ctx.scale(2, 2);
-  const w = rect.width, h = rect.height;
+  try {
+    const canvas = document.getElementById("color-canvas");
+    if (!canvas) return;
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const w = Math.round(rect.width), h = Math.round(rect.height);
+    if (w < 1 || h < 1) return;
+    const w2 = w * 2, h2 = h * 2;
 
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      const s = (x / w) * 100;
-      const v = (1 - y / h) * 100;
-      const hex = hsvToHex(_cpH, s, v);
-      ctx.fillStyle = hex;
-      ctx.fillRect(x, y, 1, 1);
+    if (canvas.width !== w2 || canvas.height !== h2 || !_cpCache) {
+      canvas.width = w2;
+      canvas.height = h2;
+      _cpCache = buildColorCache(w2, h2, _cpH);
+      if (!_cpCache) return;
     }
-  }
 
-  // Indikator posisi warna (circle)
-  const cx = (_cpS / 100) * w;
-  const cy = (1 - _cpV / 100) * h;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = "#fff";
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = "#1A1408";
-  ctx.stroke();
+    const ctx = canvas.getContext("2d");
+    ctx.putImageData(_cpCache, 0, 0);
+
+    // indicator in canvas pixel coordinates (no transforms)
+    const cx = (_cpS / 100) * w2;
+    const cy = (1 - _cpV / 100) * h2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#1A1408";
+    ctx.stroke();
+  } catch (e) { console.error('cp:drawColorField', e); }
+}
+
+function redrawColorField() {
+  if (!_cpCache) { drawColorField(); return; }
+  try {
+    const canvas = document.getElementById("color-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.putImageData(_cpCache, 0, 0);
+
+    const w2 = canvas.width, h2 = canvas.height;
+    const cx = (_cpS / 100) * w2;
+    const cy = (1 - _cpV / 100) * h2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#1A1408";
+    ctx.stroke();
+  } catch (e) { console.error('cp:redrawColorField', e); }
 }
 
 function getColorFromCanvas(x, y) {
@@ -591,7 +722,7 @@ function getColorFromCanvas(x, y) {
   const hex = hsvToHex(_cpH, _cpS, _cpV);
   document.getElementById("color-preview").style.background = hex;
   document.getElementById("color-hex").value = hex.slice(1);
-  drawColorField();
+  redrawColorField();
 }
 
 function handleColorEvent(e) {
@@ -628,10 +759,12 @@ function openColorPicker(target) {
   // Set up canvas
   const canvas = document.getElementById("color-canvas");
   const parent = canvas.parentElement;
+  _cpCache = null;
   parent.style.height = parent.offsetWidth > 0 ? parent.offsetWidth + "px" : "180px";
   setTimeout(() => { drawColorField(); }, 50);
 
   document.getElementById("color-modal").classList.remove("hidden");
+  lockScroll();
 }
 
 function applyColor() {
@@ -643,6 +776,7 @@ function applyColor() {
     refreshJsonOutput();
   }
   document.getElementById("color-modal").classList.add("hidden");
+  unlockScroll();
   _cpTarget = null;
 }
 
@@ -706,6 +840,7 @@ function renderSlidesArea() {
   document.getElementById("slide-count-label").textContent = state.slides.length;
   renderCarouselTrack();
   renderSlideList();
+  refreshJsonOutput();
 }
 
 function getAspectRatioValue() {
@@ -795,6 +930,7 @@ function renderSlideList() {
       if (slide) {
         slide[field] = e.target.value;
         renderCarouselTrack();
+        refreshJsonOutput();
       }
       e.target.style.height = "auto";
       e.target.style.height = e.target.scrollHeight + "px";
@@ -826,6 +962,426 @@ function renderSlideList() {
   });
 }
 
+async function renderEmptyState() {
+  try {
+    const data = await api("/api/guide");
+    const guide = data.guide || [];
+    const container = document.getElementById("guide-steps");
+    if (!container) return;
+    container.innerHTML = guide.map((step, i) => `
+      <div class="rounded-lg border px-3 py-2.5 flex items-start gap-2.5 ${i === guide.length - 1 && guide.length % 2 === 1 ? 'col-span-2' : ''}" style="background:var(--bg-card); border-color:var(--border-soft)">
+        <span class="guide-step-num flex-shrink-0 font-semibold" style="color:var(--amber)">${i + 1}.</span>
+        <div class="flex-1">
+          <p class="lg:text-sm text-xs font-medium" style="color:var(--cream)">${escapeHtml(step.title)}</p>
+          <p class="lg:text-sm text-[10px] mt-0.5" style="color:var(--ink-soft)">${escapeHtml(step.description)}</p>
+        </div>
+      </div>
+    `).join("");
+  } catch (e) {
+    console.warn('Gagal memuat panduan:', e);
+  }
+}
+
+async function loadGuideForAdmin() {
+  try {
+    const data = await api("/api/guide");
+    return data.guide || [];
+  } catch { return []; }
+}
+
+let _dragIdx = null;
+let _touchDragIdx = null;
+
+function reorderGuide(from, to) {
+  if (from === null || from === to) return;
+  const guide = window._guideData;
+  if (!guide) return;
+  const [moved] = guide.splice(from, 1);
+  guide.splice(to, 0, moved);
+  window._guideData = guide;
+  renderGuideEditor(guide);
+}
+
+function setupTouchDrag(row, list) {
+  let startY, touchIdx, clone, cloneY;
+
+  const onTouchStart = (e) => {
+    const handle = row.querySelector(".guide-drag-handle");
+    if (handle && !handle.contains(e.target)) return;
+    if (e.target.closest("input") || e.target.closest("textarea") || e.target.closest("button")) return;
+    const touch = e.touches[0];
+    startY = touch.clientY;
+    touchIdx = parseInt(row.dataset.idx);
+    _touchDragIdx = touchIdx;
+  };
+
+  const onTouchMove = (e) => {
+    if (_touchDragIdx === null) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const rows = list.querySelectorAll(".guide-step-row");
+    rows.forEach((r) => r.style.border = "");
+    for (const r of rows) {
+      const rect = r.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      if (touch.clientY < mid) {
+        r.style.border = "1px dashed var(--amber-dim)";
+        break;
+      }
+    }
+  };
+
+  const onTouchEnd = (e) => {
+    if (_touchDragIdx === null) return;
+    const touch = e.changedTouches[0];
+    const rows = list.querySelectorAll(".guide-step-row");
+    rows.forEach((r) => r.style.border = "");
+    let targetIdx = rows.length - 1;
+    for (let i = 0; i < rows.length; i++) {
+      const rect = rows[i].getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      if (touch.clientY < mid) {
+        targetIdx = i;
+        break;
+      }
+    }
+    if (targetIdx > _touchDragIdx) targetIdx--;
+    reorderGuide(_touchDragIdx, targetIdx);
+    _touchDragIdx = null;
+  };
+
+  row.addEventListener("touchstart", onTouchStart, { passive: true });
+  row.addEventListener("touchmove", onTouchMove, { passive: false });
+  row.addEventListener("touchend", onTouchEnd);
+}
+
+function renderGuideEditor(guide) {
+  const list = document.getElementById("guide-list");
+  if (!list) return;
+  list.innerHTML = guide.map((step, i) => `
+    <div class="rounded-lg px-3 py-2.5 guide-step-row" draggable="true" data-idx="${i}" style="background:var(--bg-canvas); cursor:grab; touch-action:none">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="guide-drag-handle flex-shrink-0 text-xs" style="color:var(--ink-faint); cursor:grab; user-select:none">
+          <i class="ti ti-grip-vertical text-sm"></i>
+        </span>
+        <span class="text-xs font-medium flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center" style="background:var(--amber-soft); color:var(--amber)">${i + 1}</span>
+        <div class="flex-1 min-w-0">
+          <input class="guide-title input-field w-full rounded-lg px-2.5 py-1.5 text-xs" value="${escapeHtml(step.title)}" placeholder="Judul langkah" data-idx="${i}">
+        </div>
+        <div class="flex items-center gap-0.5 flex-shrink-0">
+          <button class="guide-move-btn text-xs hover:text-[var(--amber)] ${i === 0 ? 'opacity-20 pointer-events-none' : ''}" style="color:var(--ink-faint)" data-idx="${i}" data-dir="up" title="Naik">
+            <i class="ti ti-chevron-up text-sm"></i>
+          </button>
+          <button class="guide-move-btn text-xs hover:text-[var(--amber)] ${i === guide.length - 1 ? 'opacity-20 pointer-events-none' : ''}" style="color:var(--ink-faint)" data-idx="${i}" data-dir="down" title="Turun">
+            <i class="ti ti-chevron-down text-sm"></i>
+          </button>
+          <button class="guide-del-btn text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" data-idx="${i}">
+            <i class="ti ti-trash text-sm"></i>
+          </button>
+        </div>
+      </div>
+      <textarea class="guide-desc input-field w-full rounded-lg px-2.5 py-1.5 text-xs" rows="2" placeholder="Deskripsi langkah" data-idx="${i}" style="resize:vertical; min-height:2.5rem">${escapeHtml(step.description)}</textarea>
+    </div>
+  `).join("");
+
+  // Auto-expand textareas
+  list.querySelectorAll(".guide-desc").forEach((ta) => {
+    ta.style.height = "auto";
+    ta.style.height = ta.scrollHeight + "px";
+  });
+
+  // HTML5 Drag & drop (desktop)
+  list.querySelectorAll(".guide-step-row").forEach((row) => {
+    row.addEventListener("dragstart", (e) => {
+      _dragIdx = parseInt(row.dataset.idx);
+      row.style.opacity = "0.4";
+      e.dataTransfer.effectAllowed = "move";
+    });
+    row.addEventListener("dragend", () => {
+      row.style.opacity = "";
+      _dragIdx = null;
+      list.querySelectorAll(".guide-step-row").forEach((r) => r.style.border = "");
+    });
+    row.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      list.querySelectorAll(".guide-step-row").forEach((r) => r.style.border = "");
+      row.style.border = "1px dashed var(--amber-dim)";
+    });
+    row.addEventListener("dragleave", () => {
+      row.style.border = "";
+    });
+    row.addEventListener("drop", (e) => {
+      e.preventDefault();
+      row.style.border = "";
+      reorderGuide(_dragIdx, parseInt(row.dataset.idx));
+    });
+  });
+
+  // Touch drag & drop (mobile)
+  list.querySelectorAll(".guide-step-row").forEach((row) => setupTouchDrag(row, list));
+}
+
+function openGuideModal() {
+  document.getElementById("user-dropdown").classList.add("hidden");
+  document.getElementById("guide-modal").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  renderGuideEditor([]);
+  loadGuideForAdmin().then((guide) => {
+    renderGuideEditor(guide);
+    window._guideData = guide;
+  });
+}
+
+function closeGuideModal() {
+  document.getElementById("guide-modal").classList.add("hidden");
+  document.body.style.overflow = "";
+  window._guideData = null;
+}
+
+/* ── Personalization ── */
+function applyTheme(theme) {
+  const html = document.documentElement;
+  if (theme === "light") {
+    html.classList.add("light-theme");
+  } else {
+    html.classList.remove("light-theme");
+  }
+  const darkBtn = document.getElementById("btn-theme-dark");
+  const lightBtn = document.getElementById("btn-theme-light");
+  if (darkBtn && lightBtn) {
+    const active = theme === "light" ? lightBtn : darkBtn;
+    const inactive = theme === "light" ? darkBtn : lightBtn;
+    active.style.background = "var(--amber)";
+    active.style.color = "#1a1a1a";
+    inactive.style.background = "transparent";
+    inactive.style.color = "var(--ink-faint)";
+  }
+  try { localStorage.setItem("cps_theme", theme); } catch {}
+}
+
+async function loadSettings() {
+  const saved = localStorage.getItem("cps_theme");
+  if (state.currentUser) {
+    try {
+      const data = await api("/api/settings");
+      const theme = data.settings?.theme || saved || "dark";
+      applyTheme(theme);
+      return;
+    } catch {}
+  }
+  applyTheme(saved || "dark");
+}
+
+async function saveSettings(changes) {
+  try { localStorage.setItem("cps_theme", changes.theme || "dark"); } catch {}
+  if (state.currentUser) {
+    try {
+      await api("/api/settings", {
+        method: "PUT",
+        body: JSON.stringify({ settings: changes }),
+      });
+    } catch {}
+  }
+}
+
+function openSettingsModal() {
+  document.getElementById("user-dropdown").classList.add("hidden");
+  document.getElementById("settings-modal").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  const theme = localStorage.getItem("cps_theme") || "dark";
+  applyTheme(theme);
+}
+
+function closeSettingsModal() {
+  document.getElementById("settings-modal").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+/* ── Presets ── */
+function collectPresetData() {
+  return {
+    topic: state.topic,
+    purpose: state.purpose,
+    audience: state.audience,
+    slideCount: state.slideCount,
+    aspectRatio: state.aspectRatio,
+    customRatioW: state.customRatioW,
+    customRatioH: state.customRatioH,
+    visualCategory: state.visualCategory,
+    stylePreset: state.stylePreset,
+    customStyle: state.customStyle,
+    palette: state.palette,
+    color1: state.color1,
+    color2: state.color2,
+    color3: state.color3,
+    brandNote: state.brandNote,
+    lightingNote: state.lightingNote,
+    compositionNote: state.compositionNote,
+    negativePrompt: state.negativePrompt,
+    layout: state.layout,
+    evergreenNiche: document.getElementById("inp-evergreen-niche")?.value || "",
+    subniche: document.getElementById("inp-subniche")?.value || "",
+  };
+}
+
+function applyPresetData(data) {
+  state.topic = data.topic || "";
+  state.purpose = data.purpose || "";
+  state.audience = data.audience || "";
+  state.slideCount = data.slideCount || 5;
+  state.aspectRatio = data.aspectRatio || "";
+  state.customRatioW = data.customRatioW || "";
+  state.customRatioH = data.customRatioH || "";
+  state.visualCategory = data.visualCategory || "";
+  state.stylePreset = data.stylePreset || "";
+  state.customStyle = data.customStyle || "";
+  state.palette = data.palette || "";
+  state.color1 = data.color1 || "#1E3A5F";
+  state.color2 = data.color2 || "#D4AF37";
+  state.color3 = data.color3 || "#F5F5F0";
+  state.brandNote = data.brandNote || "";
+  state.lightingNote = data.lightingNote || "soft even lighting, no harsh shadows";
+  state.compositionNote = data.compositionNote || "centered composition, balanced margins";
+  state.negativePrompt = data.negativePrompt || DEFAULT_NEGATIVE;
+  state.layout = data.layout || "";
+
+  const topicEl = document.getElementById("inp-topic");
+  if (topicEl) topicEl.value = state.topic;
+  const purposeEl = document.getElementById("inp-purpose");
+  if (purposeEl) purposeEl.value = state.purpose;
+  const audienceEl = document.getElementById("inp-audience");
+  if (audienceEl) audienceEl.value = state.audience;
+  const countEl = document.getElementById("inp-count");
+  if (countEl) countEl.value = state.slideCount;
+  const ratioEl = document.getElementById("inp-ratio");
+  if (ratioEl) ratioEl.value = state.aspectRatio;
+  const ratioW = document.getElementById("inp-ratio-w");
+  if (ratioW) ratioW.value = state.customRatioW;
+  const ratioH = document.getElementById("inp-ratio-h");
+  if (ratioH) ratioH.value = state.customRatioH;
+  const catEl = document.getElementById("inp-visual-category");
+  if (catEl) catEl.value = state.visualCategory;
+  const customStyleEl = document.getElementById("inp-customstyle");
+  if (customStyleEl) customStyleEl.value = state.customStyle;
+  const paletteEl = document.getElementById("inp-palette");
+  if (paletteEl) paletteEl.value = state.palette;
+  const brandEl = document.getElementById("inp-brand");
+  if (brandEl) brandEl.value = state.brandNote;
+  const layoutEl = document.getElementById("inp-layout");
+  if (layoutEl) layoutEl.value = state.layout;
+
+  const nicheEl = document.getElementById("inp-evergreen-niche");
+  if (nicheEl) {
+    nicheEl.value = data.evergreenNiche || "";
+    const subEl = document.getElementById("inp-subniche");
+    if (subEl) {
+      subEl.innerHTML = "";
+      const items = SUBNICHE_MAP[nicheEl.value] || [];
+      subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+      subEl.value = data.subniche || "";
+    }
+  }
+
+  updateColorSwatches();
+  renderStylePresets();
+  renderSlidesArea();
+  if (typeof refreshJsonPreview === "function") refreshJsonPreview();
+}
+
+async function loadPresets() {
+  const select = document.getElementById("preset-select");
+  const overlay = document.getElementById("preset-empty-overlay");
+  if (!select) return;
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">Muat preset...</option>';
+  if (!getCurrentUser()) return;
+  try {
+    const data = await api("/api/presets");
+    for (const p of data.presets) {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      select.appendChild(opt);
+    }
+    if (currentVal) select.value = currentVal;
+    if (overlay) {
+      overlay.classList.toggle("hidden", data.presets.length > 0);
+    }
+  } catch {}
+}
+
+function showPrompt(msg, placeholder) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("preset-name-modal");
+    const input = document.getElementById("preset-name-input");
+    document.getElementById("preset-name-msg").textContent = msg;
+    input.value = "";
+    input.placeholder = placeholder || "";
+    modal.classList.remove("hidden");
+    lockScroll();
+    setTimeout(() => input.focus(), 100);
+    const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); };
+    const ok = () => { cleanup(); resolve(input.value.trim()); };
+    document.getElementById("preset-name-ok").onclick = ok;
+    document.getElementById("preset-name-cancel").onclick = () => { cleanup(); resolve(null); };
+    input.onkeydown = (e) => { if (e.key === "Enter") ok(); if (e.key === "Escape") { cleanup(); resolve(null); } };
+    modal.onclick = (e) => { if (e.target === modal) { cleanup(); resolve(null); } };
+  });
+}
+
+async function savePreset() {
+  if (!getCurrentUser()) { showToast("Login untuk menyimpan preset", "error"); return; }
+  const name = await showPrompt("Nama preset:", "cth: Kesehatan Mental");
+  if (!name) return;
+  try {
+    const data = collectPresetData();
+    await api("/api/presets", {
+      method: "POST",
+      body: JSON.stringify({ name, data }),
+    });
+    showToast("Preset disimpan", "success");
+    loadPresets();
+  } catch (err) { showToast(err.message, "error"); }
+}
+
+async function deletePreset() {
+  const select = document.getElementById("preset-select");
+  const id = select?.value;
+  if (!id) return;
+  const ok = await showConfirm("Hapus preset ini?");
+  if (!ok) return;
+  try {
+    await api("/api/presets/" + id, { method: "DELETE" });
+    showToast("Preset dihapus", "success");
+    loadPresets();
+  } catch (err) { showToast(err.message, "error"); }
+}
+
+async function loadSelectedPreset() {
+  const select = document.getElementById("preset-select");
+  const id = select?.value;
+  if (!id) {
+    if (select && select.options.length <= 1) {
+      showAlert(
+        "Belum ada Preset tersimpan saat ini, lakukan pengisian sesuai panduan lalu tekan tombol simpan untuk menyimpan preset. Beri nama Preset Anda sesuai keinginan Anda.",
+        () => {
+          const target = document.getElementById("empty-state");
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      );
+    }
+    return;
+  }
+  try {
+    const data = await api("/api/presets");
+    const preset = data.presets.find(p => p.id === id);
+    if (!preset) return;
+    applyPresetData(preset.data);
+    showToast("Preset dimuat", "success");
+  } catch (err) { showToast(err.message, "error"); }
+}
+
 function showToast(message, type = "default") {
   const container = document.getElementById("toast-container");
   const toast = document.createElement("div");
@@ -849,10 +1405,21 @@ function showConfirm(msg) {
     const modal = document.getElementById("confirm-modal");
     document.getElementById("confirm-msg").textContent = msg;
     modal.classList.remove("hidden");
-    const cleanup = () => { modal.classList.add("hidden"); };
+    lockScroll();
+    const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); };
     document.getElementById("confirm-ok").onclick = () => { cleanup(); resolve(true); };
     document.getElementById("confirm-cancel").onclick = () => { cleanup(); resolve(false); };
   });
+}
+
+function showAlert(msg, onOk) {
+  const modal = document.getElementById("alert-modal");
+  document.getElementById("alert-msg").textContent = msg;
+  modal.classList.remove("hidden");
+  lockScroll();
+  const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); };
+  document.getElementById("alert-ok").onclick = () => { cleanup(); if (onOk) onOk(); };
+  modal.onclick = (e) => { if (e.target === modal) { cleanup(); } };
 }
 
 function resetApp(silent) {
@@ -893,6 +1460,15 @@ function resetApp(silent) {
   updateRatioIcon();
   renderStylePresets();
   renderSlidesArea();
+  const nicheEl = document.getElementById("inp-evergreen-niche");
+  if (nicheEl) nicheEl.value = "";
+  const subEl = document.getElementById("inp-subniche");
+  if (subEl) {
+    subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>';
+    subEl.value = "";
+  }
+  const presetEl = document.getElementById("preset-select");
+  if (presetEl) presetEl.value = "";
   if (!silent) showToast("Semua input & slide direset", "default");
 }
 
@@ -963,6 +1539,74 @@ function closeImageModal() {
   document.body.style.overflow = "";
 }
 
+// ── Niche & Subniche Manager ──
+
+function openNicheModal() {
+  document.getElementById("niche-modal").classList.remove("hidden");
+  document.getElementById("niche-modal").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  renderNicheManager();
+}
+
+function closeNicheModal() {
+  document.getElementById("niche-modal").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+function renderNicheManager() {
+  const list = document.getElementById("niche-list");
+  const keys = Object.keys(NICHE_MAP);
+  list.innerHTML = keys.map(name => {
+    const cfg = NICHE_MAP[name] || {};
+    const subs = (SUBNICHE_MAP[name] || []).join("\n");
+    const en = s => escapeHtml(String(s));
+    return `
+      <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
+        <div class="flex items-center justify-between mb-2 gap-2">
+          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(name)}" placeholder="Nama niche" data-field="name">
+          <button data-del-niche="${name}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
+        </div>
+        <div class="flex gap-2 mb-2">
+          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(cfg.purpose)}" placeholder="Purpose (edukasi/promosi/inspirasi)" data-field="purpose">
+          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(cfg.audience)}" placeholder="Audience" data-field="audience">
+        </div>
+        <textarea class="input-field w-full rounded px-2 py-1.5 text-xs resize-y" rows="3" placeholder="Subniche (1 per baris)" data-field="subniches" style="min-height:56px">${subs}</textarea>
+      </div>
+    `;
+  }).join("");
+}
+
+async function saveNicheChanges() {
+  const cards = document.querySelectorAll("#niche-list > div");
+  const newNicheMap = {};
+  const newSubnicheMap = {};
+  for (const card of cards) {
+    const name = (card.querySelector('[data-field="name"]').value || "").trim();
+    if (!name) continue;
+    newNicheMap[name] = {
+      purpose: (card.querySelector('[data-field="purpose"]').value || "").trim(),
+      audience: (card.querySelector('[data-field="audience"]').value || "").trim(),
+    };
+    newSubnicheMap[name] = card.querySelector('[data-field="subniches"]').value.split("\n").map(s => s.trim()).filter(Boolean);
+  }
+  try {
+    await api("/api/data/niches", { method: "PUT", body: JSON.stringify(newNicheMap) });
+    await api("/api/data/subniches", { method: "PUT", body: JSON.stringify(newSubnicheMap) });
+    NICHE_MAP = newNicheMap;
+    SUBNICHE_MAP = newSubnicheMap;
+    showToast("Niche & subniche berhasil disimpan", "success");
+    closeNicheModal();
+    populateNicheDropdown();
+    const el = document.getElementById("inp-evergreen-niche");
+    const sub = document.getElementById("inp-subniche");
+    const items = SUBNICHE_MAP[el.value] || [];
+    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+    sub.value = "";
+  } catch (err) {
+    showToast("Gagal menyimpan: " + err.message, "error");
+  }
+}
+
 function renderCategoryImageManager() {
   const list = document.getElementById("category-image-list");
   const cats = Object.keys(VISUAL_CATEGORIES);
@@ -975,7 +1619,6 @@ function renderCategoryImageManager() {
     </div>
     ${cats.map((cat) => {
     const styles = VISUAL_CATEGORIES[cat];
-    const isBuiltIn = BUILT_IN_CATEGORIES.includes(cat);
     return `
       <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
         <div class="flex items-center justify-between mb-2">
@@ -984,7 +1627,7 @@ function renderCategoryImageManager() {
             <button data-add-style="${cat}" class="btn-ghost text-[10px] rounded-md px-1.5 py-0.5 flex items-center gap-0.5" title="Tambah sub-kategori">
               <i class="ti ti-plus text-xs"></i>
             </button>
-            ${isBuiltIn ? "" : `<button data-del-cat="${cat}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" title="Hapus kategori"><i class="ti ti-trash"></i></button>`}
+            <button data-del-cat="${cat}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint)" title="Hapus kategori"><i class="ti ti-trash"></i></button>
           </div>
         </div>
         <div class="flex flex-col gap-2">
@@ -1080,12 +1723,18 @@ function renderCategoryImageManager() {
       const catName = e.currentTarget.getAttribute("data-del-cat");
       const ok = await showConfirm(`Hapus seluruh kategori "${catName}" beserta sub-kategori dan gambarnya?`);
       if (!ok) return;
+      const isBuiltIn = BUILT_IN_CATEGORIES.includes(catName);
       try {
-        await api(`/api/custom-categories/${encodeURIComponent(catName)}`, { method: "DELETE" });
+        if (isBuiltIn) {
+          const updated = { ...VISUAL_CATEGORIES };
+          delete updated[catName];
+          await api("/api/data/visual-categories", { method: "PUT", body: JSON.stringify({ categories: updated }) });
+        } else {
+          await api(`/api/custom-categories/${encodeURIComponent(catName)}`, { method: "DELETE" });
+        }
         delete VISUAL_CATEGORIES[catName];
         renderCategoryImageManager();
         renderStylePresets();
-        // refresh visual category dropdown
         populateVisualCategory();
         showToast(`Kategori "${catName}" dihapus`, "success");
       } catch (err) {
@@ -1223,13 +1872,13 @@ async function generateIdeaFromNiche() {
   const evergreen = document.getElementById("inp-evergreen-niche").value;
   const subniche = document.getElementById("inp-subniche").value;
   const niche = evergreen + (subniche ? " - " + subniche : "");
-  if (!evergreen) { document.getElementById("niche-modal").classList.remove("hidden"); return; }
+  if (!evergreen) { document.getElementById("niche-alert-modal").classList.remove("hidden"); lockScroll(); return; }
 
   const keyStatus = await api("/api/ai/api-key");
   if (!keyStatus.hasKey) { showToast("API Key belum diatur. Minta Admin untuk mengatur API Key.", "error"); return; }
   if (!getActiveModels().length) { showToast("Model AI belum dipilih.", "error"); return; }
 
-  resetApp(true);
+  abortGeneration();
   state._aborted = false;
   state._abortController = new AbortController();
   const signal = state._abortController.signal;
@@ -1239,7 +1888,6 @@ async function generateIdeaFromNiche() {
   btn.disabled = true;
   const originalLabel = label.innerHTML;
 
-  const defaults = NICHE_MAP[evergreen] || { purpose: "edukasi", audience: "umum" };
   const p = state.prompts || DEFAULT_PROMPTS;
   const systemPrompt = p.system_idea;
   const userPrompt = replacePromptVars(p.user_idea, { niche });
@@ -1263,12 +1911,7 @@ async function generateIdeaFromNiche() {
 
       document.getElementById("inp-topic").value = topic;
       state.topic = topic;
-      document.getElementById("inp-purpose").value = defaults.purpose;
-      state.purpose = defaults.purpose;
-      document.getElementById("inp-audience").value = defaults.audience;
-      state.audience = defaults.audience;
 
-      if (state.slides.length === 0 && state.topic.trim()) state.slides = buildDefaultSlides(state.slideCount);
       renderSlidesArea();
       showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
 
@@ -1311,6 +1954,7 @@ async function aiGenerateSlideContent() {
     return;
   }
 
+  abortGeneration();
   state._aborted = false;
   state._abortController = new AbortController();
   const signal = state._abortController.signal;
@@ -1322,15 +1966,12 @@ async function aiGenerateSlideContent() {
 
   const p = state.prompts || DEFAULT_PROMPTS;
   const systemPrompt = p.system_slide;
-  const customStyleNote = state.customStyle.trim() ? `\nAturan tambahan: ${state.customStyle.trim()}` : "";
   const brandNoteLine = state.brandNote.trim() ? `\nBrand/Catatan: ${state.brandNote.trim()}` : "";
   const userPrompt = replacePromptVars(p.user_slide, {
     topic: state.topic,
     purpose: state.purpose,
     audience: state.audience,
     slideCount: String(state.slideCount),
-    customStyle: state.customStyle,
-    customStyleNote,
     brandNoteLine,
   });
 
@@ -1471,7 +2112,6 @@ function buildJsonOutput() {
 }
 
 function refreshJsonOutput() {
-  if (!state.jsonGenerated) return;
   if (!state.topic.trim()) return;
   const hasEmptyHeadline = state.slides.some((s) => !s.headline.trim());
   if (hasEmptyHeadline) return;
@@ -1660,13 +2300,18 @@ function showCopySlideFailed(text) {
 function bindInputs() {
   document.getElementById("inp-topic").addEventListener("input", (e) => {
     state.topic = e.target.value;
-    if (state.slides.length === 0 && state.topic.trim()) {
+    const hadSlides = state.slides.length > 0;
+    if (!hadSlides && state.topic.trim()) {
       state.slides = buildDefaultSlides(state.slideCount);
     }
     if (state.slides[0] && state.slides[0].role === "cover") {
       state.slides[0].headline = state.topic || "Judul carousel";
     }
-    renderSlidesArea();
+    if (hadSlides) {
+      renderCarouselTrack();
+    } else {
+      renderSlidesArea();
+    }
   });
 
   document.getElementById("inp-purpose").addEventListener("change", (e) => { state.purpose = e.target.value; });
@@ -1707,7 +2352,7 @@ function bindInputs() {
   document.getElementById("inp-color-1").addEventListener("click", () => openColorPicker("color1"));
   document.getElementById("inp-color-2").addEventListener("click", () => openColorPicker("color2"));
   document.getElementById("inp-color-3").addEventListener("click", () => openColorPicker("color3"));
-  document.getElementById("inp-palette").addEventListener("input", (e) => { state.palette = e.target.value; });
+  document.getElementById("inp-palette").addEventListener("input", (e) => { state.palette = e.target.value; refreshJsonOutput(); });
   document.getElementById("inp-brand").addEventListener("input", (e) => { state.brandNote = e.target.value; refreshJsonOutput(); });
 
   // ── Color Picker Modal ──
@@ -1723,12 +2368,18 @@ function bindInputs() {
     canvas.addEventListener("touchend", () => { picking = false; });
   }
 
+  let _hueRaf = null;
   document.getElementById("color-hue").addEventListener("input", (e) => {
     _cpH = Number(e.target.value);
-    drawColorField();
-    const hex = hsvToHex(_cpH, _cpS, _cpV);
-    document.getElementById("color-preview").style.background = hex;
-    document.getElementById("color-hex").value = hex.slice(1);
+    _cpCache = null;
+    if (_hueRaf) cancelAnimationFrame(_hueRaf);
+    _hueRaf = requestAnimationFrame(() => {
+      _hueRaf = null;
+      drawColorField();
+      const hex = hsvToHex(_cpH, _cpS, _cpV);
+      document.getElementById("color-preview").style.background = hex;
+      document.getElementById("color-hex").value = hex.slice(1);
+    });
   });
 
   document.getElementById("color-hex").addEventListener("input", (e) => {
@@ -1738,6 +2389,7 @@ function bindInputs() {
       const hsv = hexToHsv(val);
       _cpH = hsv.h; _cpS = hsv.s; _cpV = hsv.v;
       document.getElementById("color-hue").value = _cpH;
+      _cpCache = null;
       drawColorField();
     }
   });
@@ -1748,11 +2400,13 @@ function bindInputs() {
   document.getElementById("btn-apply-color").addEventListener("click", applyColor);
   document.getElementById("btn-close-color").addEventListener("click", () => {
     document.getElementById("color-modal").classList.add("hidden");
+    unlockScroll();
     _cpTarget = null;
   });
   document.getElementById("color-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) {
       document.getElementById("color-modal").classList.add("hidden");
+      unlockScroll();
       _cpTarget = null;
     }
   });
@@ -1765,6 +2419,7 @@ function bindInputs() {
       const hsv = hexToHsv(c);
       _cpH = hsv.h; _cpS = hsv.s; _cpV = hsv.v;
       document.getElementById("color-hue").value = _cpH;
+      _cpCache = null;
       drawColorField();
     }
   });
@@ -1861,19 +2516,22 @@ function bindInputs() {
     document.getElementById("inp-password-new").value = "";
     document.getElementById("inp-password-confirm").value = "";
     document.getElementById("password-modal").classList.remove("hidden");
+    lockScroll();
     document.getElementById("inp-password-current").focus();
   });
   document.getElementById("btn-close-password").addEventListener("click", () => {
     document.getElementById("password-modal").classList.add("hidden");
+    unlockScroll();
   });
   document.getElementById("password-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) document.getElementById("password-modal").classList.add("hidden");
+    if (e.target === e.currentTarget) { document.getElementById("password-modal").classList.add("hidden"); unlockScroll(); }
   });
-  document.getElementById("btn-close-niche").addEventListener("click", () => {
-    document.getElementById("niche-modal").classList.add("hidden");
+  document.getElementById("btn-close-niche-alert").addEventListener("click", () => {
+    document.getElementById("niche-alert-modal").classList.add("hidden");
+    unlockScroll();
   });
-  document.getElementById("niche-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) document.getElementById("niche-modal").classList.add("hidden");
+  document.getElementById("niche-alert-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) { document.getElementById("niche-alert-modal").classList.add("hidden"); unlockScroll(); }
   });
   document.getElementById("btn-save-password").addEventListener("click", async () => {
     if (!getCurrentUser()) { showToast("Silakan login terlebih dahulu", "error"); return; }
@@ -1889,6 +2547,7 @@ function bindInputs() {
         body: JSON.stringify({ currentPassword: current, newPassword: newPass }),
       });
       document.getElementById("password-modal").classList.add("hidden");
+      unlockScroll();
       showToast("Password berhasil diubah", "success");
     } catch (err) { showToast(err.message, "error"); }
   });
@@ -1899,10 +2558,12 @@ function bindInputs() {
   document.getElementById("btn-admin-panel").addEventListener("click", () => {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("admin-modal").classList.remove("hidden");
+    lockScroll();
     renderUserList();
   });
   document.getElementById("btn-close-admin").addEventListener("click", () => {
     document.getElementById("admin-modal").classList.add("hidden");
+    unlockScroll();
   });
 
   document.getElementById("btn-category-images").addEventListener("click", () => {
@@ -1910,16 +2571,141 @@ function bindInputs() {
     openImageModal();
   });
   document.getElementById("btn-close-img").addEventListener("click", closeImageModal);
+
+  // -- Guide Modal --
+  document.getElementById("btn-guide").addEventListener("click", openGuideModal);
+  document.getElementById("btn-close-guide").addEventListener("click", closeGuideModal);
+  document.getElementById("guide-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeGuideModal();
+  });
+  document.getElementById("btn-add-guide-step").addEventListener("click", () => {
+    const guide = window._guideData || [];
+    guide.push({ title: "Langkah baru", description: "" });
+    window._guideData = guide;
+    renderGuideEditor(guide);
+  });
+  document.getElementById("guide-list").addEventListener("click", (e) => {
+    const guide = window._guideData || [];
+    const delBtn = e.target.closest(".guide-del-btn");
+    if (delBtn) {
+      const idx = parseInt(delBtn.dataset.idx);
+      guide.splice(idx, 1);
+      window._guideData = guide;
+      renderGuideEditor(guide);
+      return;
+    }
+    const moveBtn = e.target.closest(".guide-move-btn");
+    if (moveBtn) {
+      const idx = parseInt(moveBtn.dataset.idx);
+      const dir = moveBtn.dataset.dir;
+      const targetIdx = dir === "up" ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= guide.length) return;
+      [guide[idx], guide[targetIdx]] = [guide[targetIdx], guide[idx]];
+      window._guideData = guide;
+      renderGuideEditor(guide);
+    }
+  });
+  document.getElementById("guide-list").addEventListener("input", (e) => {
+    const target = e.target;
+    const guide = window._guideData || [];
+    const idx = parseInt(target.dataset.idx);
+    if (isNaN(idx) || !guide[idx]) return;
+    if (target.classList.contains("guide-title")) {
+      guide[idx].title = target.value;
+    } else if (target.classList.contains("guide-desc")) {
+      guide[idx].description = target.value;
+      target.style.height = "auto";
+      target.style.height = target.scrollHeight + "px";
+    }
+  });
+  document.getElementById("btn-save-guide").addEventListener("click", async () => {
+    const guide = window._guideData || [];
+    if (guide.length === 0) { showToast("Minimal 1 langkah", "error"); return; }
+    try {
+      await api("/api/guide", { method: "PUT", body: JSON.stringify({ guide }) });
+      showToast("Panduan berhasil disimpan", "success");
+      closeGuideModal();
+      renderEmptyState();
+    } catch (err) { showToast(err.message, "error"); }
+  });
+  document.getElementById("btn-reset-guide").addEventListener("click", async () => {
+    const ok = await showConfirm("Reset panduan ke default?");
+    if (!ok) return;
+    try {
+      const data = await api("/api/guide/reset", { method: "POST" });
+      window._guideData = data.guide;
+      renderGuideEditor(data.guide);
+      showToast("Panduan direset ke default", "success");
+    } catch (err) { showToast(err.message, "error"); }
+  });
+  // -- Niche & Subniche --
+  document.getElementById("btn-niche-management").addEventListener("click", () => {
+    document.getElementById("user-dropdown").classList.add("hidden");
+    openNicheModal();
+  });
+  document.getElementById("btn-close-niche").addEventListener("click", closeNicheModal);
+  document.getElementById("niche-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeNicheModal();
+  });
+  document.getElementById("btn-add-niche").addEventListener("click", () => {
+    const inp = document.getElementById("inp-new-niche");
+    const name = inp.value.trim();
+    if (!name) { showToast("Masukkan nama niche", "error"); return; }
+    if (NICHE_MAP[name]) { showToast("Niche sudah ada", "error"); return; }
+    NICHE_MAP[name] = { purpose: "", audience: "" };
+    SUBNICHE_MAP[name] = [];
+    inp.value = "";
+    renderNicheManager();
+  });
+  document.getElementById("niche-list").addEventListener("click", (e) => {
+    const delBtn = e.target.closest("[data-del-niche]");
+    if (!delBtn) return;
+    const name = delBtn.dataset.delNiche;
+    delete NICHE_MAP[name];
+    delete SUBNICHE_MAP[name];
+    renderNicheManager();
+  });
+  document.getElementById("btn-save-niches").addEventListener("click", saveNicheChanges);
+  // -- Settings --
+  document.getElementById("btn-settings").addEventListener("click", openSettingsModal);
+  document.getElementById("btn-close-settings").addEventListener("click", closeSettingsModal);
+  document.getElementById("settings-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeSettingsModal();
+  });
+  document.getElementById("btn-theme-dark").addEventListener("click", () => {
+    applyTheme("dark");
+    saveSettings({ theme: "dark" });
+  });
+  document.getElementById("btn-theme-light").addEventListener("click", () => {
+    applyTheme("light");
+    saveSettings({ theme: "light" });
+  });
+
+  // -- Presets --
+  document.getElementById("btn-save-preset").addEventListener("click", savePreset);
+  document.getElementById("btn-delete-preset").addEventListener("click", deletePreset);
+  document.getElementById("preset-select").addEventListener("change", loadSelectedPreset);
+  document.getElementById("preset-empty-overlay").addEventListener("click", () => {
+    showAlert(
+      "Belum ada Preset tersimpan saat ini, lakukan pengisian sesuai panduan lalu tekan tombol simpan untuk menyimpan preset. Beri nama Preset Anda sesuai keinginan Anda.",
+      () => {
+        const target = document.getElementById("empty-state");
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    );
+  });
+
   document.getElementById("img-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) closeImageModal();
   });
   document.getElementById("admin-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) document.getElementById("admin-modal").classList.add("hidden");
+    if (e.target === e.currentTarget) { document.getElementById("admin-modal").classList.add("hidden"); unlockScroll(); }
   });
   // -- Prompt AI Modal --
   async function openPromptModal() {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("prompt-modal").classList.remove("hidden");
+    lockScroll();
     try {
       const data = await api("/api/ai/prompts");
       const p = data.prompts;
@@ -1933,9 +2719,10 @@ function bindInputs() {
   document.getElementById("btn-prompt-ai").addEventListener("click", openPromptModal);
   document.getElementById("btn-close-prompt").addEventListener("click", () => {
     document.getElementById("prompt-modal").classList.add("hidden");
+    unlockScroll();
   });
   document.getElementById("prompt-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) document.getElementById("prompt-modal").classList.add("hidden");
+    if (e.target === e.currentTarget) { document.getElementById("prompt-modal").classList.add("hidden"); unlockScroll(); }
   });
   document.getElementById("btn-save-prompts").addEventListener("click", async () => {
     const ok = await showConfirm("Simpan perubahan prompt?");
@@ -1953,6 +2740,7 @@ function bindInputs() {
       state.negativePrompt = prompts.negative_prompt;
       showToast("Prompt berhasil disimpan", "success");
       document.getElementById("prompt-modal").classList.add("hidden");
+      unlockScroll();
     } catch (err) { showToast(err.message, "error"); }
   });
   document.getElementById("btn-reset-prompts").addEventListener("click", async () => {
@@ -1978,6 +2766,7 @@ function bindInputs() {
     document.getElementById("btn-delete-api-key").classList.add("hidden");
     document.getElementById("ai-key-status").textContent = "";
     document.getElementById("ai-modal").classList.remove("hidden");
+    lockScroll();
     renderAIModelList();
     try {
       const keyStatus = await api("/api/ai/api-key");
@@ -1991,9 +2780,10 @@ function bindInputs() {
   });
   document.getElementById("btn-close-ai").addEventListener("click", () => {
     document.getElementById("ai-modal").classList.add("hidden");
+    unlockScroll();
   });
   document.getElementById("ai-modal").addEventListener("click", (e) => {
-    if (e.target === e.currentTarget) document.getElementById("ai-modal").classList.add("hidden");
+    if (e.target === e.currentTarget) { document.getElementById("ai-modal").classList.add("hidden"); unlockScroll(); }
   });
   document.getElementById("btn-add-user").addEventListener("click", addUser);
   document.getElementById("user-list").addEventListener("change", async (e) => {
@@ -2011,21 +2801,25 @@ function bindInputs() {
     const btn = e.target.closest("[data-delete-user]");
     if (btn) deleteUser(btn.getAttribute("data-delete-user"));
   });
-  document.getElementById("inp-ai-api-key").addEventListener("input", async (e) => {
-    const val = e.target.value;
-    if (val) {
-      try {
-        await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({ apiKey: val }) });
-        state.openCodeApiKey = "(terpasang)";
-        document.getElementById("ai-key-status").textContent = "✓ Tersimpan";
-        document.getElementById("btn-delete-api-key").classList.remove("hidden");
-        showToast("API Key disimpan di server", "success");
-      } catch (err) { showToast(err.message, "error"); }
-    } else {
-      document.getElementById("ai-key-status").textContent = "";
-      document.getElementById("btn-delete-api-key").classList.add("hidden");
-    }
-    });
+  let saveKeyTimeout;
+  document.getElementById("inp-ai-api-key").addEventListener("input", (e) => {
+    clearTimeout(saveKeyTimeout);
+    saveKeyTimeout = setTimeout(async () => {
+      const val = e.target.value;
+      if (val) {
+        try {
+          await api("/api/ai/api-key", { method: "PUT", body: JSON.stringify({ apiKey: val }) });
+          state.openCodeApiKey = "(terpasang)";
+          document.getElementById("ai-key-status").textContent = "✓ Tersimpan";
+          document.getElementById("btn-delete-api-key").classList.remove("hidden");
+          showToast("API Key disimpan di server", "success");
+        } catch (err) { showToast(err.message, "error"); }
+      } else {
+        document.getElementById("ai-key-status").textContent = "";
+        document.getElementById("btn-delete-api-key").classList.add("hidden");
+      }
+    }, 600);
+  });
   document.getElementById("btn-delete-api-key").addEventListener("click", async () => {
     const ok = await showConfirm("Hapus API Key yang tersimpan?");
     if (!ok) return;
@@ -2132,6 +2926,7 @@ function bindInputs() {
       document.getElementById("login-modal").classList.add("hidden");
       document.body.style.overflow = "";
       await loadApiKeyAndModels();
+      loadSettings();
     } catch (err) {
       showToast(err.message, "error");
       document.getElementById("inp-login-password").value = "";
@@ -2174,18 +2969,17 @@ function bindInputs() {
     const phone = normalizePhone(document.getElementById("inp-forgot-phone").value);
     if (!email) { showToast("Masukkan email", "error"); return; }
     if (!phone) { showToast("Masukkan nomor WhatsApp", "error"); return; }
+    const waWindow = window.open("", "_blank");
     try {
       const result = await api("/api/auth/forgot-password", {
         method: "POST",
         body: JSON.stringify({ email, phone }),
       });
-      const waMsg = encodeURIComponent(`Carousel Studio - Token reset Anda: ${result.resetToken}\n\nToken berlaku 1 jam. Jangan bagikan token ini kepada siapa pun.`);
-      window.open(`https://wa.me/${result.waNumber}?text=${waMsg}`, "_blank");
-      showToast(`Token reset dikirim ke ${result.waNumber}`, "success");
+      waWindow.location.href = `https://wa.me/${result.waNumber}?text=${encodeURIComponent('Token reset Carofeed: ' + result.resetToken)}`;
+      showToast("Cek WhatsApp untuk token reset", "success");
       document.getElementById("forgot-form").classList.add("hidden");
       document.getElementById("reset-form").classList.remove("hidden");
-      document.getElementById("inp-reset-token").value = result.resetToken;
-    } catch (err) { showToast(err.message, "error"); }
+    } catch (err) { waWindow.close(); showAlert(err.message); }
   });
   document.getElementById("inp-forgot-email").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("btn-forgot").click();
@@ -2218,6 +3012,7 @@ function bindInputs() {
       document.getElementById("inp-reset-token").value = "";
       document.getElementById("inp-reset-password").value = "";
       document.getElementById("inp-reset-confirm").value = "";
+      document.getElementById("token-display-area").classList.add("hidden");
     } catch (err) { showToast(err.message, "error"); }
   });
   document.getElementById("inp-reset-confirm").addEventListener("keydown", (e) => {
@@ -2249,11 +3044,29 @@ async function loadApiKeyAndModels() {
   } catch (e) { console.warn('Gagal memuat data awal:', e); }
 }
 
+async function loadStaticData() {
+  const results = await Promise.allSettled([
+    fetch('/api/data/visual-categories').then(r => r.ok && r.json()),
+    fetch('/api/data/niches').then(r => r.ok && r.json()),
+    fetch('/api/data/subniches').then(r => r.ok && r.json()),
+  ]);
+  const [vc, niches, subniches] = results.map(r => r.status === 'fulfilled' ? r.value : null);
+  if (vc?.categories) { VISUAL_CATEGORIES = vc.categories; BUILT_IN_CATEGORIES = Object.keys(vc.categories); }
+  else BUILT_IN_CATEGORIES = Object.keys(VISUAL_CATEGORIES);
+  if (vc?.palettes) STYLE_PALETTES = vc.palettes;
+  if (niches && typeof niches === 'object') NICHE_MAP = niches;
+  if (subniches && typeof subniches === 'object') SUBNICHE_MAP = subniches;
+}
+
 async function init() {
   populateVisualCategory();
+  populateNicheDropdown();
   renderStylePresets();
   bindInputs();
   renderSlidesArea();
+  renderEmptyState();
+
+  loadStaticData().then(() => { populateVisualCategory(); populateNicheDropdown(); });
 
   // Aktifkan :active pseudo-class di iOS Safari (tanpa ini :active tidak bekerja di <button>)
   document.body.addEventListener("touchstart", () => {}, { passive: true });
@@ -2271,10 +3084,12 @@ async function init() {
       state.currentUser = me.user;
       renderUserMenu();
       applyRoleVisibility();
-      await loadApiKeyAndModels();
-      await loadPrompts();
-      await loadCategoryImages();
-      await loadCustomCategories();
+      await Promise.all([
+        loadApiKeyAndModels(),
+        loadPrompts(),
+        loadCategoryImages(),
+        loadCustomCategories(),
+      ]);
       if (state.openCodeApiKey) fetchFreeModels();
     } catch (e) {
       console.error('Init gagal, session tidak valid:', e);
@@ -2290,6 +3105,7 @@ async function init() {
     applyRoleVisibility();
     showLoginModal();
   }
+  loadSettings();
 }
 
 init();

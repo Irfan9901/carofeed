@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carofeed — Carousel Feed Builder</title>
+  <meta name="description" content="Buat konten carousel Instagram berkualitas tinggi dengan bantuan AI. Hemat waktu, tingkatkan engagement.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">◆</span>
+        Carofeed
+      </a>
+      <div class="nav-links">
+        <a href="#fitur">Fitur</a>
+        <a href="#harga">Harga</a>
+        <a href="#testimonial">Testimonial</a>
+        <a href="#faq">FAQ</a>
+        <a href="#blog">Blog</a>
+      </div>
+      <div class="nav-actions" id="nav-actions">
+        <a class="btn btn-outline btn-sm">Masuk</a>
+        <a class="btn btn-primary btn-sm">Coba Gratis</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#fitur" class="mobile-link">Fitur</a>
+    <a href="#harga" class="mobile-link">Harga</a>
+    <a href="#testimonial" class="mobile-link">Testimonial</a>
+    <a href="#faq" class="mobile-link">FAQ</a>
+    <a href="#blog" class="mobile-link">Blog</a>
+    <div class="mobile-actions" id="mobile-actions"></div>
+  </div>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-inner">
+      <div class="hero-badge" id="hero-badge">🚀 Baru dirilis — AI Carousel Generator</div>
+      <h1 class="hero-title" id="hero-title">
+        Buat Carousel Instagram<br>
+        <span class="gradient-text">10x Lebih Cepat dengan AI</span>
+      </h1>
+      <p class="hero-sub" id="hero-sub">
+        Dari ide sampai slide siap posting dalam hitungan menit.
+        Tinggal pilih niche, AI kita yang bikin konten + visualnya.
+      </p>
+      <div class="hero-actions" id="hero-actions">
+        <a class="btn btn-primary btn-lg" id="hero-btn-1">Mulai Gratis</a>
+        <a href="#fitur" class="btn btn-ghost btn-lg">Lihat Fitur ↓</a>
+      </div>
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat">
+          <span class="stat-num">200+</span>
+          <span class="stat-label">Pengguna Aktif</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">5.000+</span>
+          <span class="stat-label">Carousel Terbuat</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">10</span>
+          <span class="stat-label">Template Visual</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fitur" class="section">
+    <div class="container">
+      <h2 class="section-title">Semua yang Kamu Butuh buat<br>Bikin Carousel Viral</h2>
+      <p class="section-desc">Gak perlu jadi desainer atau copywriter. Cukup kasih ide, AI kita kerja.</p>
+      <div class="features-grid" id="features-grid"></div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container">
+      <h2 class="section-title" id="steps-title">3 Langkah Gampang</h2>
+      <p class="section-desc" id="steps-desc">Gak butuh skill desain atau nulis. Serius.</p>
+      <div class="steps" id="steps"></div>
+    </div>
+  </section>
+
+  <section id="harga" class="section">
+    <div class="container">
+      <h2 class="section-title">Mulai Gratis,<br>Scale Kapan Aja</h2>
+      <p class="section-desc">Gak ada biaya tersembunyi. Hanya bayar AI API yang kamu pake.</p>
+      <div class="pricing-grid" id="pricing-grid"></div>
+    </div>
+  </section>
+
+  <section id="testimonial" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">Apa Kata Mereka?</h2>
+      <p class="section-desc">Udah dipake content creator, UMKM, sampe agency.</p>
+      <div class="testimonials-grid" id="testimonials-grid"></div>
+    </div>
+  </section>
+
+  <section id="faq" class="section">
+    <div class="container">
+      <h2 class="section-title">Pertanyaan Umum</h2>
+      <p class="section-desc">Yang sering ditanyain pengguna baru.</p>
+      <div class="faq-list" id="faq-list"></div>
+    </div>
+  </section>
+
+  <section id="blog" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">Tips & Tutorial<br>Carousel Marketing</h2>
+      <p class="section-desc">Dapetin insight dan strategi konten Instagram dari para ahli.</p>
+      <div class="blog-grid" id="blog-grid"></div>
+    </div>
+  </section>
+
+  <div id="custom-sections-container"></div>
+
+  <section class="section cta">
+    <div class="container">
+      <div class="cta-card">
+        <h2 class="cta-title" id="cta-title">
+          Siap Bikin Carousel<br>
+          <span class="gradient-text">10x Lebih Cepat?</span>
+        </h2>
+        <p class="cta-desc" id="cta-desc">Gak perlu trial & error. Langsung jadi. Gratis mulai sekarang.</p>
+        <a id="cta-btn" class="btn btn-primary btn-lg">Mulai Gratis →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-icon">◆</span>
+          Carofeed
+        </div>
+        <p class="footer-desc">Buat carousel Instagram dengan AI. Hemat waktu, tingkatkan engagement.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Produk</h4>
+          <a href="#fitur">Fitur</a>
+          <a href="#harga">Harga</a>
+          <a href="https://carofeed.vercel.app">Aplikasi</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="#blog">Blog</a>
+          <a href="#faq">FAQ</a>
+          <a href="#">Dokumentasi</a>
+        </div>
+        <div class="footer-col">
+          <h4>Kontak</h4>
+          <a href="mailto:hello@carouselstudio.app">hello@carouselstudio.app</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>© 2026 Carofeed. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

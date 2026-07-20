@@ -1,0 +1,122 @@
+{
+  "Kesehatan": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Keuangan": {
+    "purpose": "edukasi",
+    "audience": "profesional"
+  },
+  "Bisnis": {
+    "purpose": "edukasi",
+    "audience": "pebisnis"
+  },
+  "Karier": {
+    "purpose": "edukasi",
+    "audience": "profesional"
+  },
+  "Pendidikan": {
+    "purpose": "edukasi",
+    "audience": "pelajar"
+  },
+  "Teknologi": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Artificial Intelligence": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Digital Marketing": {
+    "purpose": "edukasi",
+    "audience": "digital-marketer"
+  },
+  "Media Sosial": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Content Creator": {
+    "purpose": "tutorial",
+    "audience": "content-creator"
+  },
+  "Branding": {
+    "purpose": "brand-awareness",
+    "audience": "pebisnis"
+  },
+  "Produktivitas": {
+    "purpose": "tips-trik",
+    "audience": "profesional"
+  },
+  "Parenting": {
+    "purpose": "edukasi",
+    "audience": "orang-tua"
+  },
+  "Hubungan": {
+    "purpose": "inspirasi",
+    "audience": "umum"
+  },
+  "Pengembangan Diri": {
+    "purpose": "motivasi",
+    "audience": "umum"
+  },
+  "Hobi": {
+    "purpose": "storytelling",
+    "audience": "umum"
+  },
+  "Kuliner": {
+    "purpose": "tutorial",
+    "audience": "umum"
+  },
+  "Rumah & Taman": {
+    "purpose": "tips-trik",
+    "audience": "umum"
+  },
+  "Hewan Peliharaan": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Fashion": {
+    "purpose": "inspirasi",
+    "audience": "umum"
+  },
+  "Kecantikan": {
+    "purpose": "tutorial",
+    "audience": "umum"
+  },
+  "Otomotif": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Travel": {
+    "purpose": "storytelling",
+    "audience": "umum"
+  },
+  "Spiritual": {
+    "purpose": "motivasi",
+    "audience": "umum"
+  },
+  "Hukum & Administrasi": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Seni & Kreativitas": {
+    "purpose": "inspirasi",
+    "audience": "umum"
+  },
+  "Lingkungan": {
+    "purpose": "edukasi",
+    "audience": "umum"
+  },
+  "Sains": {
+    "purpose": "edukasi",
+    "audience": "pelajar"
+  },
+  "Gaming": {
+    "purpose": "storytelling",
+    "audience": "umum"
+  },
+  "Hiburan": {
+    "purpose": "storytelling",
+    "audience": "umum"
+  }
+}

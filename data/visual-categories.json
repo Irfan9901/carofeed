@@ -1,0 +1,646 @@
+{
+  "Modern": [
+    {
+      "id": "minimalist",
+      "label": "Minimalist",
+      "desc": "Bersih, simpel, banyak ruang kosong",
+      "icon": "ti-square-rounded",
+      "tags": [
+        "minimalist",
+        "clean composition",
+        "ample negative space",
+        "simple shapes",
+        "understated"
+      ]
+    },
+    {
+      "id": "modern",
+      "label": "Modern",
+      "desc": "Kontemporer, garis bersih, elegan",
+      "icon": "ti-arrows-split-2",
+      "tags": [
+        "modern style",
+        "clean lines",
+        "contemporary",
+        "sleek",
+        "refined"
+      ]
+    },
+    {
+      "id": "flat-design",
+      "label": "Flat Design",
+      "desc": "Bidang warna datar tanpa bayangan",
+      "icon": "ti-layout-2",
+      "tags": [
+        "flat design",
+        "vector illustration",
+        "solid colors",
+        "no gradients",
+        "simplified shapes"
+      ]
+    },
+    {
+      "id": "material-design",
+      "label": "Material Design",
+      "desc": "Google-style, elevasi & bayangan",
+      "icon": "ti-layers-intersect",
+      "tags": [
+        "material design",
+        "elevation shadows",
+        "responsive layout",
+        "bold colors",
+        "card-based ui"
+      ]
+    },
+    {
+      "id": "glassmorphism",
+      "label": "Glassmorphism",
+      "desc": "Kaca transparan dengan blur",
+      "icon": "ti-glass-full",
+      "tags": [
+        "glassmorphism",
+        "frosted glass",
+        "backdrop blur",
+        "translucent",
+        "layered depth"
+      ]
+    },
+    {
+      "id": "neumorphism",
+      "label": "Neumorphism",
+      "desc": "Soft UI, timbul & tenggelam",
+      "icon": "ti-border-radius",
+      "tags": [
+        "neumorphism",
+        "soft ui",
+        "subtle raised elements",
+        "monochromatic",
+        "smooth shadows"
+      ]
+    },
+    {
+      "id": "claymorphism",
+      "label": "Claymorphism",
+      "desc": "3D lembut seperti tanah liat",
+      "icon": "ti-cube",
+      "tags": [
+        "claymorphism",
+        "soft 3d",
+        "playful shapes",
+        "warm lighting",
+        "rounded forms"
+      ]
+    }
+  ],
+  "Illustration": [
+    {
+      "id": "hand-drawn",
+      "label": "Hand Drawn",
+      "desc": "Sketsa tangan alami",
+      "icon": "ti-pencil",
+      "tags": [
+        "hand drawn",
+        "sketchy lines",
+        "organic feel",
+        "imperfect strokes",
+        "artistic"
+      ]
+    },
+    {
+      "id": "sketch",
+      "label": "Sketch",
+      "desc": "Sketsa pensil cepat",
+      "icon": "ti-writing",
+      "tags": [
+        "sketch style",
+        "pencil texture",
+        "rough lines",
+        "unfinished look",
+        "conceptual"
+      ]
+    },
+    {
+      "id": "doodle",
+      "label": "Doodle",
+      "desc": "Coretan santai & imut",
+      "icon": "ti-mood-happy",
+      "tags": [
+        "doodle",
+        "playful",
+        "whimsical",
+        "casual drawing",
+        "fun characters"
+      ]
+    },
+    {
+      "id": "watercolor",
+      "label": "Watercolor",
+      "desc": "Cat air lembut & organik",
+      "icon": "ti-droplet",
+      "tags": [
+        "watercolor",
+        "soft washes",
+        "translucent color",
+        "organic bleeding",
+        "artistic texture"
+      ]
+    },
+    {
+      "id": "line-art",
+      "label": "Line Art",
+      "desc": "Garis tegas hitam-putih",
+      "icon": "ti-minus",
+      "tags": [
+        "line art",
+        "black and white",
+        "clean strokes",
+        "minimal detailing",
+        "vector lines"
+      ]
+    },
+    {
+      "id": "outline-illustration",
+      "label": "Outline Illustration",
+      "desc": "Ilustrasi dengan outline tipis",
+      "icon": "ti-border-none",
+      "tags": [
+        "outline illustration",
+        "thin borders",
+        "colored fills",
+        "storybook style",
+        "whimsical"
+      ]
+    }
+  ],
+  "3D": [
+    {
+      "id": "3d-render",
+      "label": "3D Render",
+      "desc": "Render 3D realistis penuh",
+      "icon": "ti-3d-cube-sphere",
+      "tags": [
+        "3d render",
+        "realistic materials",
+        "ray tracing",
+        "three-dimensional",
+        "spatial depth"
+      ]
+    },
+    {
+      "id": "3d-illustration",
+      "label": "3D Illustration",
+      "desc": "Ilustrasi 3D gaya artistik",
+      "icon": "ti-shape-3",
+      "tags": [
+        "3d illustration",
+        "stylized 3d",
+        "colorful renders",
+        "isometric view",
+        "digital art"
+      ]
+    },
+    {
+      "id": "isometric",
+      "label": "Isometric",
+      "desc": "Perspektif isometrik 2.5D",
+      "icon": "ti-box",
+      "tags": [
+        "isometric",
+        "2.5d perspective",
+        "grid-based",
+        "technical view",
+        "gaming aesthetic"
+      ]
+    },
+    {
+      "id": "low-poly",
+      "label": "Low Poly",
+      "desc": "Poligon rendah, gaya geometris",
+      "icon": "ti-triangle",
+      "tags": [
+        "low poly",
+        "geometric",
+        "faceted",
+        "polygon art",
+        "modern abstract"
+      ]
+    }
+  ],
+  "Artistic": [
+    {
+      "id": "oil-painting",
+      "label": "Oil Painting",
+      "desc": "Lukisan cat minyak klasik",
+      "icon": "ti-palette",
+      "tags": [
+        "oil painting",
+        "rich textures",
+        "brush strokes",
+        "classical art",
+        "deep colors"
+      ]
+    },
+    {
+      "id": "acrylic-painting",
+      "label": "Acrylic Painting",
+      "desc": "Cat akrilik tebal & bertekstur",
+      "icon": "ti-brush",
+      "tags": [
+        "acrylic painting",
+        "thick paint",
+        "vibrant colors",
+        "textured strokes",
+        "modern painting"
+      ]
+    },
+    {
+      "id": "ink-illustration",
+      "label": "Ink Illustration",
+      "desc": "Tinta hitam tegas & kontras",
+      "icon": "ti-feather",
+      "tags": [
+        "ink illustration",
+        "black ink",
+        "crosshatching",
+        "high contrast",
+        "detailed linework"
+      ]
+    },
+    {
+      "id": "pencil-drawing",
+      "label": "Pencil Drawing",
+      "desc": "Gambar pensil realistis",
+      "icon": "ti-ballpen",
+      "tags": [
+        "pencil drawing",
+        "graphite",
+        "shading",
+        "realistic sketch",
+        "monochrome"
+      ]
+    },
+    {
+      "id": "paper-cut",
+      "label": "Paper Cut",
+      "desc": "Kolase potongan kertas",
+      "icon": "ti-scissors",
+      "tags": [
+        "paper cut",
+        "layered paper",
+        "shadow depth",
+        "craft aesthetic",
+        "tactile"
+      ]
+    },
+    {
+      "id": "origami",
+      "label": "Origami",
+      "desc": "Lipatan kertas geometris",
+      "icon": "ti-paper-bag",
+      "tags": [
+        "origami",
+        "folded paper",
+        "geometric folds",
+        "paper sculpture",
+        "japanese craft"
+      ]
+    }
+  ],
+  "Classic": [
+    {
+      "id": "vintage",
+      "label": "Vintage",
+      "desc": "Nuansa klasik tempo dulu",
+      "icon": "ti-clock",
+      "tags": [
+        "vintage",
+        "retro color palette",
+        "aged texture",
+        "nostalgic",
+        "warm tones"
+      ]
+    },
+    {
+      "id": "retro",
+      "label": "Retro",
+      "desc": "Gaya masa lalu yang ikonik",
+      "icon": "ti-disc",
+      "tags": [
+        "retro poster style",
+        "vintage color palette",
+        "bold outlines",
+        "grain texture",
+        "nostalgic mood"
+      ]
+    },
+    {
+      "id": "bauhaus",
+      "label": "Bauhaus",
+      "desc": "Geometris, fungsional, berani",
+      "icon": "ti-letter-case",
+      "tags": [
+        "bauhaus",
+        "geometric abstraction",
+        "primary colors",
+        "functional design",
+        "bold typography"
+      ]
+    },
+    {
+      "id": "swiss-design",
+      "label": "Swiss Design",
+      "desc": "Grid rapi, tipografi presisi",
+      "icon": "ti-grid-dots",
+      "tags": [
+        "swiss design",
+        "grid system",
+        "clean typography",
+        "minimal layout",
+        "international style"
+      ]
+    },
+    {
+      "id": "memphis",
+      "label": "Memphis",
+      "desc": "Ceria, pola abstrak, warna kontras",
+      "icon": "ti-diamond",
+      "tags": [
+        "memphis design",
+        "bold patterns",
+        "colorful",
+        "abstract shapes",
+        "playful aesthetic"
+      ]
+    }
+  ],
+  "Entertainment": [
+    {
+      "id": "cartoon",
+      "label": "Cartoon",
+      "desc": "Gaya kartun ceria & lucu",
+      "icon": "ti-mask",
+      "tags": [
+        "cartoon",
+        "exaggerated features",
+        "bright colors",
+        "fun style",
+        "friendly characters"
+      ]
+    },
+    {
+      "id": "comic-book",
+      "label": "Comic Book",
+      "desc": "Gaya komik dengan halftone",
+      "icon": "ti-book",
+      "tags": [
+        "comic book",
+        "halftone dots",
+        "bold outlines",
+        "pop art colors",
+        "speech bubbles"
+      ]
+    },
+    {
+      "id": "anime",
+      "label": "Anime",
+      "desc": "Gaya animasi jepang",
+      "icon": "ti-eye",
+      "tags": [
+        "anime style",
+        "large eyes",
+        "cel shading",
+        "vibrant hair",
+        "japanese aesthetic"
+      ]
+    },
+    {
+      "id": "pixel-art",
+      "label": "Pixel Art",
+      "desc": "Grafis piksel retro game",
+      "icon": "ti-apps",
+      "tags": [
+        "pixel art",
+        "8-bit",
+        "blocky graphics",
+        "retro gaming",
+        "limited palette"
+      ]
+    }
+  ],
+  "Premium": [
+    {
+      "id": "luxury",
+      "label": "Luxury",
+      "desc": "Mewah, elegan, premium",
+      "icon": "ti-crown",
+      "tags": [
+        "luxury",
+        "premium materials",
+        "gold accents",
+        "sophisticated",
+        "high-end"
+      ]
+    },
+    {
+      "id": "elegant",
+      "label": "Elegant",
+      "desc": "Anggun, halus, berkelas",
+      "icon": "ti-flower",
+      "tags": [
+        "elegant",
+        "refined",
+        "graceful",
+        "soft colors",
+        "sophisticated"
+      ]
+    },
+    {
+      "id": "corporate",
+      "label": "Corporate",
+      "desc": "Profesional, rapi, formal",
+      "icon": "ti-briefcase",
+      "tags": [
+        "corporate clean style",
+        "professional",
+        "geometric layout",
+        "subtle shadows",
+        "structured grid"
+      ]
+    },
+    {
+      "id": "editorial",
+      "label": "Editorial",
+      "desc": "Tipografi besar, gaya majalah",
+      "icon": "ti-typography",
+      "tags": [
+        "bold editorial layout",
+        "high contrast",
+        "large typography",
+        "magazine style",
+        "strong color blocking"
+      ]
+    },
+    {
+      "id": "magazine-style",
+      "label": "Magazine Style",
+      "desc": "Layout majalah glossy",
+      "icon": "ti-news",
+      "tags": [
+        "magazine layout",
+        "polished design",
+        "multi-column",
+        "featured imagery",
+        "glossy finish"
+      ]
+    }
+  ],
+  "Digital": [
+    {
+      "id": "futuristic",
+      "label": "Futuristic",
+      "desc": "Neon, sleek, masa depan",
+      "icon": "ti-rocket",
+      "tags": [
+        "futuristic",
+        "neon colors",
+        "sleek lines",
+        "holographic",
+        "tech aesthetic"
+      ]
+    },
+    {
+      "id": "sci-fi",
+      "label": "Sci-Fi",
+      "desc": "Fiksi ilmiah, alien, teknologi",
+      "icon": "ti-planet",
+      "tags": [
+        "sci-fi",
+        "space themes",
+        "alien technology",
+        "dark palette",
+        "glowing accents"
+      ]
+    },
+    {
+      "id": "cyberpunk",
+      "label": "Cyberpunk",
+      "desc": "Distopia, neon, high-tech",
+      "icon": "ti-device-laptop",
+      "tags": [
+        "cyberpunk",
+        "neon dystopia",
+        "high tech low life",
+        "dark urban",
+        "glowing neon"
+      ]
+    },
+    {
+      "id": "steampunk",
+      "label": "Steampunk",
+      "desc": "Mesin uap, vintage-futuristik",
+      "icon": "ti-settings",
+      "tags": [
+        "steampunk",
+        "victorian era",
+        "brass gears",
+        "steam machinery",
+        "retro futuristic"
+      ]
+    }
+  ],
+  "Realism": [
+    {
+      "id": "photorealistic",
+      "label": "Photorealistic",
+      "desc": "Realistis seperti foto asli",
+      "icon": "ti-camera",
+      "tags": [
+        "photorealistic",
+        "studio lighting",
+        "premium product photography",
+        "shallow depth of field",
+        "high detail"
+      ]
+    },
+    {
+      "id": "cinematic",
+      "label": "Cinematic",
+      "desc": "Gaya film sinematik",
+      "icon": "ti-video",
+      "tags": [
+        "cinematic",
+        "film grading",
+        "anamorphic",
+        "dramatic lighting",
+        "movie aesthetic"
+      ]
+    }
+  ],
+  "Creative": [
+    {
+      "id": "abstract",
+      "label": "Abstract",
+      "desc": "Bentuk non-representasional",
+      "icon": "ti-circle",
+      "tags": [
+        "abstract",
+        "non-representational",
+        "expressive forms",
+        "color fields",
+        "conceptual"
+      ]
+    },
+    {
+      "id": "geometric",
+      "label": "Geometric",
+      "desc": "Bentuk geometris presisi",
+      "icon": "ti-shape-2",
+      "tags": [
+        "geometric",
+        "precision shapes",
+        "mathematical",
+        "structured patterns",
+        "modern abstract"
+      ]
+    },
+    {
+      "id": "pop-art",
+      "label": "Pop Art",
+      "desc": "Budaya pop, warna berani",
+      "icon": "ti-droplet-filled",
+      "tags": [
+        "pop art",
+        "bold colors",
+        "cultural references",
+        "comic style",
+        "mass culture"
+      ]
+    },
+    {
+      "id": "surrealism",
+      "label": "Surrealism",
+      "desc": "Imajinatif, seperti mimpi",
+      "icon": "ti-moon",
+      "tags": [
+        "surrealism",
+        "dreamlike",
+        "fantastical",
+        "juxtaposition",
+        "subconscious"
+      ]
+    },
+    {
+      "id": "fantasy",
+      "label": "Fantasy",
+      "desc": "Dunia fantasi magis",
+      "icon": "ti-wand",
+      "tags": [
+        "fantasy",
+        "magical",
+        "mythical creatures",
+        "enchanted",
+        "otherworldly"
+      ]
+    }
+  ]
+}
