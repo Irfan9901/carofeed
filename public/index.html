@@ -94,16 +94,21 @@
 
           <!-- Preset -->
           <div id="preset-bar" class="flex items-center gap-2 mb-4 hidden">
-            <div class="relative flex-1">
-              <select id="preset-select" class="input-field w-full rounded-lg px-2.5 py-1.5 text-xs">
+            <div class="relative flex-1" style="min-width:0">
+              <div id="preset-trigger" class="input-field w-full rounded-lg px-3 py-2 text-sm flex items-center gap-2 cursor-pointer" tabindex="0" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                <span id="preset-trigger-text" class="truncate flex-1" style="color:var(--ink-faint)">Muat preset...</span>
+                <i class="ti ti-chevron-down text-xs shrink-0" style="color:var(--ink-faint)"></i>
+              </div>
+              <div id="preset-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 z-50 rounded-lg border" style="background:var(--bg-panel); border-color:var(--border-soft); box-shadow:0 8px 24px rgba(0,0,0,.4); max-height:200px; overflow-y:auto"></div>
+              <select id="preset-select" class="hidden" aria-hidden="true">
                 <option value="">Muat preset...</option>
               </select>
               <div id="preset-empty-overlay" class="hidden absolute inset-0 rounded-lg cursor-pointer z-10"></div>
             </div>
-            <button id="btn-save-preset" class="btn-ghost rounded-lg px-2.5 py-2 text-xs flex items-center gap-1 whitespace-nowrap">
+            <button id="btn-save-preset" class="btn-ghost rounded-lg px-3 py-2 text-sm flex items-center gap-1.5 whitespace-nowrap shrink-0">
               <i class="ti ti-device-floppy text-sm"></i> Simpan
             </button>
-            <button id="btn-delete-preset" class="rounded-lg px-2 py-1.5 text-xs flex items-center" style="color:var(--ink-faint)" title="Hapus preset">
+            <button id="btn-delete-preset" class="rounded-lg px-2.5 py-2 text-sm flex items-center shrink-0" style="color:var(--ink-faint)" title="Hapus preset">
               <i class="ti ti-trash text-sm"></i>
             </button>
           </div>

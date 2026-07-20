@@ -1291,24 +1291,46 @@ function applyPresetData(data) {
 
 async function loadPresets() {
   const select = document.getElementById("preset-select");
+  const dropdown = document.getElementById("preset-dropdown");
   const overlay = document.getElementById("preset-empty-overlay");
+  const triggerText = document.getElementById("preset-trigger-text");
   if (!select) return;
   const currentVal = select.value;
   select.innerHTML = '<option value="">Muat preset...</option>';
   if (!getCurrentUser()) return;
+  let presets = [];
   try {
     const data = await api("/api/presets");
-    for (const p of data.presets) {
+    presets = data.presets || [];
+    for (const p of presets) {
       const opt = document.createElement("option");
       opt.value = p.id;
       opt.textContent = p.name;
       select.appendChild(opt);
     }
-    if (currentVal) select.value = currentVal;
+    if (currentVal) { select.value = currentVal; }
+    else { select.value = ""; }
     if (overlay) {
-      overlay.classList.toggle("hidden", data.presets.length > 0);
+      overlay.classList.toggle("hidden", presets.length > 0);
     }
   } catch {}
+
+  // Re-render custom dropdown
+  if (dropdown) {
+    dropdown.innerHTML = "";
+    for (const p of presets) {
+      const opt = document.createElement("div");
+      opt.className = "option" + (p.id === select.value ? " selected" : "");
+      opt.dataset.value = p.id;
+      opt.textContent = p.name;
+      dropdown.appendChild(opt);
+    }
+  }
+  if (triggerText) {
+    const match = presets.find(p => p.id === select.value);
+    triggerText.textContent = match ? match.name : "Muat preset...";
+    triggerText.style.color = match ? "var(--cream)" : "var(--ink-faint)";
+  }
 }
 
 function showPrompt(msg, placeholder) {
@@ -2693,6 +2715,52 @@ function bindInputs() {
         if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     );
+  });
+
+  // -- Custom preset dropdown --
+  const trigger = document.getElementById("preset-trigger");
+  const dropdown = document.getElementById("preset-dropdown");
+  const presetSelect = document.getElementById("preset-select");
+  const triggerText = document.getElementById("preset-trigger-text");
+  function closePresetDropdown() {
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+    if (dropdown) dropdown.classList.add("hidden");
+  }
+  function togglePresetDropdown() {
+    const isOpen = dropdown && !dropdown.classList.contains("hidden");
+    closePresetDropdown();
+    if (!isOpen) {
+      if (trigger) trigger.setAttribute("aria-expanded", "true");
+      if (dropdown) dropdown.classList.remove("hidden");
+    }
+  }
+  if (trigger) {
+    trigger.addEventListener("click", (e) => { e.stopPropagation(); togglePresetDropdown(); });
+    trigger.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); togglePresetDropdown(); }
+      if (e.key === "Escape") closePresetDropdown();
+    });
+  }
+  if (dropdown) {
+    dropdown.addEventListener("click", (e) => {
+      const opt = e.target.closest(".option");
+      if (!opt || !presetSelect) return;
+      const value = opt.dataset.value;
+      presetSelect.value = value;
+      if (triggerText) {
+        triggerText.textContent = value ? opt.textContent : "Muat preset...";
+        triggerText.style.color = value ? "var(--cream)" : "var(--ink-faint)";
+      }
+      dropdown.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+      closePresetDropdown();
+      presetSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  document.addEventListener("click", (e) => {
+    if (trigger && dropdown && !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      closePresetDropdown();
+    }
   });
 
   document.getElementById("img-modal").addEventListener("click", (e) => {

@@ -545,3 +545,16 @@
   border-color:var(--amber);
   color:#FFFFFF;
 }
+
+#preset-trigger{ transition:border-color .15s ease; }
+#preset-trigger:hover,
+#preset-trigger:focus-visible{ border-color:var(--amber-dim); outline:none; }
+#preset-trigger[aria-expanded="true"]{ border-color:var(--amber); box-shadow:0 0 0 3px #8A652622; }
+#preset-dropdown .option{
+  padding:10px 14px; cursor:pointer; transition:background .15s; color:var(--cream);
+}
+#preset-dropdown .option:hover{ background:var(--bg-card-hover); }
+#preset-dropdown .option.selected{ color:var(--amber); }
+.light-theme #preset-dropdown{ background:#fff; border-color:#e0ddd6; }
+.light-theme #preset-dropdown .option{ color:var(--ink); }
+.light-theme #preset-dropdown .option:hover{ background:#f5f3ee; }
