@@ -3100,7 +3100,6 @@ function enhanceSelect(id) {
     const wrapper = document.createElement("div");
     wrapper.className = "relative";
     wrapper.style.minWidth = "0";
-    wrapper.style.overflow = "hidden";
     for (const cls of ["w-full", "flex-1"]) {
       if (sel.classList.contains(cls)) wrapper.classList.add(cls);
     }
