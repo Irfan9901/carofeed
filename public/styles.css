@@ -545,7 +545,7 @@
   color:#FFFFFF;
 }
 
-.enhanced-trigger{ transition:border-color .15s ease; }
+.enhanced-trigger{ overflow:hidden; transition:border-color .15s ease; }
 .enhanced-trigger:hover,
 .enhanced-trigger:focus-visible{ border-color:var(--amber-dim); outline:none; }
 .enhanced-trigger[aria-expanded="true"]{ border-color:var(--amber); box-shadow:0 0 0 3px #8A652622; }
