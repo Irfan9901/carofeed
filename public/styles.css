@@ -561,3 +561,4 @@
 .light-theme .enhanced-dropdown .option:hover{ background:#f5f3ee; }
 /* Missed Tailwind utilities */
 .min-w-0{ min-width:0; }
+#niche-row{ display:grid; grid-template-columns:1fr 1fr; }
