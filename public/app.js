@@ -1281,7 +1281,7 @@ function applyPresetData(data) {
     if (subEl) {
       subEl.innerHTML = "";
       const items = SUBNICHE_MAP[nicheEl.value] || [];
-      subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+      subEl.innerHTML = '<option value="">Pilih Subniche</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
       subEl.value = data.subniche || "";
       subEl._enhancedRefresh?.();
     }
@@ -1475,7 +1475,7 @@ function resetApp(silent) {
   if (nicheEl) nicheEl.value = "";
   const subEl = document.getElementById("inp-subniche");
   if (subEl) {
-    subEl.innerHTML = '<option value="">Pilih subniche (opsional)</option>';
+    subEl.innerHTML = '<option value="">Pilih Subniche</option>';
     subEl.value = "";
   }
   const presetEl = document.getElementById("preset-select");
@@ -1614,7 +1614,7 @@ async function saveNicheChanges() {
     const el = document.getElementById("inp-evergreen-niche");
     const sub = document.getElementById("inp-subniche");
     const items = SUBNICHE_MAP[el.value] || [];
-    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+    sub.innerHTML = '<option value="">Pilih Subniche</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
     sub.value = "";
     sub._enhancedRefresh?.();
   } catch (err) {
@@ -2449,7 +2449,7 @@ function bindInputs() {
     const el = document.getElementById("inp-evergreen-niche");
     const sub = document.getElementById("inp-subniche");
     const items = SUBNICHE_MAP[el.value] || [];
-    sub.innerHTML = '<option value="">Pilih subniche (opsional)</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+    sub.innerHTML = '<option value="">Pilih Subniche</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
     sub.value = "";
     sub._enhancedRefresh?.();
   }

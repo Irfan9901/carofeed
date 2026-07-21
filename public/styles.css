@@ -230,7 +230,6 @@
     .step-rail.pl-10{ padding-left:44px; }
     .step-rail::before{ left:16px; }
     .flex-row.gap-2.mb-2:not(#niche-row){ flex-direction:column; }
-    #niche-row{ flex-direction:column; }
     header p.text-\[11px\]{ display:none; }
     #carousel-track{ display:none; }
     #slides-area .flex.items-center.justify-between p:last-child{ display:none; }
