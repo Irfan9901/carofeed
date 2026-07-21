@@ -358,9 +358,15 @@ async function renderUserList() {
 let _gisInitDone = false;
 async function initGoogleSignIn() {
   if (_gisInitDone || !window.google?.accounts?.id) return;
+  const show = (id) => { const el = document.getElementById(id); if (el) el.classList.remove("hidden"); };
+  const hide = (id) => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); };
   try {
     const cfg = await api("/api/auth/google-config");
-    if (!cfg.clientId) return;
+    if (!cfg.clientId) {
+      hide("google-section-login");
+      hide("google-section-register");
+      return;
+    }
     google.accounts.id.initialize({
       client_id: cfg.clientId,
       callback: handleGoogleCredential,
@@ -369,6 +375,8 @@ async function initGoogleSignIn() {
       const el = document.getElementById(id);
       if (el) google.accounts.id.renderButton(el, { theme:"outline", size:"large", shape:"pill", width: el.offsetWidth || 280 });
     });
+    show("google-section-login");
+    show("google-section-register");
     _gisInitDone = true;
   } catch (e) { console.warn('Google Sign-In init skipped:', e); }
 }
