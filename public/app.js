@@ -413,30 +413,23 @@ async function doRegister() {
 
 function handleGoogleCredential(response) {
   if (!response?.credential) return;
-  try {
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    const name = payload.name || "";
-    const email = payload.email || "";
-    const googleId = payload.sub || "";
-    if (!email) { showToast("Gagal mendapatkan email dari Google", "error"); return; }
-    api("/api/auth/google", {
-      method: "POST",
-      body: JSON.stringify({ name, email, googleId }),
-    }).then(result => {
-      storeToken(result.token);
-      state.currentUser = result.user;
-      try { localStorage.setItem("cps_last_name", name); } catch {}
-      try { localStorage.setItem("cps_last_email", email); } catch {}
-      renderUserMenu();
-      applyRoleVisibility();
-      document.getElementById("login-modal").classList.add("hidden");
-      document.body.style.overflow = "";
-      loadApiKeyAndModels();
-      loadSettings();
-    }).catch(err => {
-      showToast(err.message, "error");
-    });
-  } catch (e) { showToast("Gagal memproses login Google", "error"); }
+  api("/api/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ credential: response.credential }),
+  }).then(result => {
+    storeToken(result.token);
+    state.currentUser = result.user;
+    try { localStorage.setItem("cps_last_name", result.user.name); } catch {}
+    try { localStorage.setItem("cps_last_email", result.user.email); } catch {}
+    renderUserMenu();
+    applyRoleVisibility();
+    document.getElementById("login-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+    loadApiKeyAndModels();
+    loadSettings();
+  }).catch(err => {
+    showToast(err.message, "error");
+  });
 }
 
 async function checkQuota() {
