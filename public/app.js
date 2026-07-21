@@ -343,7 +343,11 @@ async function renderUserList() {
           <span style="color:var(--ink-faint)">${escapeHtml(u.email)}</span>
           <input data-phone-user="${u.id}" type="tel" value="${escapeHtml(u.phone || "")}" class="input-field rounded px-1.5 py-0.5 text-xs" style="width:120px; background:var(--bg-card); color:var(--ink-soft)" placeholder="No. WA">
           <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:var(--amber-soft); color:var(--amber)">${u.role}</span>
-          <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:${u.tier === 'free' ? 'var(--bg-card-hover)' : 'var(--amber-soft)'}; color:${u.tier === 'free' ? 'var(--ink-faint)' : 'var(--amber)'}">${u.tier === 'free' ? 'Free' : 'Paid'} (${u.generateCount || 0})</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:${u.tier === 'free' ? 'var(--bg-card-hover)' : 'var(--amber-soft)'}; color:${u.tier === 'free' ? 'var(--ink-faint)' : 'var(--amber)'}">${u.tier === 'free' ? `Free (${u.generateCount || 0})` : 'Paid'}</span>
+          <select data-tier-user="${u.id}" class="input-field rounded px-1 py-0.5 text-[10px]" style="background:var(--bg-card); color:var(--cream)">
+            <option value="free" ${u.tier === 'free' ? 'selected' : ''}>Free</option>
+            <option value="paid" ${u.tier === 'paid' ? 'selected' : ''}>Paid</option>
+          </select>
         </div>
         ${users.length > 1 && u.id !== state.currentUser?.id ? `
           <button data-delete-user="${u.id}" class="hover:text-[var(--coral)]" style="color:var(--ink-faint)">
@@ -2944,6 +2948,16 @@ function bindInputs() {
           body: JSON.stringify({ phone: normalizePhone(input.value) }),
         });
       } catch (e) { console.warn('Gagal menyimpan nomor telepon:', e); }
+    }
+    const tierInput = e.target.closest("[data-tier-user]");
+    if (tierInput) {
+      try {
+        await api(`/api/users/${tierInput.getAttribute("data-tier-user")}`, {
+          method: "PUT",
+          body: JSON.stringify({ tier: tierInput.value }),
+        });
+        renderUserList();
+      } catch (e) { console.warn('Gagal mengubah tier:', e); }
     }
   });
   document.getElementById("user-list").addEventListener("click", (e) => {
