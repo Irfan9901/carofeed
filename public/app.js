@@ -337,16 +337,16 @@ async function renderUserList() {
     const users = await api("/api/users");
     const list = document.getElementById("user-list");
     list.innerHTML = `
-      <div class="grid grid-cols-[1fr_1.5fr_100px_70px_100px_36px] gap-1 px-3 py-1.5 text-[10px] font-medium" style="color:var(--ink-faint); border-bottom:1px solid var(--border-soft)">
+      <div class="grid grid-cols-[1fr_1fr_80px_55px_80px_28px] gap-1 px-3 py-1.5 text-[10px] font-medium" style="color:var(--ink-faint); border-bottom:1px solid var(--border-soft)">
         <span>Nama</span>
         <span>Email</span>
-        <span>No. WA</span>
+        <span>WA</span>
         <span class="text-center">Role</span>
         <span class="text-center">Tier</span>
         <span></span>
       </div>
     ` + users.map((u) => `
-      <div class="grid grid-cols-[1fr_1.5fr_100px_70px_100px_36px] gap-1 items-center rounded-lg px-3 py-2 text-xs" style="background:var(--bg-canvas)">
+      <div class="grid grid-cols-[1fr_1fr_80px_55px_80px_28px] gap-1 items-center rounded-lg px-3 py-2 text-xs" style="background:var(--bg-canvas)">
         <span style="color:var(--cream); overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${escapeHtml(u.name)}">${escapeHtml(u.name)}</span>
         <span style="color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${escapeHtml(u.email)}">${escapeHtml(u.email)}</span>
         <input data-phone-user="${u.id}" type="tel" value="${escapeHtml(u.phone || "")}" class="input-field rounded px-1.5 py-0.5 text-xs" style="width:100%; background:var(--bg-card); color:var(--ink-soft); box-sizing:border-box" placeholder="WA">
