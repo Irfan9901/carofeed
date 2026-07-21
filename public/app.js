@@ -3098,8 +3098,8 @@ function enhanceSelect(id) {
     sel.dataset.enhanced = "true";
 
     const wrapper = document.createElement("div");
-    wrapper.className = "relative";
-    for (const cls of ["w-full", "flex-1", "min-w-0"]) {
+    wrapper.className = "relative min-w-0";
+    for (const cls of ["w-full", "flex-1"]) {
       if (sel.classList.contains(cls)) wrapper.classList.add(cls);
     }
 
