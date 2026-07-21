@@ -336,24 +336,30 @@ async function renderUserList() {
   try {
     const users = await api("/api/users");
     const list = document.getElementById("user-list");
-    list.innerHTML = users.map((u) => `
-      <div class="flex items-center justify-between rounded-lg px-3 py-2 text-xs" style="background:var(--bg-canvas)">
-        <div class="flex items-center gap-1.5 flex-wrap">
-          <span style="color:var(--cream)">${escapeHtml(u.name)}</span>
-          <span style="color:var(--ink-faint)">${escapeHtml(u.email)}</span>
-          <input data-phone-user="${u.id}" type="tel" value="${escapeHtml(u.phone || "")}" class="input-field rounded px-1.5 py-0.5 text-xs" style="width:120px; background:var(--bg-card); color:var(--ink-soft)" placeholder="No. WA">
-          <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:var(--amber-soft); color:var(--amber)">${u.role}</span>
-          <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:${u.tier === 'free' ? 'var(--bg-card-hover)' : 'var(--amber-soft)'}; color:${u.tier === 'free' ? 'var(--ink-faint)' : 'var(--amber)'}">${u.tier === 'free' ? `Free (${u.generateCount || 0})` : 'Paid'}</span>
-          <select data-tier-user="${u.id}" class="input-field rounded px-1 py-0.5 text-[10px]" style="background:var(--bg-card); color:var(--cream)">
-            <option value="free" ${u.tier === 'free' ? 'selected' : ''}>Free</option>
-            <option value="paid" ${u.tier === 'paid' ? 'selected' : ''}>Paid</option>
-          </select>
-        </div>
+    list.innerHTML = `
+      <div class="grid grid-cols-[1fr_1.5fr_100px_70px_100px_36px] gap-1 px-3 py-1.5 text-[10px] font-medium" style="color:var(--ink-faint); border-bottom:1px solid var(--border-soft)">
+        <span>Nama</span>
+        <span>Email</span>
+        <span>No. WA</span>
+        <span class="text-center">Role</span>
+        <span class="text-center">Tier</span>
+        <span></span>
+      </div>
+    ` + users.map((u) => `
+      <div class="grid grid-cols-[1fr_1.5fr_100px_70px_100px_36px] gap-1 items-center rounded-lg px-3 py-2 text-xs" style="background:var(--bg-canvas)">
+        <span style="color:var(--cream); overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${escapeHtml(u.name)}">${escapeHtml(u.name)}</span>
+        <span style="color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap" title="${escapeHtml(u.email)}">${escapeHtml(u.email)}</span>
+        <input data-phone-user="${u.id}" type="tel" value="${escapeHtml(u.phone || "")}" class="input-field rounded px-1.5 py-0.5 text-xs" style="width:100%; background:var(--bg-card); color:var(--ink-soft); box-sizing:border-box" placeholder="WA">
+        <span class="px-1 py-0.5 rounded text-[10px] text-center" style="background:var(--amber-soft); color:var(--amber)">${u.role}</span>
+        <select data-tier-user="${u.id}" class="input-field rounded px-1 py-0.5 text-[10px]" style="width:100%; background:var(--bg-card); color:var(--cream); box-sizing:border-box">
+          <option value="free" ${u.tier === 'free' ? 'selected' : ''}>Free${u.tier === 'free' ? ` (${u.generateCount || 0})` : ''}</option>
+          <option value="paid" ${u.tier === 'paid' ? 'selected' : ''}>Paid</option>
+        </select>
         ${users.length > 1 && u.id !== state.currentUser?.id ? `
-          <button data-delete-user="${u.id}" class="hover:text-[var(--coral)]" style="color:var(--ink-faint)">
+          <button data-delete-user="${u.id}" class="flex items-center justify-center hover:text-[var(--coral)]" style="color:var(--ink-faint)">
             <i class="ti ti-trash text-sm"></i>
           </button>
-        ` : ""}
+        ` : '<span></span>'}
       </div>
     `).join("");
   } catch { showToast("Gagal memuat daftar user", "error"); }
