@@ -58,6 +58,8 @@ const { pruneExpiredTokens } = authModule;
 app.use('/api/auth', authRouter);
 app.use('/api/users', require('./routes/users'));
 app.use('/api/ai', require('./routes/ai'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/generate', require('./routes/generate'));
 app.use('/api/category-images', require('./routes/categoryImages'));
 app.use('/api/custom-categories', require('./routes/customCategories'));
 app.use('/api/guide', require('./routes/guide'));

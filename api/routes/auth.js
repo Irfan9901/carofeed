@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const { v4: uuidv4 } = require('uuid');
 const { get, set } = require('../../lib/db');
 const { hashPassword, verifyPassword } = require('../../lib/crypto');
 const { generateToken, requireAuth } = require('../middleware/auth');
@@ -15,6 +16,18 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many registration attempts. Try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+function safeUser(u) {
+  return { id: u.id, name: u.name, email: u.email, role: u.role, tier: u.tier || "paid", generateCount: u.generateCount || 0 };
+}
 
 async function pruneExpiredTokens() {
   try {
@@ -46,6 +59,8 @@ async function ensureAdminExists() {
       phone: '',
       password: adminPassword,
       role: 'admin',
+      tier: 'paid',
+      generateCount: 0,
       createdAt: Date.now(),
     });
     await set('users', users);
@@ -58,6 +73,10 @@ async function ensureAdminExists() {
   }
   return users;
 }
+
+router.get('/google-config', (req, res) => {
+  res.json({ clientId: process.env.GOOGLE_CLIENT_ID || '' });
+});
 
 router.post('/login', authLimiter, async (req, res) => {
   try {
@@ -76,11 +95,124 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Wrong password' });
     }
 
+    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+
     const token = generateToken(user);
-    res.json({
-      token,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-    });
+    res.json({ token, user: safeUser(user) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/register', registerLimiter, async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.status(400).json({ error: 'Name, email, and password required' });
+    if (password.length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
+
+    let users = await get('users') || [];
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) return res.status(409).json({ error: 'Email sudah terdaftar' });
+    if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) return res.status(409).json({ error: 'Nama sudah digunakan' });
+
+    const newUser = {
+      id: 's-' + uuidv4().slice(0, 7),
+      name,
+      email,
+      phone: '',
+      password: await hashPassword(password),
+      role: 'user',
+      tier: 'free',
+      generateCount: 0,
+      googleId: null,
+      avatar: '',
+      createdAt: Date.now(),
+    };
+
+    users.push(newUser);
+    await set('users', users);
+
+    const token = generateToken(newUser);
+    res.status(201).json({ token, user: safeUser(newUser) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) return res.status(400).json({ error: 'Google credential required' });
+
+    let payload;
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+
+    if (clientId) {
+      const { OAuth2Client } = require('google-auth-library');
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({ idToken: credential, audience: clientId });
+      payload = ticket.getPayload();
+    } else {
+      try {
+        const parts = credential.split('.');
+        payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+      } catch { return res.status(501).json({ error: 'Google OAuth not configured on server' }); }
+    }
+
+    const { email, name, sub, picture } = payload;
+    if (!email) return res.status(400).json({ error: 'Google account has no email' });
+
+    let users = await get('users') || [];
+    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+    if (user) {
+      user.googleId = sub;
+      user.avatar = user.avatar || picture || '';
+      if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; }
+    } else {
+      user = {
+        id: 's-' + uuidv4().slice(0, 7),
+        name,
+        email,
+        phone: '',
+        password: '',
+        role: 'user',
+        tier: 'free',
+        generateCount: 0,
+        googleId: sub,
+        avatar: picture || '',
+        createdAt: Date.now(),
+      };
+      users.push(user);
+    }
+    await set('users', users);
+
+    const token = generateToken(user);
+    res.json({ token, user: safeUser(user) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error: ' + err.message });
+  }
+});
+
+router.get('/quota', requireAuth, async (req, res) => {
+  try {
+    let users = await get('users') || [];
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+
+    const config = await get('appConfig') || { freeLimit: 20, upgradeLink: '' };
+    const freeLimit = config.freeLimit || 20;
+    const upgradeLink = config.upgradeLink || '';
+    const generateCount = user.generateCount || 0;
+    const tier = user.tier || 'paid';
+
+    if (tier === 'paid') return res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: true });
+
+    res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -188,13 +320,21 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-router.get('/me', requireAuth, (req, res) => {
-  res.json({
-    user: { id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role },
-  });
+router.get('/me', requireAuth, async (req, res) => {
+  try {
+    let users = await get('users') || [];
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+
+    res.json({ user: safeUser(user) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
-// Reset admin password via ADMIN_RESET_KEY env var
 router.post('/reset-admin', async (req, res) => {
   try {
     const { resetKey, newPassword } = req.body;

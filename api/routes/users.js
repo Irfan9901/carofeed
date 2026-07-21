@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', requireAdmin, async (req, res) => {
   try {
     const users = (await get('users')) || [];
-    const safe = users.map(({ password, ...u }) => u);
+    const safe = users.map(({ password, ...u }) => ({ ...u, tier: u.tier || 'paid', generateCount: u.generateCount || 0 }));
     res.json(safe);
   } catch (err) {
     console.error(err);
@@ -37,6 +37,8 @@ router.post('/', requireAdmin, async (req, res) => {
       phone: normalizePhone(phone || ''),
       password: await hashPassword(password),
       role: role === 'admin' ? 'admin' : 'user',
+      tier: 'paid',
+      generateCount: 0,
       createdAt: Date.now(),
     };
 
@@ -83,6 +85,9 @@ router.put('/:id', requireAdmin, async (req, res) => {
     if (req.body.email !== undefined) users[idx].email = req.body.email;
     if (req.body.role !== undefined && req.user.role === 'admin') {
       users[idx].role = req.body.role;
+    }
+    if (req.body.tier !== undefined && ['free', 'paid'].includes(req.body.tier)) {
+      users[idx].tier = req.body.tier;
     }
 
     await set('users', users);

@@ -343,6 +343,7 @@ async function renderUserList() {
           <span style="color:var(--ink-faint)">${escapeHtml(u.email)}</span>
           <input data-phone-user="${u.id}" type="tel" value="${escapeHtml(u.phone || "")}" class="input-field rounded px-1.5 py-0.5 text-xs" style="width:120px; background:var(--bg-card); color:var(--ink-soft)" placeholder="No. WA">
           <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:var(--amber-soft); color:var(--amber)">${u.role}</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px]" style="background:${u.tier === 'free' ? 'var(--bg-card-hover)' : 'var(--amber-soft)'}; color:${u.tier === 'free' ? 'var(--ink-faint)' : 'var(--amber)'}">${u.tier === 'free' ? 'Free' : 'Paid'} (${u.generateCount || 0})</span>
         </div>
         ${users.length > 1 && u.id !== state.currentUser?.id ? `
           <button data-delete-user="${u.id}" class="hover:text-[var(--coral)]" style="color:var(--ink-faint)">
@@ -354,6 +355,111 @@ async function renderUserList() {
   } catch { showToast("Gagal memuat daftar user", "error"); }
 }
 
+let _gisInitDone = false;
+async function initGoogleSignIn() {
+  if (_gisInitDone || !window.google?.accounts?.id) return;
+  try {
+    const cfg = await api("/api/auth/google-config");
+    if (!cfg.clientId) return;
+    google.accounts.id.initialize({
+      client_id: cfg.clientId,
+      callback: handleGoogleCredential,
+    });
+    ["google-btn-login","google-btn-register"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) google.accounts.id.renderButton(el, { theme:"outline", size:"large", shape:"pill", width: el.offsetWidth || 280 });
+    });
+    _gisInitDone = true;
+  } catch (e) { console.warn('Google Sign-In init skipped:', e); }
+}
+
+async function doRegister() {
+  resetApp(true);
+  const name = document.getElementById("inp-register-name").value.trim();
+  const email = document.getElementById("inp-register-email").value.trim();
+  const password = document.getElementById("inp-register-password").value;
+  if (!name) { showToast("Isi nama", "error"); return; }
+  if (!email) { showToast("Isi email", "error"); return; }
+  if (!password || password.length < 4) { showToast("Password minimal 4 karakter", "error"); return; }
+  try {
+    const result = await api("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password }),
+    });
+    storeToken(result.token);
+    state.currentUser = result.user;
+    try { localStorage.setItem("cps_last_name", name); } catch {}
+    try { localStorage.setItem("cps_last_email", email); } catch {}
+    renderUserMenu();
+    applyRoleVisibility();
+    document.getElementById("login-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+    await loadApiKeyAndModels();
+    loadSettings();
+    showToast("Akun berhasil dibuat!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+    document.getElementById("inp-register-password").value = "";
+  }
+}
+
+function handleGoogleCredential(response) {
+  if (!response?.credential) return;
+  try {
+    const payload = JSON.parse(atob(response.credential.split('.')[1]));
+    const name = payload.name || "";
+    const email = payload.email || "";
+    const googleId = payload.sub || "";
+    if (!email) { showToast("Gagal mendapatkan email dari Google", "error"); return; }
+    api("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ name, email, googleId }),
+    }).then(result => {
+      storeToken(result.token);
+      state.currentUser = result.user;
+      try { localStorage.setItem("cps_last_name", name); } catch {}
+      try { localStorage.setItem("cps_last_email", email); } catch {}
+      renderUserMenu();
+      applyRoleVisibility();
+      document.getElementById("login-modal").classList.add("hidden");
+      document.body.style.overflow = "";
+      loadApiKeyAndModels();
+      loadSettings();
+    }).catch(err => {
+      showToast(err.message, "error");
+    });
+  } catch (e) { showToast("Gagal memproses login Google", "error"); }
+}
+
+async function checkQuota() {
+  if (!getCurrentUser()) return true;
+  try {
+    const info = await api("/api/auth/quota");
+    if (info.tier === "free" && info.generateCount >= info.freeLimit) {
+      showUpgradeModal(info.freeLimit, info.upgradeLink);
+      return false;
+    }
+    return true;
+  } catch { return true; }
+}
+
+async function completeGenerate() {
+  if (!getCurrentUser()) return;
+  try { await api("/api/generate/complete", { method: "POST" }); }
+  catch {}
+}
+
+async function showUpgradeModal(limit, upgradeLink) {
+  const msg = document.getElementById("upgrade-msg");
+  const linkBtn = document.getElementById("upgrade-link-btn");
+  msg.textContent = `Kamu telah mencapai batas ${limit} kali generate untuk akun gratis. Upgrade ke akun Paid untuk melanjutkan.`;
+  linkBtn.href = upgradeLink || "#";
+  if (!upgradeLink) linkBtn.style.opacity = "0.5";
+  else linkBtn.style.opacity = "1";
+  document.getElementById("upgrade-modal").classList.remove("hidden");
+  lockScroll();
+}
+
 let _scrollLockDepth = 0;
 function lockScroll() { _scrollLockDepth++; document.body.style.overflow = 'hidden'; }
 function unlockScroll() {
@@ -363,15 +469,23 @@ function unlockScroll() {
 
 function showLoginModal() {
   document.getElementById("login-form").classList.remove("hidden");
+  document.getElementById("register-form").classList.add("hidden");
   document.getElementById("forgot-form").classList.add("hidden");
+  document.getElementById("reset-form").classList.add("hidden");
+  document.getElementById("auth-tab-login").style.color = "var(--cream)";
+  document.getElementById("auth-tab-register").style.color = "var(--ink-faint)";
   document.getElementById("inp-login-name").value = localStorage.getItem("cps_last_name") || "";
   document.getElementById("inp-login-email").value = localStorage.getItem("cps_last_email") || "";
   document.getElementById("inp-login-password").value = "";
   document.getElementById("inp-forgot-email").value = "";
   document.getElementById("inp-forgot-phone").value = "";
+  document.getElementById("register-form").querySelector("input").value = "";
+  document.getElementById("inp-register-email").value = "";
+  document.getElementById("inp-register-password").value = "";
   document.getElementById("login-modal").classList.remove("hidden");
   document.getElementById("login-modal").scrollTop = 0;
   document.body.style.overflow = "hidden";
+  initGoogleSignIn();
 }
 
 function applyRoleVisibility() {
@@ -1969,15 +2083,19 @@ async function aiGenerateSlideContent() {
     return;
   }
 
+  const btn = document.getElementById("btn-ai-generate");
+  const label = document.getElementById("btn-ai-label");
+  const originalLabel = label.textContent;
+
+  const withinQuota = await checkQuota();
+  if (!withinQuota) { btn.disabled = false; label.textContent = originalLabel; return; }
+
   abortGeneration();
   state._aborted = false;
   state._abortController = new AbortController();
   const signal = state._abortController.signal;
 
-  const btn = document.getElementById("btn-ai-generate");
-  const label = document.getElementById("btn-ai-label");
   btn.disabled = true;
-  const originalLabel = label.textContent;
 
   const p = state.prompts || DEFAULT_PROMPTS;
   const systemPrompt = p.system_slide;
@@ -2023,6 +2141,7 @@ async function aiGenerateSlideContent() {
       document.getElementById("inp-count").value = String(state.slideCount);
       renderSlidesArea();
       showToast("Isi slide berhasil disusun AI", "success");
+      completeGenerate();
       btn.disabled = false;
       label.textContent = originalLabel;
       setSlideListSkeleton(false);
@@ -2577,11 +2696,16 @@ function bindInputs() {
     if (e.key === "Enter") document.getElementById("btn-save-password").click();
   });
 
-  document.getElementById("btn-admin-panel").addEventListener("click", () => {
+  document.getElementById("btn-admin-panel").addEventListener("click", async () => {
     document.getElementById("user-dropdown").classList.add("hidden");
     document.getElementById("admin-modal").classList.remove("hidden");
     lockScroll();
     renderUserList();
+    try {
+      const cfg = await api("/api/admin/config");
+      document.getElementById("inp-admin-free-limit").value = cfg.freeLimit || 20;
+      document.getElementById("inp-admin-upgrade-link").value = cfg.upgradeLink || "";
+    } catch {}
   });
   document.getElementById("btn-close-admin").addEventListener("click", () => {
     document.getElementById("admin-modal").classList.add("hidden");
@@ -3042,6 +3166,52 @@ function bindInputs() {
   document.getElementById("inp-reset-confirm").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("btn-reset-password").click();
   });
+
+  // AUTH TAB SWITCHING
+  document.getElementById("auth-tab-login").addEventListener("click", () => {
+    document.getElementById("login-form").classList.remove("hidden");
+    document.getElementById("register-form").classList.add("hidden");
+    document.getElementById("auth-tab-login").style.color = "var(--cream)";
+    document.getElementById("auth-tab-register").style.color = "var(--ink-faint)";
+  });
+  document.getElementById("auth-tab-register").addEventListener("click", () => {
+    document.getElementById("login-form").classList.add("hidden");
+    document.getElementById("register-form").classList.remove("hidden");
+    document.getElementById("auth-tab-register").style.color = "var(--cream)";
+    document.getElementById("auth-tab-login").style.color = "var(--ink-faint)";
+  });
+  document.getElementById("btn-back-to-login").addEventListener("click", () => {
+    document.getElementById("login-form").classList.remove("hidden");
+    document.getElementById("register-form").classList.add("hidden");
+    document.getElementById("auth-tab-login").style.color = "var(--cream)";
+    document.getElementById("auth-tab-register").style.color = "var(--ink-faint)";
+  });
+  document.getElementById("btn-register").addEventListener("click", doRegister);
+  document.getElementById("inp-register-password").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") doRegister();
+  });
+
+  // UPGRADE MODAL
+  document.getElementById("upgrade-close").addEventListener("click", () => {
+    document.getElementById("upgrade-modal").classList.add("hidden");
+    unlockScroll();
+  });
+  document.getElementById("upgrade-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) { document.getElementById("upgrade-modal").classList.add("hidden"); unlockScroll(); }
+  });
+
+  // ADMIN CONFIG
+  document.getElementById("btn-save-admin-config").addEventListener("click", async () => {
+    const freeLimit = parseInt(document.getElementById("inp-admin-free-limit").value, 10) || 20;
+    const upgradeLink = document.getElementById("inp-admin-upgrade-link").value.trim();
+    try {
+      await api("/api/admin/config", {
+        method: "PUT",
+        body: JSON.stringify({ freeLimit, upgradeLink }),
+      });
+      showToast("Konfigurasi tersimpan", "success");
+    } catch (err) { showToast(err.message, "error"); }
+  });
 }
 
 async function loadApiKeyAndModels() {
@@ -3256,6 +3426,7 @@ async function init() {
     el.addEventListener("input", () => autoExpand(el));
     autoExpand(el);
   });
+  initGoogleSignIn();
   console.log('[init] complete');
 }
 

@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script src="https://accounts.google.com/gsi/client" onload="window._gisLoaded=1" defer></script>
 </head>
 <body class="min-h-screen">
 
@@ -434,6 +435,24 @@
     </div>
 
     <div id="user-list" class="flex flex-col gap-1.5 overflow-y-auto min-h-0 flex-1"></div>
+
+    <hr class="my-3" style="border-color:var(--border-soft)">
+
+    <div class="flex items-center justify-between mb-3">
+      <h4 class="font-display text-xs" style="color:var(--cream)">Konfigurasi Aplikasi</h4>
+    </div>
+    <div class="flex flex-col gap-2 mb-3">
+      <div class="flex items-center gap-2">
+        <label class="text-xs whitespace-nowrap" style="color:var(--ink-soft)">Batas Gratis</label>
+        <input id="inp-admin-free-limit" type="number" min="1" value="20" class="input-field rounded-lg px-3 py-2 text-xs" style="width:80px">
+        <span class="text-[10px]" style="color:var(--ink-faint)">slide per user</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="text-xs whitespace-nowrap" style="color:var(--ink-soft)">Link Upgrade</label>
+        <input id="inp-admin-upgrade-link" type="url" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="https://wa.me/... atau halaman pembayaran">
+      </div>
+    </div>
+    <button id="btn-save-admin-config" class="rounded-lg px-4 py-2 text-xs font-medium w-full" style="background:var(--amber); color:#1a1a1a">Simpan Konfigurasi</button>
   </div>
 </div>
 
@@ -610,6 +629,12 @@
         <p class="text-sm" style="color:var(--ink-faint)">Carousel Feed Builder</p>
       </div>
 
+      <!-- Auth tabs -->
+      <div class="flex mb-3 rounded-lg overflow-hidden" style="background:var(--bg-canvas); border:1px solid var(--border-soft)">
+        <button id="auth-tab-login" class="flex-1 py-2 text-xs font-medium" style="color:var(--cream)">Masuk</button>
+        <button id="auth-tab-register" class="flex-1 py-2 text-xs font-medium" style="color:var(--ink-faint)">Daftar</button>
+      </div>
+
       <!-- Login form -->
       <div id="login-form" class="rounded-2xl border p-6" style="background:var(--bg-card); border-color:var(--border-soft)">
         <div class="mb-4">
@@ -620,7 +645,7 @@
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Email</label>
           <input id="inp-login-email" type="email" autocomplete="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
         </div>
-        <div class="mb-10">
+        <div class="mb-4">
           <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Password</label>
           <div class="flex items-center rounded-xl" style="background:#100E0A; border:1px solid var(--border-soft)">
             <input id="inp-login-password" type="password" autocomplete="current-password" class="flex-1 px-4 py-3 text-sm" placeholder="Masukkan password" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
@@ -629,8 +654,41 @@
             </button>
           </div>
         </div>
-        <button id="btn-login" class="btn-primary w-full rounded-xl px-4 py-3 text-sm font-semibold shadow-lg mb-3">Masuk</button>
-        <button id="btn-show-forgot" class="text-xs w-full text-center" style="color:var(--ink-faint)">Lupa password?</button>
+        <button id="btn-login" class="btn-primary w-full rounded-xl px-4 py-3 text-sm font-semibold shadow-lg">Masuk</button>
+        <div class="relative my-4">
+          <hr style="border-color:var(--border-soft)">
+          <span class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 text-xs px-2" style="color:var(--ink-faint); background:var(--bg-card)">atau</span>
+        </div>
+        <div id="google-btn-login" class="flex justify-center"></div>
+        <button id="btn-show-forgot" class="text-xs w-full text-center mt-3" style="color:var(--ink-faint)">Lupa password?</button>
+      </div>
+
+      <!-- Register form -->
+      <div id="register-form" class="hidden rounded-2xl border p-6" style="background:var(--bg-card); border-color:var(--border-soft)">
+        <div class="mb-4">
+          <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Nama</label>
+          <input id="inp-register-name" type="text" autocomplete="name" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="Nama kamu">
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Email</label>
+          <input id="inp-register-email" type="email" autocomplete="email" class="input-field w-full rounded-xl px-4 py-3 text-sm" placeholder="email@contoh.com">
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Password</label>
+          <div class="flex items-center rounded-xl" style="background:#100E0A; border:1px solid var(--border-soft)">
+            <input id="inp-register-password" type="password" autocomplete="new-password" class="flex-1 px-4 py-3 text-sm" placeholder="Min 4 karakter" style="border:none; outline:none; background:transparent; color:var(--cream); min-width:0">
+            <button data-toggle-pw="inp-register-password" type="button" class="flex-shrink-0 flex items-center justify-center mr-1 rounded-lg hover:bg-[var(--bg-card-hover)]" style="color:var(--ink-faint); width:36px; height:36px">
+              <i class="ti ti-eye text-lg"></i>
+            </button>
+          </div>
+        </div>
+        <button id="btn-register" class="btn-primary w-full rounded-xl px-4 py-3 text-sm font-semibold shadow-lg">Daftar</button>
+        <div class="relative my-4">
+          <hr style="border-color:var(--border-soft)">
+          <span class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 text-xs px-2" style="color:var(--ink-faint); background:var(--bg-card)">atau</span>
+        </div>
+        <div id="google-btn-register" class="flex justify-center"></div>
+        <button id="btn-back-to-login" class="text-xs w-full text-center mt-3" style="color:var(--ink-faint)">Sudah punya akun? Masuk</button>
       </div>
 
       <!-- Forgot form -->
@@ -751,6 +809,20 @@
     </div>
     <div id="niche-list" class="flex flex-col gap-3 overflow-y-auto min-h-0 flex-1 mb-3"></div>
     <button id="btn-save-niches" class="rounded-lg px-4 py-2 text-xs font-medium w-full" style="background:var(--amber); color:#1a1a1a">Simpan Semua</button>
+  </div>
+</div>
+
+<div id="upgrade-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-xs mx-4 p-5 text-center" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style="background:var(--amber-soft)">
+      <i class="ti ti-crown text-xl" style="color:var(--amber)"></i>
+    </div>
+    <h3 class="font-display text-base mb-2" style="color:var(--cream)">Batas Pemakaian Tercapai</h3>
+    <p class="text-xs mb-5 leading-relaxed" style="color:var(--ink-soft)" id="upgrade-msg">Kamu telah mencapai batas penggunaan gratis. Upgrade akun untuk melanjutkan.</p>
+    <div class="flex gap-3 justify-center">
+      <button id="upgrade-close" class="rounded-lg px-5 py-2 text-xs font-medium" style="background:var(--bg-card-hover); color:var(--ink-soft)">Tutup</button>
+      <a id="upgrade-link-btn" href="#" target="_blank" rel="noopener" class="rounded-lg px-5 py-2 text-xs font-medium inline-block" style="background:var(--amber); color:#1a1a1a">Upgrade Sekarang</a>
+    </div>
   </div>
 </div>
 
