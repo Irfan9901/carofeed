@@ -549,6 +549,7 @@
 .enhanced-trigger:hover,
 .enhanced-trigger:focus-visible{ border-color:var(--amber-dim); outline:none; }
 .enhanced-trigger[aria-expanded="true"]{ border-color:var(--amber); box-shadow:0 0 0 3px #8A652622; }
+.enhanced-trigger .truncate{ min-width:0; }
 .enhanced-dropdown .option{
   padding:10px 14px; cursor:pointer; transition:background .15s; color:var(--cream); font-size:13px;
   white-space:normal; word-break:break-word;
