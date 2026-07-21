@@ -2097,6 +2097,17 @@ async function aiGenerateSlideContent() {
   if (!getCurrentUser()) { showToast("Lakukan Login untuk melanjutkan proses", "error"); return; }
   if (!state.topic.trim()) { showToast("Isi topik carousel dulu di langkah 1", "error"); return; }
 
+  const missing = [];
+  if (!state.purpose) missing.push("• Tujuan");
+  if (!state.audience) missing.push("• Target audiens");
+  if (!state.visualCategory) missing.push("• Kategori visual");
+  if (!state.stylePreset) missing.push("• Subkategori visual");
+  if (!state.layout) missing.push("• Layout slide");
+  if (missing.length) {
+    showAlert("Lengkapi parameter berikut sebelum generate:\n" + missing.join("\n"));
+    return;
+  }
+
   const keyStatus = await api("/api/ai/api-key");
   if (!keyStatus.hasKey) {
     showToast(isAdmin() ? "Masukkan OpenCode API Key di panel Admin" : "API Key belum diatur", "error");
