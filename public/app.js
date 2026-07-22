@@ -240,9 +240,20 @@ const state = {
 };
 
 // ── API client ──
+function getDeviceId() {
+  let id = localStorage.getItem("cps_device_id");
+  if (!id) {
+    id = (crypto.randomUUID && crypto.randomUUID()) || ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+    try { localStorage.setItem("cps_device_id", id); } catch {}
+  }
+  return id;
+}
+const _deviceId = getDeviceId();
+
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json" };
   if (state.authToken) headers["Authorization"] = `Bearer ${state.authToken}`;
+  if (_deviceId) headers["X-Device-Id"] = _deviceId;
   const res = await fetch(path, { ...options, headers: { ...headers, ...options.headers } });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -446,8 +457,8 @@ async function checkQuota() {
   if (!getCurrentUser()) return true;
   try {
     const info = await api("/api/auth/quota");
-    if (info.tier === "free" && info.generateCount >= info.freeLimit) {
-      showUpgradeModal(info.freeLimit, info.upgradeLink);
+    if (info.tier === "free" && (info.deviceBlocked || info.generateCount >= info.freeLimit)) {
+      showUpgradeModal(info.freeLimit, info.upgradeLink, info.deviceBlocked);
       return false;
     }
     return true;
@@ -460,10 +471,14 @@ async function completeGenerate() {
   catch {}
 }
 
-async function showUpgradeModal(limit, upgradeLink) {
+async function showUpgradeModal(limit, upgradeLink, deviceBlocked) {
   const msg = document.getElementById("upgrade-msg");
   const linkBtn = document.getElementById("upgrade-link-btn");
-  msg.textContent = `Kamu telah mencapai batas ${limit} kali generate untuk akun gratis. Upgrade ke akun Paid untuk melanjutkan.`;
+  if (deviceBlocked) {
+    msg.textContent = "Perangkat ini sudah digunakan oleh akun gratis lain. Gunakan akun yang sudah ada atau hubungi admin untuk upgrade.";
+  } else {
+    msg.textContent = `Kamu telah mencapai batas ${limit} kali generate untuk akun gratis. Upgrade ke akun Paid untuk melanjutkan.`;
+  }
   linkBtn.href = upgradeLink || "#";
   if (!upgradeLink) linkBtn.style.opacity = "0.5";
   else linkBtn.style.opacity = "1";

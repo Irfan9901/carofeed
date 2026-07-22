@@ -212,7 +212,17 @@ router.get('/quota', requireAuth, async (req, res) => {
 
     if (tier === 'paid') return res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: true });
 
-    res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit });
+    // Device check: prevent same device from using multiple free accounts
+    const deviceId = req.headers['x-device-id'];
+    let deviceBlocked = false;
+    if (deviceId) {
+      const deviceAccounts = await get(`deviceAccounts:${deviceId}`) || [];
+      if (deviceAccounts.length > 0 && !deviceAccounts.includes(user.id)) {
+        deviceBlocked = true;
+      }
+    }
+
+    res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit && !deviceBlocked, deviceBlocked });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -392,6 +402,17 @@ generateRouter.post('/complete', requireAuth, async (req, res) => {
     if (idx === -1) return res.status(404).json({ error: 'User not found' });
 
     if (!users[idx].tier) users[idx].tier = 'paid';
+
+    // Record device→user mapping for free accounts
+    const deviceId = req.headers['x-device-id'];
+    if (deviceId && users[idx].tier === 'free') {
+      const deviceAccounts = await get(`deviceAccounts:${deviceId}`) || [];
+      if (!deviceAccounts.includes(users[idx].id)) {
+        deviceAccounts.push(users[idx].id);
+        await set(`deviceAccounts:${deviceId}`, deviceAccounts);
+      }
+    }
+
     users[idx].generateCount = (users[idx].generateCount || 0) + 1;
     await set('users', users);
 
