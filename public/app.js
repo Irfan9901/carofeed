@@ -2527,8 +2527,8 @@ function bindInputs() {
 
   function updateSwipeToggleUI(checked) {
     document.getElementById("inp-swipe-text").checked = checked;
-    document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "var(--border-soft)";
-    document.getElementById("swipe-knob").style.transform = checked ? "translateX(16px)" : "translateX(0)";
+    document.getElementById("swipe-track").style.background = checked ? "#34C759" : "#E5E5EA";
+    document.getElementById("swipe-knob").style.transform = checked ? "translateX(20px)" : "translateX(0)";
   }
   document.getElementById("lbl-swipe-text").addEventListener("click", (e) => {
     e.preventDefault();
