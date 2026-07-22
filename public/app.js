@@ -3191,9 +3191,10 @@ function bindInputs() {
         method: "POST",
         body: JSON.stringify({ email }),
       });
-      showToast("Cek email untuk token reset", "success");
-      document.getElementById("forgot-form").classList.add("hidden");
-      document.getElementById("reset-form").classList.remove("hidden");
+      showAlert(`Token reset telah dikirim ke ${email}. Cek inbox email dan copy token untuk melanjutkan reset password.`, () => {
+        document.getElementById("forgot-form").classList.add("hidden");
+        document.getElementById("reset-form").classList.remove("hidden");
+      });
     } catch (err) { showAlert(err.message); }
   });
   document.getElementById("inp-forgot-email").addEventListener("keydown", (e) => {
