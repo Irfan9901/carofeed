@@ -301,8 +301,16 @@
 
           <div class="mt-5">
             <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Intruksi Tambahan (opsional)</label>
-            <textarea id="inp-customstyle" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4" rows="2" placeholder="contoh: hand-drawn texture, maskot lucu" style="resize:none; overflow:hidden; min-height:38px"></textarea>
+            <textarea id="inp-customstyle" class="input-field w-full rounded-lg px-3 py-2.5 text-sm" rows="2" placeholder="contoh: hand-drawn texture, maskot lucu" style="resize:none; overflow:hidden; min-height:38px"></textarea>
           </div>
+
+          <label class="flex items-center gap-2.5 mb-4 cursor-pointer" id="lbl-swipe-text">
+            <input type="checkbox" class="hidden" id="inp-swipe-text" checked>
+            <div class="relative w-9 h-5 flex-shrink-0 rounded-full" id="swipe-track" style="background:var(--amber); transition:background .2s">
+              <div class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm" id="swipe-knob" style="transform:translateX(16px); transition:transform .2s"></div>
+            </div>
+            <span class="text-xs select-none" style="color:var(--ink-soft)">Tampilkan teks "Geser Untuk Melanjutkan"</span>
+          </label>
 
           <div>
             <label class="block text-xs mb-1.5" style="color:var(--ink-soft)">Palet Warna</label>

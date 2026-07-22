@@ -237,6 +237,7 @@ const state = {
   currentUser: null,
   prompts: null,
   categoryImages: {},
+  swipeText: true,
 };
 
 // ── API client ──
@@ -687,6 +688,10 @@ function composeMainPrompt(slide) {
 
   if (state.brandNote) {
     parts.push(` Brand: ${state.brandNote}.`);
+  }
+
+  if (state.swipeText && slide.role !== "penutup") {
+    parts.push(` Include subtle "Geser Untuk Melanjutkan →" text at the bottom of the slide.`);
   }
 
   let prompt = parts.join("") + " STRICT NON-NEGOTIABLE RULE: Absolutely NO living beings, people, characters, animals, creatures, humans, faces, body parts, or any biological entity. No mascots, no cartoon characters, no people. Only objects, text, abstract shapes, buildings, nature without living beings.";
@@ -2248,6 +2253,7 @@ function buildSingleSlideJson(slide, idx) {
     headline: slide.headline,
     body_text: slide.body || null,
     visual_idea: slide.visualIdea || null,
+    swipe_text: state.swipeText && slide.role !== "penutup" ? "Geser Untuk Melanjutkan" : null,
     aspect_ratio: getAspectRatioValue(),
     global_style: {
       preset: state.stylePreset,
@@ -2299,6 +2305,7 @@ function buildJsonOutput() {
       headline: s.headline,
       body_text: s.body || null,
       visual_idea: s.visualIdea || null,
+      swipe_text: state.swipeText && s.role !== "penutup" ? "Geser Untuk Melanjutkan" : null,
       prompt: composeMainPrompt(s),
       negative_prompt: state.negativePrompt,
       aspect_ratio: getAspectRatioValue(),
@@ -2517,6 +2524,21 @@ function bindInputs() {
 
   document.getElementById("inp-purpose").addEventListener("change", (e) => { state.purpose = e.target.value; });
   document.getElementById("inp-audience").addEventListener("change", (e) => { state.audience = e.target.value; });
+
+  function updateSwipeToggleUI(checked) {
+    document.getElementById("inp-swipe-text").checked = checked;
+    document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "var(--border-soft)";
+    document.getElementById("swipe-knob").style.transform = checked ? "translateX(16px)" : "translateX(0)";
+  }
+  document.getElementById("lbl-swipe-text").addEventListener("click", (e) => {
+    e.preventDefault();
+    const cb = document.getElementById("inp-swipe-text");
+    const newState = !cb.checked;
+    updateSwipeToggleUI(newState);
+    state.swipeText = newState;
+    refreshJsonOutput();
+    renderCarouselTrack();
+  });
 
   document.getElementById("inp-count").addEventListener("change", (e) => {
     const n = Math.max(1, Math.min(15, Number(e.target.value) || 1));
