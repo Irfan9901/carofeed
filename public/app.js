@@ -366,10 +366,12 @@ async function renderUserList() {
           <option value="user" ${u.role === 'user' ? 'selected' : ''}>user</option>
           <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
         </select>
-        <select data-tier-user="${u.id}" class="input-field rounded px-1 py-0.5 text-[10px]" style="width:100%; background:var(--bg-card); color:var(--cream); box-sizing:border-box">
-          <option value="free" ${u.tier === 'free' ? 'selected' : ''}>Free${u.tier === 'free' ? ` (${u.generateCount || 0})` : ''}</option>
-          <option value="paid" ${u.tier === 'paid' ? 'selected' : ''}>Paid</option>
-        </select>
+        ${u.role === 'admin'
+          ? `<select data-tier-user="${u.id}" disabled class="input-field rounded px-1 py-0.5 text-[10px]" style="width:100%; background:var(--bg-card); color:var(--cream); box-sizing:border-box; opacity:0.5"><option value="paid" selected>Paid</option></select>`
+          : `<select data-tier-user="${u.id}" class="input-field rounded px-1 py-0.5 text-[10px]" style="width:100%; background:var(--bg-card); color:var(--cream); box-sizing:border-box">
+            <option value="free" ${u.tier === 'free' ? 'selected' : ''}>Free${u.tier === 'free' ? ` (${u.generateCount || 0})` : ''}</option>
+            <option value="paid" ${u.tier === 'paid' ? 'selected' : ''}>Paid</option>
+          </select>`}
         ${users.length > 1 && u.id !== state.currentUser?.id ? `
           <button data-delete-user="${u.id}" class="flex items-center justify-center hover:text-[var(--coral)]" style="color:var(--ink-faint)">
             <i class="ti ti-trash text-sm"></i>

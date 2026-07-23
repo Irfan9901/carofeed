@@ -86,8 +86,11 @@ router.put('/:id', requireAdmin, async (req, res) => {
       if (req.body.email !== undefined) users[idx].email = req.body.email;
       if (req.body.role !== undefined && req.user.role === 'admin') {
         users[idx].role = req.body.role;
+        if (req.body.role === 'admin') users[idx].tier = 'paid';
       }
       if (req.body.tier !== undefined && ['free', 'paid'].includes(req.body.tier)) {
+        if (users[idx].role === 'admin' && req.body.tier === 'free')
+          throw new HttpError(400, 'Admin cannot have free tier');
         users[idx].tier = req.body.tier;
       }
       const { password, ...safe } = users[idx];
