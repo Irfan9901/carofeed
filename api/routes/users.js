@@ -93,6 +93,9 @@ router.put('/:id', requireAdmin, async (req, res) => {
           throw new HttpError(400, 'Admin cannot have free tier');
         users[idx].tier = req.body.tier;
       }
+      if (req.body.generateCount !== undefined) {
+        users[idx].generateCount = parseInt(req.body.generateCount, 10) || 0;
+      }
       const { password, ...safe } = users[idx];
       userSafe = safe;
       return users;
