@@ -463,6 +463,7 @@ async function checkQuota() {
   if (!getCurrentUser()) return true;
   try {
     const info = await api("/api/auth/quota");
+    state.needsReview = info.reviewRequired;
     if (info.tier === "free" && (info.deviceBlocked || info.generateCount >= info.freeLimit)) {
       showUpgradeModal(info.freeLimit, info.upgradeLink, info.deviceBlocked);
       return false;
@@ -497,6 +498,69 @@ function lockScroll() { _scrollLockDepth++; document.body.style.overflow = 'hidd
 function unlockScroll() {
   _scrollLockDepth = Math.max(0, _scrollLockDepth - 1);
   if (_scrollLockDepth === 0) document.body.style.overflow = '';
+}
+
+function showReviewModal() {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("review-modal");
+    const q1 = document.getElementById("review-q1");
+    const q2 = document.getElementById("review-q2");
+    const done = document.getElementById("review-done");
+
+    q1.value = "";
+    q2.value = "";
+    done.disabled = true;
+    done.classList.add("opacity-50");
+
+    const check = () => {
+      const ok = q1.value.trim() && q2.value.trim();
+      done.disabled = !ok;
+      done.classList.toggle("opacity-50", !ok);
+    };
+    q1.addEventListener("input", check);
+    q2.addEventListener("input", check);
+
+    const handler = async () => {
+      done.disabled = true;
+      done.textContent = "Mengirim...";
+      try {
+        await api("/api/auth/review/send", {
+          method: "POST",
+          body: JSON.stringify({ q1: q1.value.trim(), q2: q2.value.trim() }),
+        });
+        modal.classList.add("hidden");
+        unlockScroll();
+        q1.removeEventListener("input", check);
+        q2.removeEventListener("input", check);
+        done.removeEventListener("click", handler);
+        await showThankYouModal();
+        resolve();
+      } catch (e) {
+        showToast(e.message || "Gagal mengirim review", "error");
+        done.disabled = false;
+        done.textContent = "Done";
+      }
+    };
+    done.addEventListener("click", handler);
+
+    modal.classList.remove("hidden");
+    lockScroll();
+  });
+}
+
+function showThankYouModal() {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("review-thanks-modal");
+    modal.classList.remove("hidden");
+    lockScroll();
+    const handler = () => {
+      modal.classList.add("hidden");
+      unlockScroll();
+      document.getElementById("review-thanks-ok").removeEventListener("click", handler);
+      resolve();
+    };
+    document.getElementById("review-thanks-ok").addEventListener("click", handler);
+  });
 }
 
 function showLoginModal() {
@@ -2151,6 +2215,13 @@ async function aiGenerateSlideContent() {
   const withinQuota = await checkQuota();
   if (!withinQuota) { btn.disabled = false; label.textContent = originalLabel; return; }
 
+  if (state.needsReview) {
+    btn.disabled = false;
+    label.textContent = originalLabel;
+    await showReviewModal();
+    state.needsReview = false;
+  }
+
   abortGeneration();
   state._aborted = false;
   state._abortController = new AbortController();
@@ -3322,6 +3393,16 @@ function bindInputs() {
   });
   document.getElementById("upgrade-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) { document.getElementById("upgrade-modal").classList.add("hidden"); unlockScroll(); }
+  });
+
+  // REVIEW MODAL — done button handler is attached dynamically in showReviewModal()
+
+  // REVIEW THANKS MODAL
+  document.getElementById("review-thanks-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) {
+      document.getElementById("review-thanks-modal").classList.add("hidden");
+      unlockScroll();
+    }
   });
 
   // ADMIN CONFIG

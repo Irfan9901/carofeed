@@ -865,6 +865,36 @@
     <button id="alert-ok" class="rounded-lg px-6 py-2 text-xs font-medium" style="background:var(--amber); color:#1a1a1a">OK</button>
   </div>
 </div>
+<!-- review modal -->
+<div id="review-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-sm mx-4 p-5" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <h3 class="font-display text-base mb-4 text-center" style="color:var(--cream)">Beri Review</h3>
+    <div class="mb-4">
+      <label class="block text-xs font-medium mb-1" style="color:var(--ink-soft)">1. Bagaimana pendapatmu tentang produk ini?</label>
+      <textarea id="review-q1" rows="3" class="input-field rounded w-full px-3 py-2 text-xs" style="background:var(--bg-canvas); color:var(--cream); resize:vertical; box-sizing:border-box" placeholder="Tulis pendapatmu..."></textarea>
+    </div>
+    <div class="mb-4">
+      <label class="block text-xs font-medium mb-1" style="color:var(--ink-soft)">2. Bagaimana produk ini membantu kamu?</label>
+      <textarea id="review-q2" rows="3" class="input-field rounded w-full px-3 py-2 text-xs" style="background:var(--bg-canvas); color:var(--cream); resize:vertical; box-sizing:border-box" placeholder="Ceritakan bagaimana produk ini membantu..."></textarea>
+    </div>
+    <div class="flex gap-3 justify-center">
+      <button id="review-done" disabled class="rounded-lg px-6 py-2 text-xs font-medium opacity-50" style="background:var(--amber); color:#1a1a1a">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- thank you modal -->
+<div id="review-thanks-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-xs mx-4 p-5 text-center" style="background:var(--bg-card); border-color:var(--border-strong)">
+    <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style="background:var(--amber-soft)">
+      <i class="ti ti-heart text-xl" style="color:var(--amber)"></i>
+    </div>
+    <h3 class="font-display text-base mb-2" style="color:var(--cream)">Terima Kasih!</h3>
+    <p class="text-xs mb-5 leading-relaxed" style="color:var(--ink-soft)">Terima Kasih atas partisipasinya, dan email terkirim</p>
+    <button id="review-thanks-ok" class="rounded-lg px-6 py-2 text-xs font-medium" style="background:var(--amber); color:#1a1a1a">OK</button>
+  </div>
+</div>
+
 <!-- toast -->
 <div id="toast-container" class="fixed bottom-5 right-5 flex flex-col gap-2 z-50"></div>
 

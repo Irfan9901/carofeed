@@ -247,9 +247,38 @@ router.get('/quota', requireAuth, async (req, res) => {
       }
     }
 
-    res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit && !deviceBlocked, deviceBlocked });
+    res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit && !deviceBlocked, deviceBlocked, reviewRequired: tier === 'free' && generateCount === 10 });
   } catch (err) {
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/review/send — free user review after 10 generates
+router.post('/review/send', requireAuth, async (req, res) => {
+  try {
+    const { q1, q2 } = req.body;
+    if (!q1 || !q2) return res.status(400).json({ error: 'Both questions must be answered' });
+
+    const users = await get('users') || [];
+    const user = users.find(u => u.id === req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const html = `
+      <h2>Review Pengguna Carousel Studio</h2>
+      <p><strong>Nama:</strong> ${user.name}</p>
+      <p><strong>Email:</strong> ${user.email}</p>
+      <hr>
+      <p><strong>1. Bagaimana pendapatmu tentang produk ini?</strong></p>
+      <p>${q1}</p>
+      <p><strong>2. Bagaimana produk ini membantu kamu?</strong></p>
+      <p>${q2}</p>
+    `;
+
+    await sendEmail('cerddig@gmail.com', 'Review Pengguna Carousel Studio', html);
+    res.json({ success: true });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
