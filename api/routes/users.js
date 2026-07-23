@@ -57,12 +57,12 @@ router.post('/', requireAdmin, async (req, res) => {
 
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
-    const target = await mutate('users', async (users) => {
+    await mutate('users', async (users) => {
       if (!Array.isArray(users)) users = [];
       const target = users.find((u) => u.id === req.params.id);
       if (!target) throw new HttpError(404, 'User not found');
       if (users.length <= 1) throw new HttpError(400, 'Cannot delete the last user');
-      return { value: users.filter((u) => u.id !== req.params.id), email: target.email };
+      return users.filter((u) => u.id !== req.params.id);
     });
     res.json({ success: true });
   } catch (err) {
@@ -74,7 +74,8 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
-    const safe = await mutate('users', async (users) => {
+    let userSafe;
+    await mutate('users', async (users) => {
       if (!Array.isArray(users)) users = [];
       const idx = users.findIndex((u) => u.id === req.params.id);
       if (idx === -1) throw new HttpError(404, 'User not found');
@@ -90,9 +91,10 @@ router.put('/:id', requireAdmin, async (req, res) => {
         users[idx].tier = req.body.tier;
       }
       const { password, ...safe } = users[idx];
-      return { value: users, safe };
+      userSafe = safe;
+      return users;
     });
-    res.json(safe);
+    res.json(userSafe);
   } catch (err) {
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);

@@ -179,15 +179,16 @@ router.post('/google', async (req, res) => {
     const { email, name, sub, picture } = payload;
     if (!email) return res.status(400).json({ error: 'Google account has no email' });
 
-    const result = await mutate('users', async (users) => {
+    let foundUser;
+    await mutate('users', async (users) => {
       if (!Array.isArray(users)) users = [];
-      let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-      if (user) {
-        user.googleId = sub;
-        user.avatar = user.avatar || picture || '';
-        if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; }
+      foundUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (foundUser) {
+        foundUser.googleId = sub;
+        foundUser.avatar = foundUser.avatar || picture || '';
+        if (!foundUser.tier) { foundUser.tier = 'paid'; foundUser.generateCount = foundUser.generateCount || 0; }
       } else {
-        user = {
+        foundUser = {
           id: 's-' + uuidv4().slice(0, 7),
           name,
           email,
@@ -200,13 +201,13 @@ router.post('/google', async (req, res) => {
           avatar: picture || '',
           createdAt: Date.now(),
         };
-        users.push(user);
+        users.push(foundUser);
       }
-      return { users, user };
+      return users;
     });
 
-    const token = generateToken(result.user);
-    res.json({ token, user: safeUser(result.user) });
+    const token = generateToken(foundUser);
+    res.json({ token, user: safeUser(foundUser) });
   } catch (err) {
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
@@ -394,14 +395,16 @@ router.post('/reset-admin', async (req, res) => {
     if (!resetKey || resetKey !== expectedKey) return res.status(403).json({ error: 'Invalid reset key' });
     if (!newPassword || newPassword.length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
 
-    const email = await mutate('users', async (users) => {
+    let adminEmail;
+    await mutate('users', async (users) => {
       if (!Array.isArray(users)) users = [];
       const idx = users.findIndex(u => u && u.role === 'admin');
       if (idx === -1) throw new HttpError(404, 'No admin found');
       users[idx].password = await hashPassword(newPassword);
-      return { value: users, email: users[idx].email };
+      adminEmail = users[idx].email;
+      return users;
     });
-    res.json({ success: true, email: email });
+    res.json({ success: true, email: adminEmail });
   } catch (e) {
     if (e instanceof HttpError) return res.status(e.statusCode).json({ error: e.message });
     res.status(500).json({ error: e.message });

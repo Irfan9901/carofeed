@@ -23,13 +23,15 @@ router.put('/', requireAuth, async (req, res) => {
     if (!settings || typeof settings !== 'object') {
       return res.status(400).json({ error: 'settings must be an object' });
     }
-    const result = await mutate(SETTINGS_KEY, function(all) {
+    let userSettings;
+    await mutate(SETTINGS_KEY, function(all) {
       if (!all || typeof all !== 'object') all = {};
       const current = all[req.user.id] || {};
       all[req.user.id] = { ...current, ...settings };
-      return { value: all, settings: all[req.user.id] };
+      userSettings = all[req.user.id];
+      return all;
     });
-    res.json({ success: true, settings: result.settings });
+    res.json({ success: true, settings: userSettings });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

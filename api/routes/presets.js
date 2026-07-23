@@ -49,16 +49,18 @@ router.post('/', requireAuth, async (req, res) => {
 router.put('/:id', requireAuth, async (req, res) => {
   try {
     const { name, data } = req.body;
-    const result = await mutate(PRESETS_KEY, function(all) {
+    let updated;
+    await mutate(PRESETS_KEY, function(all) {
       if (!Array.isArray(all)) all = [];
       const idx = all.findIndex((p) => p.id === req.params.id && p.userId === req.user.id);
       if (idx === -1) throw new HttpError(404, 'Preset not found');
       if (name) all[idx].name = name.trim();
       if (data) all[idx].data = data;
       all[idx].updatedAt = Date.now();
-      return { value: all, preset: all[idx] };
+      updated = all[idx];
+      return all;
     });
-    res.json({ success: true, preset: result.preset });
+    res.json({ success: true, preset: updated });
   } catch (err) {
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
