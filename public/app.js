@@ -2952,6 +2952,13 @@ function bindInputs() {
     document.getElementById("prompt-modal").classList.add("hidden");
     unlockScroll();
   });
+  document.getElementById("btn-toggle-extra").addEventListener("click", () => {
+    const content = document.getElementById("extra-prompts");
+    const icon = document.getElementById("icon-extra");
+    const isOpen = !content.classList.contains("hidden");
+    content.classList.toggle("hidden");
+    icon.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
+  });
   document.getElementById("prompt-modal").addEventListener("click", (e) => {
     if (e.target === e.currentTarget) { document.getElementById("prompt-modal").classList.add("hidden"); unlockScroll(); }
   });
