@@ -1,6 +1,6 @@
 const express = require('express');
 const crypto = require('crypto');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -25,19 +25,23 @@ router.post('/', requireAuth, async (req, res) => {
     if (!data || typeof data !== 'object') {
       return res.status(400).json({ error: 'data must be an object' });
     }
-    const all = await get(PRESETS_KEY) || [];
-    const preset = {
-      id: crypto.randomBytes(8).toString('hex'),
-      userId: req.user.id,
-      name: name.trim(),
-      data,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-    all.push(preset);
-    await set(PRESETS_KEY, all);
+    let preset;
+    await mutate(PRESETS_KEY, function(all) {
+      if (!Array.isArray(all)) all = [];
+      preset = {
+        id: crypto.randomBytes(8).toString('hex'),
+        userId: req.user.id,
+        name: name.trim(),
+        data,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      all.push(preset);
+      return all;
+    });
     res.json({ success: true, preset });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -45,27 +49,33 @@ router.post('/', requireAuth, async (req, res) => {
 router.put('/:id', requireAuth, async (req, res) => {
   try {
     const { name, data } = req.body;
-    const all = await get(PRESETS_KEY) || [];
-    const idx = all.findIndex((p) => p.id === req.params.id && p.userId === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'Preset not found' });
-    if (name) all[idx].name = name.trim();
-    if (data) all[idx].data = data;
-    all[idx].updatedAt = Date.now();
-    await set(PRESETS_KEY, all);
-    res.json({ success: true, preset: all[idx] });
+    const result = await mutate(PRESETS_KEY, function(all) {
+      if (!Array.isArray(all)) all = [];
+      const idx = all.findIndex((p) => p.id === req.params.id && p.userId === req.user.id);
+      if (idx === -1) throw new HttpError(404, 'Preset not found');
+      if (name) all[idx].name = name.trim();
+      if (data) all[idx].data = data;
+      all[idx].updatedAt = Date.now();
+      return { value: all, preset: all[idx] };
+    });
+    res.json({ success: true, preset: result.preset });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
 
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
-    const all = await get(PRESETS_KEY) || [];
-    const filtered = all.filter((p) => !(p.id === req.params.id && p.userId === req.user.id));
-    if (filtered.length === all.length) return res.status(404).json({ error: 'Preset not found' });
-    await set(PRESETS_KEY, filtered);
+    await mutate(PRESETS_KEY, function(all) {
+      if (!Array.isArray(all)) all = [];
+      const filtered = all.filter((p) => !(p.id === req.params.id && p.userId === req.user.id));
+      if (filtered.length === all.length) throw new HttpError(404, 'Preset not found');
+      return filtered;
+    });
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });

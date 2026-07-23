@@ -1,6 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { encryptApiKey, decryptApiKey } = require('../../lib/crypto');
 const { requireAdmin, requireAuth } = require('../middleware/auth');
 
@@ -30,21 +30,15 @@ const DEFAULT_PROMPTS = {
   negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
-async function getConfig() {
-  let cfg = await get('config');
-  if (!cfg) {
-    cfg = { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [], archivedModels: [], prompts: { ...DEFAULT_PROMPTS } };
-    await set('config', cfg);
-  }
-  if (!cfg.prompts) {
-    cfg.prompts = { ...DEFAULT_PROMPTS };
-    await set('config', cfg);
-  }
-  return cfg;
+function defaultConfig() {
+  return { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [], archivedModels: [], prompts: { ...DEFAULT_PROMPTS } };
 }
 
-async function saveConfig(cfg) {
-  await set('config', cfg);
+async function getConfig() {
+  let cfg = await get('config');
+  if (!cfg) return defaultConfig();
+  if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+  return cfg;
 }
 
 router.get('/models', requireAuth, async (req, res) => {
@@ -70,11 +64,15 @@ router.put('/models', requireAdmin, async (req, res) => {
     if (!Array.isArray(activeModels)) {
       return res.status(400).json({ error: 'activeModels must be an array' });
     }
-    const cfg = await getConfig();
-    cfg.activeModels = activeModels;
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+      cfg.activeModels = activeModels;
+      return cfg;
+    });
     res.json({ success: true, activeModels });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -89,15 +87,17 @@ router.post('/custom-models', requireAdmin, async (req, res) => {
     if (FREE_MODELS.some((m) => m.id === id)) {
       return res.status(409).json({ error: 'Model is already in the free list' });
     }
-    const cfg = await getConfig();
-    if ((cfg.customModels || []).includes(id)) {
-      return res.status(409).json({ error: 'Custom model already exists' });
-    }
-    cfg.customModels = [...(cfg.customModels || []), id];
-    cfg.activeModels = [...(cfg.activeModels || []), id];
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+      if ((cfg.customModels || []).includes(id)) throw new HttpError(409, 'Custom model already exists');
+      cfg.customModels = [...(cfg.customModels || []), id];
+      cfg.activeModels = [...(cfg.activeModels || []), id];
+      return cfg;
+    });
     res.status(201).json({ success: true, id });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -112,19 +112,19 @@ router.put('/custom-models/:id', requireAdmin, async (req, res) => {
     if (FREE_MODELS.some((m) => m.id === newId)) {
       return res.status(409).json({ error: 'Model ID already exists in free list' });
     }
-    const cfg = await getConfig();
     const oldId = req.params.id;
-    if (!(cfg.customModels || []).includes(oldId)) {
-      return res.status(404).json({ error: 'Custom model not found' });
-    }
-    if ((cfg.customModels || []).includes(newId) && oldId !== newId) {
-      return res.status(409).json({ error: 'New model ID already exists' });
-    }
-    cfg.customModels = (cfg.customModels || []).map((m) => (m === oldId ? newId : m));
-    cfg.activeModels = (cfg.activeModels || []).map((m) => (m === oldId ? newId : m));
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+      if (!(cfg.customModels || []).includes(oldId)) throw new HttpError(404, 'Custom model not found');
+      if ((cfg.customModels || []).includes(newId) && oldId !== newId) throw new HttpError(409, 'New model ID already exists');
+      cfg.customModels = (cfg.customModels || []).map((m) => (m === oldId ? newId : m));
+      cfg.activeModels = (cfg.activeModels || []).map((m) => (m === oldId ? newId : m));
+      return cfg;
+    });
     res.json({ success: true, id: newId });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -132,17 +132,21 @@ router.put('/custom-models/:id', requireAdmin, async (req, res) => {
 
 router.delete('/models/:id', requireAdmin, async (req, res) => {
   try {
-    const cfg = await getConfig();
     const id = req.params.id;
-    if (FREE_MODELS.some((m) => m.id === id)) {
-      cfg.archivedModels = [...new Set([...(cfg.archivedModels || []), id])];
-    } else {
-      cfg.customModels = (cfg.customModels || []).filter((m) => m !== id);
-    }
-    cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== id);
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+      if (FREE_MODELS.some((m) => m.id === id)) {
+        cfg.archivedModels = [...new Set([...(cfg.archivedModels || []), id])];
+      } else {
+        cfg.customModels = (cfg.customModels || []).filter((m) => m !== id);
+      }
+      cfg.activeModels = (cfg.activeModels || []).filter((m) => m !== id);
+      return cfg;
+    });
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -161,18 +165,18 @@ router.get('/api-key', requireAuth, async (req, res) => {
 router.put('/api-key', requireAdmin, async (req, res) => {
   try {
     const { apiKey } = req.body;
-    const cfg = await getConfig();
-    if (apiKey) {
-      if (typeof apiKey !== 'string') {
-        return res.status(400).json({ error: 'API key must be a string' });
-      }
-      cfg.apiKeyEncrypted = encryptApiKey(apiKey);
-    } else {
-      cfg.apiKeyEncrypted = null;
+    if (apiKey && typeof apiKey !== 'string') {
+      return res.status(400).json({ error: 'API key must be a string' });
     }
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+      cfg.apiKeyEncrypted = apiKey ? encryptApiKey(apiKey) : null;
+      return cfg;
+    });
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -195,11 +199,15 @@ router.put('/prompts', requireAdmin, async (req, res) => {
     if (!prompts || typeof prompts !== 'object') {
       return res.status(400).json({ error: 'prompts object required' });
     }
-    const cfg = await getConfig();
-    cfg.prompts = { ...DEFAULT_PROMPTS, ...cfg.prompts, ...prompts };
-    await saveConfig(cfg);
+    await mutate('config', function(cfg) {
+      if (!cfg) cfg = defaultConfig();
+      const existing = cfg.prompts || {};
+      cfg.prompts = { ...DEFAULT_PROMPTS, ...existing, ...prompts };
+      return cfg;
+    });
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -224,8 +232,11 @@ router.post('/chat', requireAuth, aiLimiter, async (req, res) => {
     }
     // Re-encrypt with current salt if was using legacy salt
     if (cfg.apiKeyEncrypted !== encryptApiKey(apiKey)) {
-      cfg.apiKeyEncrypted = encryptApiKey(apiKey);
-      await saveConfig(cfg);
+      await mutate('config', function(cfg) {
+        if (!cfg) cfg = defaultConfig();
+        cfg.apiKeyEncrypted = encryptApiKey(apiKey);
+        return cfg;
+      });
     }
 
     const controller = new AbortController();

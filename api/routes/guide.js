@@ -1,5 +1,5 @@
 const express = require('express');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -20,11 +20,14 @@ router.get('/', async (req, res) => {
   try {
     let guide = await get(GUIDE_KEY);
     if (!guide || !Array.isArray(guide) || guide.length === 0) {
-      guide = DEFAULT_GUIDE;
-      await set(GUIDE_KEY, guide);
+      guide = await mutate(GUIDE_KEY, function(g) {
+        if (!g || !Array.isArray(g) || g.length === 0) return DEFAULT_GUIDE;
+        return g;
+      });
     }
     res.json({ guide });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });

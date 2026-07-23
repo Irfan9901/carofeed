@@ -1,5 +1,5 @@
 const express = require('express');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -23,14 +23,15 @@ router.post('/', requireAdmin, async (req, res) => {
     if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'Nama kategori diperlukan' });
     }
-    const cats = await get(CUSTOM_KEY) || {};
-    if (cats[name]) {
-      return res.status(400).json({ error: 'Kategori sudah ada' });
-    }
-    cats[name] = styles || [];
-    await set(CUSTOM_KEY, cats);
-    res.json({ success: true, category: name, styles: cats[name] });
+    await mutate(CUSTOM_KEY, function(cats) {
+      if (!cats || typeof cats !== 'object') cats = {};
+      if (cats[name]) throw new HttpError(400, 'Kategori sudah ada');
+      cats[name] = styles || [];
+      return cats;
+    });
+    res.json({ success: true, category: name, styles: styles || [] });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -39,18 +40,20 @@ router.post('/', requireAdmin, async (req, res) => {
 router.delete('/:catName', requireAdmin, async (req, res) => {
   try {
     const { catName } = req.params;
-    const cats = await get(CUSTOM_KEY) || {};
-    if (cats[catName]) {
-      // hapus juga gambar-gambar style di dalam kategori ini
-      const images = await get(IMAGE_KEY) || {};
-      const styles = cats[catName] || [];
-      styles.forEach((s) => { delete images[s.id]; });
-      delete cats[catName];
-      await set(CUSTOM_KEY, cats);
-      await set(IMAGE_KEY, images);
-    }
+    const images = await get(IMAGE_KEY) || {};
+    await mutate(CUSTOM_KEY, function(cats) {
+      if (!cats || typeof cats !== 'object') cats = {};
+      if (cats[catName]) {
+        const styles = cats[catName] || [];
+        styles.forEach((s) => { delete images[s.id]; });
+        delete cats[catName];
+      }
+      return cats;
+    });
+    await set(IMAGE_KEY, images);
     res.json({ success: true, category: catName });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -63,23 +66,22 @@ router.post('/:catName/styles', requireAdmin, async (req, res) => {
     if (!id || !label) {
       return res.status(400).json({ error: 'id dan label style diperlukan' });
     }
-    const cats = await get(CUSTOM_KEY) || {};
-    if (!cats[catName]) {
-      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
-    }
-    if (cats[catName].some((s) => s.id === id)) {
-      return res.status(400).json({ error: 'Style id sudah ada di kategori ini' });
-    }
-    cats[catName].push({
-      id,
-      label,
-      desc: desc || '',
-      icon: icon || 'ti-star',
-      tags: tags || [],
+    const result = await mutate(CUSTOM_KEY, function(cats) {
+      if (!cats || typeof cats !== 'object') cats = {};
+      if (!cats[catName]) throw new HttpError(404, 'Kategori tidak ditemukan');
+      if (cats[catName].some((s) => s.id === id)) throw new HttpError(400, 'Style id sudah ada di kategori ini');
+      cats[catName].push({
+        id,
+        label,
+        desc: desc || '',
+        icon: icon || 'ti-star',
+        tags: tags || [],
+      });
+      return cats;
     });
-    await set(CUSTOM_KEY, cats);
-    res.json({ success: true, category: catName, styles: cats[catName] });
+    res.json({ success: true, category: catName, styles: result[catName] });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });
@@ -88,20 +90,20 @@ router.post('/:catName/styles', requireAdmin, async (req, res) => {
 router.delete('/:catName/styles/:styleId', requireAdmin, async (req, res) => {
   try {
     const { catName, styleId } = req.params;
-    const cats = await get(CUSTOM_KEY) || {};
-    if (!cats[catName]) {
-      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
-    }
-    cats[catName] = cats[catName].filter((s) => s.id !== styleId);
-    await set(CUSTOM_KEY, cats);
-    // hapus juga gambarnya
     const images = await get(IMAGE_KEY) || {};
+    await mutate(CUSTOM_KEY, function(cats) {
+      if (!cats || typeof cats !== 'object') cats = {};
+      if (!cats[catName]) throw new HttpError(404, 'Kategori tidak ditemukan');
+      cats[catName] = cats[catName].filter((s) => s.id !== styleId);
+      return cats;
+    });
     if (images[styleId]) {
       delete images[styleId];
       await set(IMAGE_KEY, images);
     }
     res.json({ success: true, category: catName, styleId });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
 });

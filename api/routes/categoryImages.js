@@ -1,5 +1,5 @@
 const express = require('express');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { requireAdmin } = require('../middleware/auth');
 const { uploadImage, deleteImage } = require('../../lib/supabase');
 
@@ -39,11 +39,14 @@ router.put('/:styleId', requireAdmin, async (req, res) => {
       return res.status(500).json({ error: 'Failed to upload image to storage' });
     }
 
-    const images = await get(IMAGE_KEY) || {};
-    images[styleId] = url;
-    await set(IMAGE_KEY, images);
+    await mutate(IMAGE_KEY, function(images) {
+      if (!images || typeof images !== 'object') images = {};
+      images[styleId] = url;
+      return images;
+    });
     res.json({ success: true, styleId, url });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error('Upload image error:', err);
     res.status(500).json({ error: 'Failed to upload image' });
   }
@@ -54,13 +57,14 @@ router.delete('/:styleId', requireAdmin, async (req, res) => {
   try {
     const { styleId } = req.params;
     await deleteImage(styleId);
-    const images = await get(IMAGE_KEY) || {};
-    if (images[styleId]) {
+    await mutate(IMAGE_KEY, function(images) {
+      if (!images || typeof images !== 'object') images = {};
       delete images[styleId];
-      await set(IMAGE_KEY, images);
-    }
+      return images;
+    });
     res.json({ success: true, styleId });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error('Delete image error:', err);
     res.status(500).json({ error: 'Failed to delete image' });
   }

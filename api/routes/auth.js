@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { v4: uuidv4 } = require('uuid');
-const { get, set } = require('../../lib/db');
+const { get, set, mutate, HttpError } = require('../../lib/db');
 const { hashPassword, verifyPassword } = require('../../lib/crypto');
 const { generateToken, requireAuth } = require('../middleware/auth');
 const { normalizePhone } = require('../../lib/phone');
@@ -32,47 +32,43 @@ function safeUser(u) {
 
 async function pruneExpiredTokens() {
   try {
-    let resetTokens = await get('resetTokens') || [];
-    if (!Array.isArray(resetTokens)) resetTokens = [];
-    const before = resetTokens.length;
-    resetTokens = resetTokens.filter(t => t && !t.used && t.expiresAt > Date.now());
-    if (resetTokens.length < before) {
-      await set('resetTokens', resetTokens);
-    }
-    return before - resetTokens.length;
-  } catch { return 0; }
+    await mutate('resetTokens', async (resetTokens) => {
+      const arr = Array.isArray(resetTokens) ? resetTokens : [];
+      return arr.filter(t => t && !t.used && t.expiresAt > Date.now());
+    });
+  } catch {}
 }
 
 async function ensureAdminExists() {
-  let users = await get('users');
-  if (!Array.isArray(users)) users = [];
-  const hasAdmin = users.some((u) => u && typeof u === 'object' && u.role === 'admin');
-  if (!hasAdmin) {
-    if (process.env.VERCEL === '1' && !process.env.ADMIN_SEED_PASSWORD) {
-      throw new Error('ADMIN_SEED_PASSWORD env var required on Vercel to seed admin. Set it and redeploy.');
+  return await mutate('users', async (users) => {
+    if (!Array.isArray(users)) users = [];
+    const hasAdmin = users.some((u) => u && typeof u === 'object' && u.role === 'admin');
+    if (!hasAdmin) {
+      if (process.env.VERCEL === '1' && !process.env.ADMIN_SEED_PASSWORD) {
+        throw new Error('ADMIN_SEED_PASSWORD env var required on Vercel to seed admin. Set it and redeploy.');
+      }
+      const adminPwPlain = process.env.ADMIN_SEED_PASSWORD || crypto.randomBytes(4).toString('hex');
+      const adminPassword = await hashPassword(adminPwPlain);
+      users.push({
+        id: 's-admin-001',
+        name: 'Admin',
+        email: 'admin@cps.local',
+        phone: '',
+        password: adminPassword,
+        role: 'admin',
+        tier: 'paid',
+        generateCount: 0,
+        createdAt: Date.now(),
+      });
+      if (process.env.VERCEL !== '1') {
+        console.log('========================================================================');
+        console.log(` Admin seeded — login: admin@cps.local / ${adminPwPlain}`);
+        console.log(` Change password immediately after first login.`);
+        console.log('========================================================================');
+      }
     }
-    const adminPwPlain = process.env.ADMIN_SEED_PASSWORD || crypto.randomBytes(4).toString('hex');
-    const adminPassword = await hashPassword(adminPwPlain);
-    users.push({
-      id: 's-admin-001',
-      name: 'Admin',
-      email: 'admin@cps.local',
-      phone: '',
-      password: adminPassword,
-      role: 'admin',
-      tier: 'paid',
-      generateCount: 0,
-      createdAt: Date.now(),
-    });
-    await set('users', users);
-    if (process.env.VERCEL !== '1') {
-      console.log('========================================================================');
-      console.log(` Admin seeded — login: admin@cps.local / ${adminPwPlain}`);
-      console.log(` Change password immediately after first login.`);
-      console.log('========================================================================');
-    }
-  }
-  return users;
+    return users;
+  });
 }
 
 router.get('/google-config', (req, res) => {
@@ -96,7 +92,13 @@ router.post('/login', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Wrong password' });
     }
 
-    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+    if (!user.tier) {
+      await mutate('users', async (users) => {
+        const u = users.find(x => x.id === user.id);
+        if (u) { u.tier = 'paid'; u.generateCount = u.generateCount || 0; }
+        return users;
+      });
+    }
 
     const token = generateToken(user);
     res.json({ token, user: safeUser(user) });
@@ -112,30 +114,32 @@ router.post('/register', registerLimiter, async (req, res) => {
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email, and password required' });
     if (password.length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
 
-    let users = await get('users') || [];
-    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) return res.status(409).json({ error: 'Email sudah terdaftar' });
-    if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) return res.status(409).json({ error: 'Nama sudah digunakan' });
-
-    const newUser = {
-      id: 's-' + uuidv4().slice(0, 7),
-      name,
-      email,
-      phone: '',
-      password: await hashPassword(password),
-      role: 'user',
-      tier: 'free',
-      generateCount: 0,
-      googleId: null,
-      avatar: '',
-      createdAt: Date.now(),
-    };
-
-    users.push(newUser);
-    await set('users', users);
+    let newUser;
+    await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) throw new HttpError(409, 'Email sudah terdaftar');
+      if (users.some(u => u.name.toLowerCase() === name.toLowerCase())) throw new HttpError(409, 'Nama sudah digunakan');
+      newUser = {
+        id: 's-' + uuidv4().slice(0, 7),
+        name,
+        email,
+        phone: '',
+        password: await hashPassword(password),
+        role: 'user',
+        tier: 'free',
+        generateCount: 0,
+        googleId: null,
+        avatar: '',
+        createdAt: Date.now(),
+      };
+      users.push(newUser);
+      return users;
+    });
 
     const token = generateToken(newUser);
     res.status(201).json({ token, user: safeUser(newUser) });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -164,34 +168,36 @@ router.post('/google', async (req, res) => {
     const { email, name, sub, picture } = payload;
     if (!email) return res.status(400).json({ error: 'Google account has no email' });
 
-    let users = await get('users') || [];
-    let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    const result = await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (user) {
+        user.googleId = sub;
+        user.avatar = user.avatar || picture || '';
+        if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; }
+      } else {
+        user = {
+          id: 's-' + uuidv4().slice(0, 7),
+          name,
+          email,
+          phone: '',
+          password: '',
+          role: 'user',
+          tier: 'free',
+          generateCount: 0,
+          googleId: sub,
+          avatar: picture || '',
+          createdAt: Date.now(),
+        };
+        users.push(user);
+      }
+      return { users, user };
+    });
 
-    if (user) {
-      user.googleId = sub;
-      user.avatar = user.avatar || picture || '';
-      if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; }
-    } else {
-      user = {
-        id: 's-' + uuidv4().slice(0, 7),
-        name,
-        email,
-        phone: '',
-        password: '',
-        role: 'user',
-        tier: 'free',
-        generateCount: 0,
-        googleId: sub,
-        avatar: picture || '',
-        createdAt: Date.now(),
-      };
-      users.push(user);
-    }
-    await set('users', users);
-
-    const token = generateToken(user);
-    res.json({ token, user: safeUser(user) });
+    const token = generateToken(result.user);
+    res.json({ token, user: safeUser(result.user) });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error: ' + err.message });
   }
@@ -203,7 +209,13 @@ router.get('/quota', requireAuth, async (req, res) => {
     const user = users.find(u => u.id === req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+    if (!user.tier) {
+      await mutate('users', async (users) => {
+        const u = users.find(x => x.id === user.id);
+        if (u) { u.tier = 'paid'; u.generateCount = u.generateCount || 0; }
+        return users;
+      });
+    }
 
     const config = await get('appConfig') || { freeLimit: 20, upgradeLink: '' };
     const freeLimit = config.freeLimit || 20;
@@ -225,6 +237,7 @@ router.get('/quota', requireAuth, async (req, res) => {
 
     res.json({ tier, generateCount, freeLimit, upgradeLink, canGenerate: generateCount < freeLimit && !deviceBlocked, deviceBlocked });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -237,19 +250,19 @@ router.post('/change-password', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'Current and new password required' });
     }
 
-    let users = await get('users');
-    if (!users) users = [];
-    const idx = users.findIndex((u) => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'User not found' });
-
-    if (!(await verifyPassword(currentPassword, users[idx].password))) {
-      return res.status(401).json({ error: 'Current password is wrong' });
-    }
-
-    users[idx].password = await hashPassword(newPassword);
-    await set('users', users);
+    await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      const idx = users.findIndex((u) => u.id === req.user.id);
+      if (idx === -1) throw new HttpError(404, 'User not found');
+      if (!(await verifyPassword(currentPassword, users[idx].password))) {
+        throw new HttpError(401, 'Current password is wrong');
+      }
+      users[idx].password = await hashPassword(newPassword);
+      return users;
+    });
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -267,17 +280,19 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
     const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
     if (!user) return res.status(404).json({ error: `Email ${email} tidak ditemukan` });
 
-    await pruneExpiredTokens();
     const resetToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
-    let resetTokens = await get('resetTokens') || [];
-    resetTokens.push({
-      tokenHash,
-      userId: user.id,
-      expiresAt: Date.now() + 60 * 60 * 1000,
-      used: false,
+    await mutate('resetTokens', async (resetTokens) => {
+      let arr = Array.isArray(resetTokens) ? resetTokens : [];
+      arr = arr.filter(t => t && !t.used && t.expiresAt > Date.now()); // prune expired
+      arr.push({
+        tokenHash,
+        userId: user.id,
+        expiresAt: Date.now() + 60 * 60 * 1000,
+        used: false,
+      });
+      return arr;
     });
-    await set('resetTokens', resetTokens);
 
     const html = `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto">
@@ -315,26 +330,28 @@ router.post('/reset-password', async (req, res) => {
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    let resetTokens = await get('resetTokens') || [];
-    const entry = resetTokens.find(
-      (t) => t.tokenHash === tokenHash && !t.used && t.expiresAt > Date.now()
-    );
-    if (!entry) {
-      return res.status(400).json({ error: 'Invalid or expired reset token' });
-    }
+    let foundEntry;
+    await mutate('resetTokens', async (resetTokens) => {
+      let arr = Array.isArray(resetTokens) ? resetTokens : [];
+      foundEntry = arr.find(
+        (t) => t.tokenHash === tokenHash && !t.used && t.expiresAt > Date.now()
+      );
+      if (!foundEntry) throw new HttpError(400, 'Invalid or expired reset token');
+      foundEntry.used = true;
+      return arr.filter(t => t && !t.used && t.expiresAt > Date.now()); // prune expired sekalian
+    });
 
-    let users = await get('users');
-    if (!users) users = [];
-    const idx = users.findIndex((u) => u.id === entry.userId);
-    if (idx === -1) return res.status(404).json({ error: 'User not found' });
-
-    users[idx].password = await hashPassword(newPassword);
-    entry.used = true;
-    await set('users', users);
-    await pruneExpiredTokens();
+    await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      const idx = users.findIndex((u) => u.id === foundEntry.userId);
+      if (idx === -1) throw new HttpError(404, 'User not found');
+      users[idx].password = await hashPassword(newPassword);
+      return users;
+    });
 
     res.json({ success: true });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -346,10 +363,13 @@ router.get('/me', requireAuth, async (req, res) => {
     const user = users.find(u => u.id === req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    if (!user.tier) { user.tier = 'paid'; user.generateCount = user.generateCount || 0; await set('users', users); }
+    if (!user.tier) {
+      await mutate('users', function(u) { var us = u || []; var found = us.find(function(x) { return x.id === user.id; }); if (found) { found.tier = 'paid'; found.generateCount = found.generateCount || 0; } return us; });
+    }
 
     res.json({ user: safeUser(user) });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
@@ -363,15 +383,16 @@ router.post('/reset-admin', async (req, res) => {
     if (!resetKey || resetKey !== expectedKey) return res.status(403).json({ error: 'Invalid reset key' });
     if (!newPassword || newPassword.length < 4) return res.status(400).json({ error: 'Password minimal 4 karakter' });
 
-    let users = await get('users');
-    if (!Array.isArray(users)) users = [];
-    const idx = users.findIndex(u => u && u.role === 'admin');
-    if (idx === -1) return res.status(404).json({ error: 'No admin found' });
-
-    users[idx].password = await hashPassword(newPassword);
-    await set('users', users);
-    res.json({ success: true, email: users[idx].email });
+    const email = await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      const idx = users.findIndex(u => u && u.role === 'admin');
+      if (idx === -1) throw new HttpError(404, 'No admin found');
+      users[idx].password = await hashPassword(newPassword);
+      return { value: users, email: users[idx].email };
+    });
+    res.json({ success: true, email: email });
   } catch (e) {
+    if (e instanceof HttpError) return res.status(e.statusCode).json({ error: e.message });
     res.status(500).json({ error: e.message });
   }
 });
@@ -407,27 +428,36 @@ adminRouter.put('/config', requireAuth, async (req, res) => {
 const generateRouter = express.Router();
 generateRouter.post('/complete', requireAuth, async (req, res) => {
   try {
-    let users = await get('users') || [];
-    const idx = users.findIndex(u => u.id === req.user.id);
-    if (idx === -1) return res.status(404).json({ error: 'User not found' });
-
-    if (!users[idx].tier) users[idx].tier = 'paid';
-
-    // Record device→user mapping for free accounts
     const deviceId = req.headers['x-device-id'];
-    if (deviceId && users[idx].tier === 'free') {
-      const deviceAccounts = await get(`deviceAccounts:${deviceId}`) || [];
-      if (!deviceAccounts.includes(users[idx].id)) {
-        deviceAccounts.push(users[idx].id);
-        await set(`deviceAccounts:${deviceId}`, deviceAccounts);
+    let generateCount;
+
+    const result = await mutate('users', async (users) => {
+      if (!Array.isArray(users)) users = [];
+      const idx = users.findIndex(u => u.id === req.user.id);
+      if (idx === -1) throw new HttpError(404, 'User not found');
+      if (!users[idx].tier) users[idx].tier = 'paid';
+      users[idx].generateCount = (users[idx].generateCount || 0) + 1;
+      generateCount = users[idx].generateCount;
+      return users;
+    });
+
+    // Record device→user mapping for free accounts (separate key, so separate mutate)
+    if (deviceId && result) {
+      const user = result.find(u => u.id === req.user.id);
+      if (user && user.tier === 'free') {
+        await mutate(`deviceAccounts:${deviceId}`, async (deviceAccounts) => {
+          const arr = Array.isArray(deviceAccounts) ? deviceAccounts : [];
+          if (!arr.includes(user.id)) {
+            arr.push(user.id);
+          }
+          return arr;
+        });
       }
     }
 
-    users[idx].generateCount = (users[idx].generateCount || 0) + 1;
-    await set('users', users);
-
-    res.json({ success: true, generateCount: users[idx].generateCount });
+    res.json({ success: true, generateCount });
   } catch (err) {
+    if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
