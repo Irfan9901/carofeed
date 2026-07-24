@@ -1571,12 +1571,6 @@ async function savePreset() {
   const name = await showPrompt("Nama preset:", "cth: Kesehatan Mental");
   if (!name) return;
   try {
-    const res = await api("/api/presets");
-    const exists = res.presets.some(p => p.name.toLowerCase() === name.toLowerCase());
-    if (exists) {
-      await showAlert('Nama preset "' + name + '" sudah ada. Gunakan nama yang berbeda.');
-      return savePreset();
-    }
     const data = collectPresetData();
     await api("/api/presets", {
       method: "POST",
@@ -1584,7 +1578,13 @@ async function savePreset() {
     });
     showToast("Preset disimpan", "success");
     loadPresets();
-  } catch (err) { showToast(err.message, "error"); }
+  } catch (err) {
+    if (err.message.includes("Sudah Ada")) {
+      await showAlert(err.message);
+      return savePreset();
+    }
+    showToast(err.message, "error");
+  }
 }
 
 async function deletePreset() {

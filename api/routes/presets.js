@@ -28,6 +28,8 @@ router.post('/', requireAuth, async (req, res) => {
     let preset;
     await mutate(PRESETS_KEY, function(all) {
       if (!Array.isArray(all)) all = [];
+      const dup = all.find(p => p.userId === req.user.id && p.name.toLowerCase() === name.trim().toLowerCase());
+      if (dup) throw new HttpError(409, 'Sudah Ada, Gunakan Nama Yang Berbeda');
       preset = {
         id: crypto.randomBytes(8).toString('hex'),
         userId: req.user.id,
