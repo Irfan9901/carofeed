@@ -19,20 +19,20 @@ router.get('/', requireAuth, async (req, res) => {
 router.post('/', requireAuth, async (req, res) => {
   try {
     const { name, data } = req.body;
-    console.log('[presets POST] name:', JSON.stringify(name), 'userId:', req.user.id);
     if (!name || typeof name !== 'string') {
       return res.status(400).json({ error: 'name is required' });
     }
     if (!data || typeof data !== 'object') {
       return res.status(400).json({ error: 'data must be an object' });
     }
+
+    const all = await get(PRESETS_KEY) || [];
+    const dup = all.find(p => p.userId === req.user.id && p.name.toLowerCase() === name.trim().toLowerCase());
+    if (dup) return res.status(409).json({ error: 'Sudah Ada, Gunakan Nama Yang Berbeda' });
+
     let preset;
     await mutate(PRESETS_KEY, function(all) {
       if (!Array.isArray(all)) all = [];
-      console.log('[presets mutate] all.length:', all.length, 'looking for:', name.trim().toLowerCase());
-      const dup = all.find(p => p.userId === req.user.id && p.name.toLowerCase() === name.trim().toLowerCase());
-      console.log('[presets mutate] dup found:', !!dup);
-      if (dup) throw new HttpError(409, 'Sudah Ada, Gunakan Nama Yang Berbeda');
       preset = {
         id: crypto.randomBytes(8).toString('hex'),
         userId: req.user.id,
@@ -44,10 +44,8 @@ router.post('/', requireAuth, async (req, res) => {
       all.push(preset);
       return all;
     });
-    console.log('[presets POST] saved:', preset.id, preset.name);
     res.json({ success: true, preset });
   } catch (err) {
-    console.log('[presets POST] error:', err.message, err.statusCode);
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
     res.status(500).json({ error: err.message });
   }
