@@ -1579,11 +1579,10 @@ async function savePreset() {
     showToast("Preset disimpan", "success");
     loadPresets();
   } catch (err) {
+    await showAlert(err.message);
     if (err.message.includes("Sudah Ada")) {
-      await showAlert(err.message);
       return savePreset();
     }
-    showToast(err.message, "error");
   }
 }
 
