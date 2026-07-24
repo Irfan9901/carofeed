@@ -26,13 +26,14 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(400).json({ error: 'data must be an object' });
     }
 
-    const all = await get(PRESETS_KEY) || [];
-    const dup = all.find(p => p.userId === req.user.id && p.name.toLowerCase() === name.trim().toLowerCase());
-    if (dup) return res.status(409).json({ error: 'Sudah Ada, Gunakan Nama Yang Berbeda' });
-
     let preset;
+    let duplicate = false;
     await mutate(PRESETS_KEY, function(all) {
       if (!Array.isArray(all)) all = [];
+      if (all.some(p => p.userId === req.user.id && p.name.toLowerCase() === name.trim().toLowerCase())) {
+        duplicate = true;
+        return all;
+      }
       preset = {
         id: crypto.randomBytes(8).toString('hex'),
         userId: req.user.id,
@@ -44,6 +45,7 @@ router.post('/', requireAuth, async (req, res) => {
       all.push(preset);
       return all;
     });
+    if (duplicate) return res.status(409).json({ error: 'Sudah Ada, Gunakan Nama Yang Berbeda' });
     res.json({ success: true, preset });
   } catch (err) {
     if (err instanceof HttpError) return res.status(err.statusCode).json({ error: err.message });
