@@ -2542,12 +2542,12 @@ function showCopySlideFailed(text) {
     wrapper.style.cssText = "position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px";
     wrapper.addEventListener("click", (e) => { if (e.target === wrapper) wrapper.remove(); });
     const box = document.createElement("div");
-    box.style.cssText = "background:#1C1A14;border:1px solid #4A4533;border-radius:12px;padding:16px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column";
+    box.style.cssText = "background:#1C1A14;border:1px solid #5E6B8A;border-radius:12px;padding:16px;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column";
     box.innerHTML = '<p style="color:#E8A33D;font-size:13px;margin-bottom:10px">⚠️ Salin otomatis gagal. Salin manual:</p>';
     const ta = document.createElement("textarea");
     ta.value = text;
     ta.readOnly = true;
-    ta.style.cssText = "background:#100E0A;color:#D8CFA8;border:1px solid #4A4533;border-radius:8px;padding:12px;font:12px monospace;width:100%;min-height:120px;resize:vertical;outline:none;flex:1";
+    ta.style.cssText = "background:#100E0A;color:#D8CFA8;border:1px solid #5E6B8A;border-radius:8px;padding:12px;font:12px monospace;width:100%;min-height:120px;resize:vertical;outline:none;flex:1";
     box.appendChild(ta);
     const btnRow = document.createElement("div");
     btnRow.style.cssText = "display:flex;gap:8px;margin-top:10px;justify-content:flex-end";
