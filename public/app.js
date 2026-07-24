@@ -2603,7 +2603,7 @@ function bindInputs() {
 
   function updateSwipeToggleUI(checked) {
     document.getElementById("inp-swipe-text").checked = checked;
-    document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "#111835";
+    document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "#000000";
     document.getElementById("swipe-knob").style.transform = checked ? "translateX(20px)" : "translateX(0)";
     document.getElementById("swipe-label").style.color = checked ? "var(--ink-soft)" : "var(--ink-faint)";
   }
