@@ -1654,14 +1654,16 @@ function showConfirm(msg) {
   });
 }
 
-function showAlert(msg, onOk) {
-  const modal = document.getElementById("alert-modal");
-  document.getElementById("alert-msg").textContent = msg;
-  modal.classList.remove("hidden");
-  lockScroll();
-  const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); };
-  document.getElementById("alert-ok").onclick = () => { cleanup(); if (onOk) onOk(); };
-  modal.onclick = (e) => { if (e.target === modal) { cleanup(); } };
+function showAlert(msg) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("alert-modal");
+    document.getElementById("alert-msg").textContent = msg;
+    modal.classList.remove("hidden");
+    lockScroll();
+    const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); resolve(); };
+    document.getElementById("alert-ok").onclick = cleanup;
+    modal.onclick = (e) => { if (e.target === modal) cleanup(); };
+  });
 }
 
 function resetApp(silent) {
@@ -3316,10 +3318,9 @@ function bindInputs() {
         method: "POST",
         body: JSON.stringify({ email }),
       });
-      showAlert(`Token reset telah dikirim ke ${email}. Cek inbox email dan copy token untuk melanjutkan reset password.`, () => {
+      await showAlert(`Token reset telah dikirim ke ${email}. Cek inbox email dan copy token untuk melanjutkan reset password.`);
         document.getElementById("forgot-form").classList.add("hidden");
         document.getElementById("reset-form").classList.remove("hidden");
-      });
     } catch (err) { showAlert(err.message); }
   });
   document.getElementById("inp-forgot-email").addEventListener("keydown", (e) => {
