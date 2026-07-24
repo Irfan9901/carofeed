@@ -4,7 +4,7 @@
 :root{
     --bg-canvas:#111835;
     --bg-panel:#0d2584;
-    --bg-card:#221F18;
+    --bg-card:#1b2655;
     --bg-card-hover:#2A271E;
     --border-soft:#4A4533;
     --border-strong:#5E5842;
@@ -66,7 +66,7 @@
   }
   .style-card.active{
     border-color:var(--amber);
-    background:linear-gradient(160deg, #3A2E1640, #221F1840);
+    background:linear-gradient(160deg, #3A2E1640, #1b265540);
   }
   .style-card.active .style-check{ opacity:1; transform:scale(1); }
   .style-check{ opacity:0; transform:scale(.5); transition:all .15s ease; }
@@ -174,7 +174,7 @@
     100%{ background-position:200% 0; }
   }
   .shimmer{
-    background:linear-gradient(90deg, #221F18 25%, #2E2A1E 50%, #221F18 75%);
+    background:linear-gradient(90deg, #1b2655 25%, #23307a 50%, #1b2655 75%);
     background-size:200% 100%;
     animation:shimmer 1.4s ease-in-out infinite;
   }
