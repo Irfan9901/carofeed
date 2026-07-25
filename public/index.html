@@ -66,6 +66,9 @@
         <button id="btn-niche-management" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
           <i class="ti ti-tags text-sm"></i> Kelola Niche
         </button>
+        <button id="btn-layout-management" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
+          <i class="ti ti-columns text-sm"></i> Kelola Layout
+        </button>
         <button id="btn-guide" class="dropdown-btn w-full text-left rounded-lg px-2 py-2 text-xs flex items-center gap-2 hidden">
           <i class="ti ti-book text-sm"></i> Kelola Panduan
         </button>
@@ -259,46 +262,6 @@
           <label class="block text-sm mb-1.5" style="color:var(--ink-soft)">Layout slide</label>
           <select id="inp-layout" class="input-field w-full rounded-lg px-3 py-2.5 text-sm mb-4">
             <option value="">Pilih layout</option>
-            <option value="hero-center">Hero Center — pusat perhatian di tengah</option>
-            <option value="left-focus">Left Focus — visual kiri, teks kanan</option>
-            <option value="right-focus">Right Focus — teks kiri, visual kanan</option>
-            <option value="top-hero">Top Hero — visual atas, info bawah</option>
-            <option value="bottom-hero">Bottom Hero — info atas, visual bawah</option>
-            <option value="split">Split Layout — dua bagian seimbang</option>
-            <option value="full-bg">Full Background — gambar latar penuh</option>
-            <option value="floating-card">Floating Card — kartu melayang di atas visual</option>
-            <option value="magazine">Magazine Layout — tata letak editorial</option>
-            <option value="product-spotlight">Product Spotlight — produk sebagai pusat</option>
-            <option value="grid">Grid Layout — kotak seragam terstruktur</option>
-            <option value="bento">Bento Layout — kotak ukuran berbeda</option>
-            <option value="timeline">Timeline Layout — kronologis</option>
-            <option value="step">Step Layout — langkah per langkah</option>
-            <option value="pyramid">Pyramid Layout — hierarki piramida</option>
-            <option value="diagonal">Diagonal Layout — garis diagonal dinamis</option>
-            <option value="corner-focus">Corner Focus — fokus di sudut</option>
-            <option value="framed">Framed Layout — dibungkus bingkai</option>
-            <option value="minimal">Minimal Layout — elemen minimal</option>
-            <option value="overlay">Overlay Layout — teks di atas gambar</option>
-            <option value="centered-card">Centered Card — kartu di tengah</option>
-            <option value="sidebar">Sidebar Layout — panel samping</option>
-            <option value="header-focus">Header Focus — fokus headline atas</option>
-            <option value="footer-focus">Footer Focus — CTA/kontak bawah</option>
-            <option value="asymmetrical">Asymmetrical Layout — komposisi tidak simetris</option>
-            <option value="symmetrical">Symmetrical Layout — simetris seimbang</option>
-            <option value="collage">Collage Layout — kolase gambar</option>
-            <option value="masonry">Masonry Layout — blok ukuran berbeda rapat</option>
-            <option value="z-pattern">Z-Pattern Layout — pola baca Z</option>
-            <option value="f-pattern">F-Pattern Layout — pola baca F</option>
-            <option value="circular">Circular Layout — elemen melingkari pusat</option>
-            <option value="radial">Radial Layout — memancar dari pusat</option>
-            <option value="banner">Banner Layout — pita membentang</option>
-            <option value="layered">Layered Layout — bertumpuk</option>
-            <option value="frame-break">Frame Break Layout — objek keluar bingkai</option>
-            <option value="monogram">Monogram Layout — huruf/logo utama</option>
-            <option value="quote-focus">Quote Focus — kutipan dominan</option>
-            <option value="statistic">Statistic Layout — angka/data fokus</option>
-            <option value="comparison">Comparison Layout — perbandingan</option>
-            <option value="checklist">Checklist Layout — daftar poin</option>
           </select>
 
           <div class="mt-5">
@@ -836,6 +799,22 @@
     </div>
     <div id="niche-list" class="flex flex-col gap-3 overflow-y-auto min-h-0 flex-1 mb-3"></div>
     <button id="btn-save-niches" class="rounded-lg px-4 py-2 text-xs font-medium w-full" style="background:var(--amber); color:#1a1a1a">Simpan Semua</button>
+  </div>
+</div>
+
+<div id="layout-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
+  <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card);border-color:var(--border-strong)">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Layout Slide</h3>
+      <button id="btn-close-layout" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="flex gap-2 mb-3">
+      <input id="inp-new-layout-id" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="ID (contoh: hero-center)" autocomplete="off">
+      <input id="inp-new-layout-label" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="Label (contoh: Hero Center)" autocomplete="off">
+      <button id="btn-add-layout" class="btn-ghost rounded-lg px-3 py-2 text-xs whitespace-nowrap">+ Tambah</button>
+    </div>
+    <div id="layout-list" class="flex flex-col gap-3 overflow-y-auto min-h-0 flex-1 mb-3"></div>
+    <button id="btn-save-layouts" class="rounded-lg px-4 py-2 text-xs font-medium w-full" style="background:var(--amber);color:#1a1a1a">Simpan Semua</button>
   </div>
 </div>
 

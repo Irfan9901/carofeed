@@ -56,6 +56,15 @@ function validateVisualCategories(body) {
   }
 }
 
+function validateLayouts(body) {
+  assert(Array.isArray(body), 'layouts: must be an array');
+  for (const item of body) {
+    assert(item && typeof item === 'object', 'layouts: each item must be an object');
+    assert(typeof item.id === 'string' && item.id, 'layouts: each item must have a string id');
+    assert(typeof item.label === 'string' && item.label, 'layouts: each item must have a string label');
+  }
+}
+
 function validatePrompts(body) {
   assert(body && typeof body === 'object' && !Array.isArray(body), 'prompts: must be an object');
   for (const k of Object.keys(body)) {
@@ -70,6 +79,7 @@ const KV_KEYS = {
   subniches: 'data_subniches',
   visualCategories: 'data_visual_categories',
   stylePalettes: 'data_style_palettes',
+  layouts: 'data_layouts',
   prompts: 'data_prompts',
   landingPage: 'data_landing_page',
 };
@@ -139,6 +149,18 @@ router.put('/visual-categories', requireAdmin, async (req, res) => {
 
 router.put('/prompts', requireAdmin, async (req, res) => {
   try { validatePrompts(req.body); await set(KV_KEYS.prompts, req.body); res.json({ success: true }); }
+  catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+router.get('/layouts', async (req, res) => {
+  try {
+    const data = await getData(KV_KEYS.layouts, 'layouts.json');
+    res.json(data);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.put('/layouts', requireAdmin, async (req, res) => {
+  try { validateLayouts(req.body); await set(KV_KEYS.layouts, req.body); res.json({ success: true }); }
   catch (e) { res.status(400).json({ error: e.message }); }
 });
 

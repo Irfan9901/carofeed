@@ -70,6 +70,7 @@ let VISUAL_CATEGORIES = {
 };
 
 let BUILT_IN_CATEGORIES = [];
+let LAYOUT_LIST = [];
 
 let STYLE_PALETTES = {
   minimalist: ["#F5F5F0", "#2D2D2D", "#A8A8A8"],
@@ -301,6 +302,7 @@ function renderUserMenu() {
     "btn-admin-panel",
     "btn-category-images",
     "btn-niche-management",
+    "btn-layout-management",
     "btn-guide",
     "btn-settings",
     "admin-only-section",
@@ -315,6 +317,7 @@ function renderUserMenu() {
     btnAdminPanel: { guest: false, user: false, admin: true },
     btnCategoryImages: { guest: false, user: false, admin: true },
     btnNicheManagement: { guest: false, user: false, admin: true },
+    btnLayoutManagement: { guest: false, user: false, admin: true },
     btnGuide: { guest: false, user: false, admin: true },
     btnSettings: { guest: true, user: true, admin: true },
     adminOnlySection: { guest: false, user: false, admin: true },
@@ -330,6 +333,7 @@ function renderUserMenu() {
     ["btn-admin-panel", "btnAdminPanel"],
     ["btn-category-images", "btnCategoryImages"],
     ["btn-niche-management", "btnNicheManagement"],
+    ["btn-layout-management", "btnLayoutManagement"],
     ["btn-guide", "btnGuide"],
     ["btn-settings", "btnSettings"],
     ["admin-only-section", "adminOnlySection"],
@@ -777,6 +781,14 @@ function populateVisualCategory() {
   const cats = Object.keys(VISUAL_CATEGORIES);
   el.innerHTML = '<option value="">Pilih kategori visual</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join("");
   el.value = state.visualCategory;
+  el._enhancedRefresh?.();
+}
+
+function populateLayoutDropdown() {
+  const el = document.getElementById("inp-layout");
+  if (!el) return;
+  el.innerHTML = '<option value="">Pilih layout</option>' + LAYOUT_LIST.map(l => `<option value="${l.id}">${l.label}</option>`).join("");
+  el.value = state.layout;
   el._enhancedRefresh?.();
 }
 
@@ -1852,6 +1864,53 @@ async function saveNicheChanges() {
     sub.innerHTML = '<option value="">Pilih Subniche</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
     sub.value = "";
     sub._enhancedRefresh?.();
+  } catch (err) {
+    showToast("Gagal menyimpan: " + err.message, "error");
+  }
+}
+
+// ── Layout Manager ──
+
+function openLayoutModal() {
+  document.getElementById("layout-modal").classList.remove("hidden");
+  document.getElementById("layout-modal").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  renderLayoutManager();
+}
+
+function closeLayoutModal() {
+  document.getElementById("layout-modal").classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+function renderLayoutManager() {
+  const list = document.getElementById("layout-list");
+  list.innerHTML = LAYOUT_LIST.map(l => `
+    <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
+      <div class="flex items-center gap-2">
+        <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${escapeHtml(l.id)}" placeholder="ID layout" data-field="id">
+        <input class="input-field flex-[2] rounded px-2 py-1.5 text-xs" value="${escapeHtml(l.label)}" placeholder="Label" data-field="label">
+        <button data-del-layout="${escapeHtml(l.id)}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function saveLayoutChanges() {
+  const cards = document.querySelectorAll("#layout-list > div");
+  const newList = [];
+  for (const card of cards) {
+    const id = (card.querySelector('[data-field="id"]').value || "").trim();
+    const label = (card.querySelector('[data-field="label"]').value || "").trim();
+    if (!id || !label) continue;
+    newList.push({ id, label });
+  }
+  try {
+    await api("/api/data/layouts", { method: "PUT", body: JSON.stringify(newList) });
+    LAYOUT_LIST = newList;
+    showToast("Layout berhasil disimpan", "success");
+    closeLayoutModal();
+    populateLayoutDropdown();
   } catch (err) {
     showToast("Gagal menyimpan: " + err.message, "error");
   }
@@ -2979,6 +3038,32 @@ function bindInputs() {
     renderNicheManager();
   });
   document.getElementById("btn-save-niches").addEventListener("click", saveNicheChanges);
+  // -- Layout Manager --
+  document.getElementById("btn-layout-management").addEventListener("click", () => {
+    document.getElementById("user-dropdown").classList.add("hidden");
+    openLayoutModal();
+  });
+  document.getElementById("btn-close-layout").addEventListener("click", closeLayoutModal);
+  document.getElementById("layout-modal").addEventListener("click", (e) => {
+    if (e.target === e.currentTarget) closeLayoutModal();
+  });
+  document.getElementById("btn-add-layout").addEventListener("click", () => {
+    const id = document.getElementById("inp-new-layout-id").value.trim();
+    const label = document.getElementById("inp-new-layout-label").value.trim();
+    if (!id || !label) { showToast("ID dan label harus diisi", "error"); return; }
+    if (LAYOUT_LIST.some(l => l.id === id)) { showToast("ID layout sudah ada", "error"); return; }
+    LAYOUT_LIST.push({ id, label });
+    document.getElementById("inp-new-layout-id").value = "";
+    document.getElementById("inp-new-layout-label").value = "";
+    renderLayoutManager();
+  });
+  document.getElementById("layout-list").addEventListener("click", (e) => {
+    const delBtn = e.target.closest("[data-del-layout]");
+    if (!delBtn) return;
+    LAYOUT_LIST = LAYOUT_LIST.filter(l => l.id !== delBtn.dataset.delLayout);
+    renderLayoutManager();
+  });
+  document.getElementById("btn-save-layouts").addEventListener("click", saveLayoutChanges);
   // -- Settings --
   document.getElementById("btn-settings").addEventListener("click", openSettingsModal);
   document.getElementById("btn-close-settings").addEventListener("click", closeSettingsModal);
@@ -3455,13 +3540,15 @@ async function loadStaticData() {
     fetch('/api/data/visual-categories').then(r => r.ok && r.json()),
     fetch('/api/data/niches').then(r => r.ok && r.json()),
     fetch('/api/data/subniches').then(r => r.ok && r.json()),
+    fetch('/api/data/layouts').then(r => r.ok && r.json()),
   ]);
-  const [vc, niches, subniches] = results.map(r => r.status === 'fulfilled' ? r.value : null);
+  const [vc, niches, subniches, layouts] = results.map(r => r.status === 'fulfilled' ? r.value : null);
   if (vc?.categories) { VISUAL_CATEGORIES = vc.categories; BUILT_IN_CATEGORIES = Object.keys(vc.categories); }
   else BUILT_IN_CATEGORIES = Object.keys(VISUAL_CATEGORIES);
   if (vc?.palettes) STYLE_PALETTES = vc.palettes;
   if (niches && typeof niches === 'object') NICHE_MAP = niches;
   if (subniches && typeof subniches === 'object') SUBNICHE_MAP = subniches;
+  if (Array.isArray(layouts)) LAYOUT_LIST = layouts;
 }
 
 function closeAllDropdowns() {
@@ -3585,7 +3672,7 @@ async function init() {
   renderEmptyState();
   console.log('[init] first pass done');
 
-  loadStaticData().then(() => { populateVisualCategory(); populateNicheDropdown(); });
+  loadStaticData().then(() => { populateVisualCategory(); populateNicheDropdown(); populateLayoutDropdown(); });
 
   // Aktifkan :active pseudo-class di iOS Safari (tanpa ini :active tidak bekerja di <button>)
   document.body.addEventListener("touchstart", () => {}, { passive: true });
