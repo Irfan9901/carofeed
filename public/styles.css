@@ -535,11 +535,12 @@
   padding:10px 14px; cursor:pointer; transition:background .15s; color:var(--cream); font-size:13px;
   white-space:normal; word-break:break-word;
 }
-.enhanced-dropdown .option:hover{ background:var(--bg-card-hover); }
-.enhanced-dropdown .option.selected{ color:var(--amber); }
+.enhanced-dropdown .option:hover{ background:rgba(232,163,61,.12); }
+.enhanced-dropdown .option.selected{ color:var(--amber); background:rgba(232,163,61,.2); }
 .light-theme .enhanced-dropdown{ background:#fff; border-color:#e0ddd6; }
 .light-theme .enhanced-dropdown .option{ color:var(--ink); }
-.light-theme .enhanced-dropdown .option:hover{ background:#f5f3ee; }
+.light-theme .enhanced-dropdown .option:hover{ background:#e8ddd0; }
+.light-theme .enhanced-dropdown .option.selected{ background:#ddd0c0; }
 /* Missed Tailwind utilities */
 .min-w-0{ min-width:0; }
 #niche-row{ display:grid; grid-template-columns:1fr 1fr; }
