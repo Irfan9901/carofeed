@@ -87,7 +87,7 @@ text-xl+ — not used in app (landing only)
 | `.btn-primary` | Main actions | amber `#ffbe0b` bg, `#1A1408` text, 600 weight |
 | `.btn-ghost` | Secondary actions | same as primary (visually identical) |
 | `.btn-ai` | Generate/AI | same as primary, with `.btn-ai:disabled` |
-| `.btn-slide-copy` | Slide copy | opacity .7 → 1 on hover/active |
+| `.btn-slide-copy` | Slide copy | same as primary, `filter:brightness(1.15)` on hover/active |
 | `.dropdown-btn` | Admin dropdown items | `var(--ink-soft)`, amber hover |
 | `.btn-ghost` (admin modals) | Add/Save | Same amber style |
 | `.btn-cancel` | Cancel/Batal (modal) | `background:var(--amber-soft)` (`#3A2E16`), `color:var(--ink-soft)` — lebih kontras dari modal bg |
@@ -128,6 +128,13 @@ Button states: `:hover` → `filter:brightness(1.15)`, `:active` → same, `:dis
 - Modal id: `preset-name-modal` — input + Batal (amber-soft) + Simpan (amber) buttons
 - Enter → confirm, Escape → cancel, overlay click → cancel
 
+### Alert Modal (Reusable)
+- `showAlert(msg, onOk?)` — function returning `Promise<void>` (`app.js:1668`)
+- Used for: general info/error messages, preset-not-found guidance
+- Modal id: `alert-modal` — message text + OK button (amber)
+- `onOk` callback executed after OK click / overlay click / cleanup
+- Enter/overlay click → close (same as OK)
+
 ### Modal Inputs
 - Admin modals (Kelola Niche, Kelola Layout, Kelola User): `py-2.5 text-sm` — **must match** the main form input standard (`~40px` height)
 - Previously used `py-1.5 text-xs` (`~32px`) — standardized in 2026
@@ -142,6 +149,12 @@ Button states: `:hover` → `filter:brightness(1.15)`, `:active` → same, `:dis
 ### Toast Notifications (`.toast`)
 - Animation: `slide-up` (fade in + translate up) `.25s ease both`
 - Positioned dynamically via JS
+
+### Button Loading State (Loader Dots)
+- Used in generate buttons ("Menggali ide…", "AI menyusun slide…")
+- 5 dots: `.dot`, each with staggered `animation-delay` (-0.3s to 0.5s)
+- Dot background: `#1A1408` (dark, high contrast on amber button bg)
+- Previously `#f5b651` (too low contrast) — fixed 2026
 
 ### Slide Editor
 - `#slide-list` — vertical flex with gap
