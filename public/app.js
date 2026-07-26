@@ -1665,13 +1665,18 @@ function showConfirm(msg) {
   });
 }
 
-function showAlert(msg) {
+function showAlert(msg, onOk) {
   return new Promise((resolve) => {
     const modal = document.getElementById("alert-modal");
     document.getElementById("alert-msg").textContent = msg;
     modal.classList.remove("hidden");
     lockScroll();
-    const cleanup = () => { modal.classList.add("hidden"); unlockScroll(); resolve(); };
+    const cleanup = () => {
+      modal.classList.add("hidden");
+      unlockScroll();
+      if (typeof onOk === "function") onOk();
+      resolve();
+    };
     document.getElementById("alert-ok").onclick = cleanup;
     modal.onclick = (e) => { if (e.target === modal) cleanup(); };
   });
