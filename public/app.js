@@ -2059,9 +2059,9 @@ function renderCategoryImageManager() {
     const newBtn = addCatBtn.cloneNode(true);
     addCatBtn.parentNode.replaceChild(newBtn, addCatBtn);
     newBtn.addEventListener("click", async () => {
-      const name = prompt("Nama kategori baru:");
-      if (!name || !name.trim()) return;
-      const trimmed = name.trim();
+      const name = await showPrompt("Nama kategori baru:", "cth: Kesehatan");
+      if (!name) return;
+      const trimmed = name;
       if (VISUAL_CATEGORIES[trimmed]) {
         showToast("Kategori sudah ada", "error");
         return;
