@@ -342,7 +342,7 @@
   width: 6px;
   margin-right: 4px;
   border-radius: 50%;
-  background-color: #f5b651;
+  background-color: #1A1408;
   animation: pulse 1.5s infinite ease-in-out;
 }
 .dot:last-child { margin-right: 0; }
@@ -352,9 +352,9 @@
 .dot:nth-child(4) { animation-delay: 0.3s; }
 .dot:nth-child(5) { animation-delay: 0.5s; }
 @keyframes pulse {
-  0% { transform: scale(0.8); background-color: #f5b651; box-shadow: 0 0 0 0 rgba(249,155,4,.4); }
-  50% { transform: scale(1.2); background-color: #f99b04; box-shadow: 0 0 0 6px rgba(249,155,4,0); }
-  100% { transform: scale(0.8); background-color: #f5b651; box-shadow: 0 0 0 0 rgba(249,155,4,.4); }
+  0% { transform: scale(0.8); background-color: #1A1408; box-shadow: 0 0 0 0 rgba(26,20,8,.3); }
+  50% { transform: scale(1.2); background-color: #3A2E16; box-shadow: 0 0 0 6px rgba(26,20,8,0); }
+  100% { transform: scale(0.8); background-color: #1A1408; box-shadow: 0 0 0 0 rgba(26,20,8,.3); }
 }
 
 /* ── Custom Select ── */
