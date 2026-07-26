@@ -1824,14 +1824,14 @@ function renderNicheManager() {
     return `
       <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
         <div class="flex items-center justify-between mb-2 gap-2">
-          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(name)}" placeholder="Nama niche" data-field="name">
+          <input class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm" value="${en(name)}" placeholder="Nama niche" data-field="name">
           <button data-del-niche="${name}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
         </div>
         <div class="flex gap-2 mb-2">
-          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(cfg.purpose)}" placeholder="Purpose (edukasi/promosi/inspirasi)" data-field="purpose">
-          <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${en(cfg.audience)}" placeholder="Audience" data-field="audience">
+          <input class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm" value="${en(cfg.purpose)}" placeholder="Purpose (edukasi/promosi/inspirasi)" data-field="purpose">
+          <input class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm" value="${en(cfg.audience)}" placeholder="Audience" data-field="audience">
         </div>
-        <textarea class="input-field w-full rounded px-2 py-1.5 text-xs resize-y" rows="3" placeholder="Subniche (1 per baris)" data-field="subniches" style="min-height:56px">${subs}</textarea>
+        <textarea class="input-field w-full rounded-lg px-3 py-2.5 text-sm resize-y" rows="3" placeholder="Subniche (1 per baris)" data-field="subniches" style="min-height:56px">${subs}</textarea>
       </div>
     `;
   }).join("");
