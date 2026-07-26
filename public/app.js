@@ -1888,8 +1888,8 @@ function renderLayoutManager() {
   list.innerHTML = LAYOUT_LIST.map(l => `
     <div class="rounded-lg p-3" style="background:var(--bg-canvas)">
       <div class="flex items-center gap-2">
-        <input class="input-field flex-1 rounded px-2 py-1.5 text-xs" value="${escapeHtml(l.id)}" placeholder="ID layout" data-field="id">
-        <input class="input-field flex-[2] rounded px-2 py-1.5 text-xs" value="${escapeHtml(l.label)}" placeholder="Label" data-field="label">
+        <input class="input-field flex-1 rounded-lg px-3 py-2.5 text-sm" value="${escapeHtml(l.id)}" placeholder="ID layout" data-field="id">
+        <input class="input-field flex-[2] rounded-lg px-3 py-2.5 text-sm" value="${escapeHtml(l.label)}" placeholder="Label" data-field="label">
         <button data-del-layout="${escapeHtml(l.id)}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
       </div>
     </div>
