@@ -97,10 +97,9 @@
   @media (hover: hover){
     .btn-ghost:hover{ filter:brightness(1.15); }
   }
-  .btn-slide-copy{ opacity:.7; }
-  .btn-slide-copy:active{ opacity:1; }
+  .btn-slide-copy:active{ filter:brightness(1.15); }
   @media (hover: hover){
-    .btn-slide-copy:hover{ opacity:1; }
+    .btn-slide-copy:hover{ filter:brightness(1.15); }
   }
 
   .btn-ai{
