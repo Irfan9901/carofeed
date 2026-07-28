@@ -488,7 +488,7 @@ async function showUpgradeModal(limit, upgradeLink, deviceBlocked) {
   if (deviceBlocked) {
     msg.textContent = "Perangkat ini sudah digunakan oleh akun gratis lain. Gunakan akun yang sudah ada atau hubungi admin untuk upgrade.";
   } else {
-    msg.textContent = `Kamu telah mencapai batas ${limit} kali generate untuk akun gratis. Upgrade ke akun Paid untuk melanjutkan.`;
+    msg.textContent = `Kamu telah mencapai batas penggunaan akun tak berbayar. Untuk menggunakan Carofeed lebih lanjut, Anda harus melakukan Upgrade. Sesudah Upgrade, segera hubungi Admin melalui email`;
   }
   linkBtn.href = upgradeLink || "#";
   if (!upgradeLink) linkBtn.style.opacity = "0.5";
