@@ -102,6 +102,10 @@ Button states: `:hover` → `filter:brightness(1.15)`, `:active` → same, `:dis
 - Placeholder: `var(--ink-faint)`
 - `<select.input-field>`: Custom chevron SVG, `appearance: none`, `padding-right:36px`
 
+### Textarea Inputs
+- **Catatan / Brand** (`#inp-brand`): placeholder "Nama Brand Kamu" — content injected into AI user prompt as `Brand/Catatan: ...` line, also in JSON output as `brand_note`
+- **Intruksi Tambahan** (`#inp-customstyle`): placeholder "contoh: hand-drawn texture, maskot lucu" — content split by comma, added to `activeStyleTags()` for JSON output (`style_tags` + `Style direction:` in prompt). **Also** injected as `Instruksi tambahan: ...` line in AI user prompt (fix 2026) so natural language instructions reach the model properly
+
 ### Enhanced Select (`enhanceSelect()`)
 - **Trigger:** `.enhanced-trigger` — mimics `.input-field`, border changes on hover/focus/open
 - **Dropdown:** `.enhanced-dropdown` — `background:var(--bg-panel)`, max-height 200px, scrollbar
@@ -134,6 +138,14 @@ Button states: `:hover` → `filter:brightness(1.15)`, `:active` → same, `:dis
 - Modal id: `alert-modal` — message text + OK button (amber)
 - `onOk` callback executed after OK click / overlay click / cleanup
 - Enter/overlay click → close (same as OK)
+
+### Upgrade Modal
+- `showUpgradeModal(limit, upgradeLink, deviceBlocked)` (`app.js:485`)
+- Triggered when: free user reaches `freeLimit` (default 20), or device is blocked
+- Modal id: `upgrade-modal` — crown icon, "Batas Pemakaian Tercapai" header, message text, Tutup + Upgrade buttons
+- Messages:
+  - **Limit reached:** "Kamu telah mencapai batas penggunaan akun tak berbayar. Untuk menggunakan Carofeed lebih lanjut, Anda harus melakukan Upgrade. Sesudah Upgrade, segera hubungi Admin melalui email"
+  - **Device blocked:** "Perangkat ini sudah digunakan oleh akun gratis lain. Gunakan akun yang sudah ada atau hubungi admin untuk upgrade."
 
 ### Modal Inputs
 - Admin modals (Kelola Niche, Kelola Layout, Kelola User): `py-2.5 text-sm` — **must match** the main form input standard (`~40px` height)
