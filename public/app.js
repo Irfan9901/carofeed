@@ -759,7 +759,7 @@ function composeMainPrompt(slide) {
   }
 
   if (state.brandNote) {
-    parts.push(` Brand: ${state.brandNote}.`);
+    parts.push(` Text overlay "${state.brandNote}" at top left.`);
   }
 
   if (state.swipeText && slide.role !== "penutup") {
