@@ -2587,7 +2587,11 @@ function copySlideJson(slideId, btn) {
     if (!slide) { btn.innerHTML = '<i class="ti ti-alert-circle text-sm"></i> Gagal'; setTimeout(() => renderSlideList(), 1500); return; }
     const idx = state.slides.indexOf(slide);
     const json = buildSingleSlideJson(slide, idx);
-    const text = JSON.stringify(json, null, 2);
+    const text = JSON.stringify({
+      consistency_instruction: json.global_style.consistency_instruction,
+      prompt: json.prompt,
+      negative_prompt: json.negative_prompt,
+    }, null, 2);
 
     let settled = false;
     function done(ok) {
