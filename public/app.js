@@ -1158,7 +1158,7 @@ function renderSlideList() {
       <textarea data-field="visualIdea" data-id="${s.id}" class="input-field w-full rounded-lg px-3 py-2 text-sm mb-3" placeholder="contoh: ilustrasi celengan dan grafik naik" rows="1">${escapeHtml(s.visualIdea)}</textarea>
 
       <button data-copy-json="${s.id}" class="btn-ghost btn-slide-copy w-full rounded-lg py-2 text-xs flex items-center justify-center gap-1.5">
-        <i class="ti ti-code text-sm" style="pointer-events:none"></i> Copy JSON slide ini
+        <i class="ti ti-file-description text-sm" style="pointer-events:none"></i> Copy Prompt Slide Ini
       </button>
     </div>
   `).join("");
