@@ -104,7 +104,8 @@ Button states: `:hover` → `filter:brightness(1.15)`, `:active` → same, `:dis
 
 ### Textarea Inputs
 - **Catatan / Brand** (`#inp-brand`): placeholder "Nama Brand Kamu" — content injected into AI user prompt as `Brand/Catatan: ...` line, also in JSON output as `brand_note`
-- **Intruksi Tambahan** (`#inp-customstyle`): placeholder "contoh: hand-drawn texture, maskot lucu" — content split by comma, added to `activeStyleTags()` for JSON output (`style_tags` + `Style direction:` in prompt). **Also** injected as `Instruksi tambahan: ...` line in AI user prompt (fix 2026) so natural language instructions reach the model properly
+- **Intruksi Tambahan** (`#inp-customstyle`): placeholder "contoh: hand-drawn texture, maskot lucu" — content split by comma, added to `activeStyleTags()` for JSON output (`style_tags` + `Style direction:` in prompt). Also injected as `Instruksi tambahan: ...` line in AI user prompt
+- **Cover slide hook** (`#inp-cover-hook`): placeholder "cth: 5 Menit Sehari untuk Kesehatan Mentalmu" — field for exact cover headline. Auto-filled from AI `coverHook` field when "Generate ide" clicked. Injected into AI user prompt as `Cover slide headline HARUS persis: "..."`. After AI generates slides, `slides[0].headline` is overridden with this value. User can edit/customize manually.
 
 ### Enhanced Select (`enhanceSelect()`)
 - **Trigger:** `.enhanced-trigger` — mimics `.input-field`, border changes on hover/focus/open

@@ -126,7 +126,7 @@ let STYLE_PALETTES = {
 let DEFAULT_NEGATIVE = "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character";
 
 let DEFAULT_PROMPTS = {
-  system_idea: "Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel, gunakan bahasa yang sama dengan bahasa topik\"}. Jangan tambahkan teks lain.",
+  system_idea: "Kamu adalah asisten kreator konten kreatif. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel, gunakan bahasa yang sama dengan bahasa topik\", \"coverHook\": \"string hook/kalimat pembuka yang kuat untuk cover slide 1, sesuai topik\"}. Jangan tambahkan teks lain.",
   user_idea: "Niche: {{niche}}",
   system_slide: "Kamu adalah asisten penyusun konten carousel Instagram. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat. Buat kalimat pembuka pada slide pertama dengan hook yang emosional dan memikat audiens. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Jika Brand/Catatan diberikan, visualIdea harus menyebutnya sebagai 'text overlay' (contoh: 'brand name text overlay at top left'), jangan pernah menggunakan kata 'logo'. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
   user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
@@ -214,6 +214,7 @@ const state = {
   visualCategory: "",
   stylePreset: "",
   customStyle: "",
+  coverHook: "",
   palette: "",
   color1: "#1E3A5F",
   color2: "#D4AF37",
@@ -1453,6 +1454,7 @@ function collectPresetData() {
     visualCategory: state.visualCategory,
     stylePreset: state.stylePreset,
     customStyle: state.customStyle,
+    coverHook: state.coverHook,
     palette: state.palette,
     color1: state.color1,
     color2: state.color2,
@@ -1478,6 +1480,7 @@ function applyPresetData(data) {
   state.visualCategory = data.visualCategory || "";
   state.stylePreset = data.stylePreset || "";
   state.customStyle = data.customStyle || "";
+  state.coverHook = data.coverHook || "";
   state.palette = data.palette || "";
   state.color1 = data.color1 || "#1E3A5F";
   state.color2 = data.color2 || "#D4AF37";
@@ -1506,6 +1509,8 @@ function applyPresetData(data) {
   if (catEl) catEl.value = state.visualCategory;
   const customStyleEl = document.getElementById("inp-customstyle");
   if (customStyleEl) { customStyleEl.value = state.customStyle; autoExpand(customStyleEl); }
+  const coverHookEl = document.getElementById("inp-cover-hook");
+  if (coverHookEl) coverHookEl.value = state.coverHook;
   const paletteEl = document.getElementById("inp-palette");
   if (paletteEl) paletteEl.value = state.palette;
   const brandEl = document.getElementById("inp-brand");
@@ -1689,6 +1694,7 @@ function resetApp(silent) {
   state.audience = "";
   state.slides = [];
   state.customStyle = "";
+  state.coverHook = "";
   state.palette = "";
   state.color1 = "#1E3A5F";
   state.color2 = "#D4AF37";
@@ -1713,6 +1719,7 @@ function resetApp(silent) {
   document.getElementById("inp-ratio").value = "";
   document.getElementById("inp-customstyle").value = "";
   autoExpand(document.getElementById("inp-customstyle"));
+  document.getElementById("inp-cover-hook").value = "";
   updateColorSwatches();
   document.getElementById("inp-palette").value = "";
   document.getElementById("inp-brand").value = "";
@@ -2222,9 +2229,13 @@ async function generateIdeaFromNiche() {
       let cleaned = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
       const result = JSON.parse(cleaned);
       const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
+      const coverHook = result.coverHook || topic;
 
       document.getElementById("inp-topic").value = topic;
       state.topic = topic;
+
+      const hookEl = document.getElementById("inp-cover-hook");
+      if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; }
 
       renderSlidesArea();
       showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
@@ -2304,13 +2315,14 @@ async function aiGenerateSlideContent() {
   const systemPrompt = p.system_slide;
   const brandNoteLine = state.brandNote.trim() ? `\nBrand/Catatan: ${state.brandNote.trim()}` : "";
   const customInstructionLine = state.customStyle.trim() ? `\nInstruksi tambahan: ${state.customStyle.trim()}` : "";
+  const coverHookLine = state.coverHook.trim() ? `\nCover slide headline HARUS persis: "${state.coverHook.trim()}". Slide 2 sampai seterusnya adalah kelanjutan atau penjelasan dari hook tersebut, tetap dalam cakupan topik yang sama.` : "";
   const userPrompt = replacePromptVars(p.user_slide, {
     topic: state.topic,
     purpose: state.purpose,
     audience: state.audience,
     slideCount: String(state.slideCount),
     brandNoteLine,
-  }) + customInstructionLine;
+  }) + customInstructionLine + coverHookLine;
 
   const modelsToTry = getActiveModels();
   let lastError = null;
@@ -2339,6 +2351,9 @@ async function aiGenerateSlideContent() {
         body: item.body || "",
         visualIdea: item.visualIdea || "",
       }));
+      if (state.coverHook.trim() && state.slides.length > 0) {
+        state.slides[0].headline = state.coverHook.trim();
+      }
 
       state.generateFailCount = 0;
       state.slideCount = state.slides.length;
@@ -2721,6 +2736,7 @@ function bindInputs() {
   });
 
   document.getElementById("inp-customstyle").addEventListener("input", (e) => { state.customStyle = e.target.value; refreshJsonOutput(); });
+  document.getElementById("inp-cover-hook").addEventListener("input", (e) => { state.coverHook = e.target.value; refreshJsonOutput(); });
   document.getElementById("inp-color-1").addEventListener("click", () => openColorPicker("color1"));
   document.getElementById("inp-color-2").addEventListener("click", () => openColorPicker("color2"));
   document.getElementById("inp-color-3").addEventListener("click", () => openColorPicker("color3"));

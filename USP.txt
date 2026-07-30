@@ -1,0 +1,215 @@
+================================================================================
+                          CAROFEED — UNIQUE SELLING POINTS
+================================================================================
+
+  "Mengubah Ide Menjadi Carousel Profesional"
+  https://carofeed.vercel.app
+
+================================================================================
+1. FITUR UNGGULAN (USP)
+================================================================================
+
+  a. AI Generate Copy + Visual Prompt Sekaligus
+     - Tidak seperti Canva (design-only) atau ChatGPT (teks doang tanpa
+       struktur), Carofeed menghasilkan headline, body, DAN visualIdea
+       untuk setiap slide dalam satu klik.
+     - Output berupa JSON prompt siap pakai — tinggal paste ke image
+       generator (ChatGPT, Midjourney, dll).
+
+  b. 49 Style Presets dengan Preview Gambar Asli
+     - 10 kategori visual (Modern, Illustration, 3D, Artistic, Classic,
+       Tropical, Urban, Luxury, Playful, Minimal).
+     - Masing-masing style dilengkapi preview gambar real — bukan cuma
+       nama atau ikon.
+     - Admin bisa upload gambar kustom untuk tiap style.
+
+  c. Bahasa Indonesia Native
+     - Seluruh UX, prompt AI, dan konten 100% Bahasa Indonesia.
+     - Tidak perlu translate atau adaptasi dari tools luar negeri.
+
+  d. Structured Workflow End-to-End
+     - Panduan langkah demi langkah: Niche → Subniche → Topik → Tujuan →
+       Audiens → Slide & Rasio → Gaya Visual → Generate AI → Edit Slide →
+       Copy JSON.
+     - Tidak ada blank canvas yang membingungkan — user diarahkan dari
+       awal sampai selesai.
+
+  e. Free Tier tanpa Kartu Kredit
+     - 20 kali generate gratis.
+     - Device-based blocking (1 perangkat = 1 akun free).
+
+  f. Preset System
+     - Simpan seluruh konfigurasi form sebagai preset.
+     - Load kembali kapan saja — cocok untuk batch konten series.
+
+  g. Slide Editor Interaktif
+     - Tambah, hapus, dan reorder slide setelah AI generate.
+     - Edit teks per slide secara manual.
+
+  h. Admin Panel Lengkap
+     - Manajemen user (role, tier, generate count).
+     - Editor niche, subniche, visual categories, palettes.
+     - Manajemen AI model & prompts.
+     - Upload gambar style.
+     - Custom categories — buat kategori visual sendiri.
+     - Landing page CMS.
+
+================================================================================
+2. PERBEDAAN DENGAN PRODUK LAIN
+================================================================================
+
+  +------------------+------------+---------+------------------+------------------+
+  | Aspek            | Carofeed   | Canva   | ChatGPT (manual) | Carousel Gen     |
+  |                  |            |         |                  | Lain             |
+  +------------------+------------+---------+------------------+------------------+
+  | Bahasa Indonesia | YA native  | Inggris | Tergantung       | Inggris semua    |
+  |                  |            |         | prompt           |                  |
+  | AI generate      | YA         | Tidak   | YA (tapi acak)   | Tidak            |
+  | copy + visual    |            |         |                  |                  |
+  | Output JSON      | YA         | Tidak   | Manual           | Tidak            |
+  | siap pakai       |            |         |                  |                  |
+  | Structured       | YA         | Tidak   | Tidak            | Terbatas         |
+  | workflow         |            |         |                  |                  |
+  | Style preview    | 49 preset  | Banyak  | Tidak            | Terbatas         |
+  | gambar asli      |            |         |                  |                  |
+  | Free tier        | 20x gratis | Terbatas| Terbatas         | Mostly paid      |
+  | tanpa CC         |            |         |                  |                  |
+  | Admin panel      | YA         | YA      | Tidak            | Tidak            |
+  +------------------+------------+---------+------------------+------------------+
+
+  Kesimpulan: Carofeed mengisi celah yang tidak diisi kompetitor —
+  AI carousel generator dalam Bahasa Indonesia dengan workflow
+  terstruktur dari ide sampai JSON prompt siap pakai.
+
+================================================================================
+3. MENGAPA ORANG HARUS MENGGUNAKAN CAROFEED?
+================================================================================
+
+  a. Hemat Waktu
+     - Dari 0 sampai JSON prompt siap pakai dalam 5-10 menit.
+     - Tidak perlu mikir "slide 1 isi apa, slide 2 isi apa" — AI
+       yang generate semua.
+
+  b. Tidak Perlu Skill Design
+     - Cukup isi form dan pilih style — output siap untuk image
+       generator.
+     - Tidak perlu Canva, Photoshop, atau skill desain grafis.
+
+  c. Konten Lebih Terstruktur
+     - Headline yang menarik, body yang informatif, visual idea yang
+       sesuai — per slide.
+     - Hasil lebih konsisten dibanding prompt ChatGPT manual.
+
+  d. Bahasa Indonesia
+     - Tidak perlu translate ide atau adaptasi konten.
+     - AI memahami konteks dan budaya Indonesia.
+
+  e. Cocok untuk Produksi Massal
+     - Preset system memungkinkan produksi series konten dengan
+       format konsisten.
+     - Cukup ganti topik, generate, selesai.
+
+  f. Gratis untuk Dicoba
+     - 20 generate gratis, tanpa komitmen, tanpa kartu kredit.
+     - Cukup login dengan akun Google — langsung bisa pakai.
+     - Tidak perlu registrasi ribet: satu klik, langsung masuk.
+     - Upgrade hanya jika sudah yakin.
+
+================================================================================
+4. MASALAH YANG DISELESAIKAN
+================================================================================
+
+  | Masalah                          | Solusi Carofeed                          |
+  |----------------------------------|-------------------------------------------|
+  | "Mau bikin konten apa hari ini?" | AI suggest topik based on niche/subniche  |
+  | "Slide 1 isi apa, slide 2 apa?"  | AI generate full slide content (headline  |
+  |                                  | + body + visualIdea)                      |
+  | "Pilih style & warna apa?"       | 49 curated style presets + palettes +     |
+  |                                  | preview gambar asli                       |
+  | "Tools luar semua English"       | 100% Bahasa Indonesia — UX, AI, output    |
+  | "Gimana cara prompt image gen?"  | Output JSON siap paste, tinggal copy      |
+  | "Bikin konten butuh berjam-jam"  | Dari ide ke JSON prompt siap pakai dalam  |
+  |                                  | 5-10 menit                                |
+  | "Konten gak konsisten"           | Preset system — format & style tersimpan  |
+  |                                  | untuk dipakai ulang                       |
+  | "Bingung mulai dari mana"        | Step-by-step guided workflow              |
+
+================================================================================
+5. SIAPA YANG COCOK MENGGUNAKAN CAROFEED?
+================================================================================
+
+  a. Content Creator Instagram Indonesia
+     - Mikro (1K-50K followers) sampai makro (100K+).
+     - Yang ingin produksi carousel secara konsisten.
+
+  b. Social Media Manager
+     - Yang handle 3-10+ akun brand lokal.
+     - Butuh produksi konten cepat dan terstruktur.
+
+  c. Agency / Freelancer
+     - Yang bikin konten untuk client.
+     - Butuh workflow efisien untuk batch konten.
+
+  d. Personal Branding Enthusiast
+     - Coach, trainer, consultant yang bangun personal brand.
+     - Butuh konten teratur tanpa ribet.
+
+  e. Pemilik Bisnis Kecil
+     - Yang manage sosial media sendiri.
+     - Tidak punya budget untuk hire desainer atau SMM.
+
+  f. Kreator Pemula
+     - Baru mulai bikin konten Instagram.
+     - Butuh panduan dari awal sampai jadi.
+
+================================================================================
+6. SIAPA YANG TIDAK COCOK DENGAN CAROFEED?
+================================================================================
+
+  a. Yang Butuh Design Final Siap Posting
+     - Carofeed output JSON prompt, BUKAN gambar jadi.
+     - Masih perlu image generator (ChatGPT, Midjourney, dll) untuk
+       render visual.
+
+  b. Audiens Non-Indonesia
+     - Seluruh UX, prompt AI, dan output dalam Bahasa Indonesia.
+     - Tidak cocok untuk konten bahasa Inggris atau bahasa lain.
+
+  c. Yang Ingin Generate Gambar Langsung
+     - Carofeed fokus ke konten & prompt — bukan image generation.
+     - Jika ingin satu platform dari awal sampai gambar jadi, carilah
+       all-in-one design tool.
+
+  d. Yang Prefer Full Manual Design Control
+     - Jika ingin control pixel-level atas setiap elemen visual,
+       Canva/Photoshop/Figma lebih cocok.
+     - Carofeed mengotomatisasi, bukan memberikan kontrol manual
+       detail.
+
+  e. Enterprise dengan Compliance Ketat
+     - Tidak ada opsi self-hosted.
+     - Data tersimpan di Vercel KV (Upstash Redis) — tidak bisa
+       on-premise.
+
+  f. Yang Butuh Template Siap Pakai (Bukan Generate)
+     - Carofeed AI-generated, bukan template library.
+     - Jika ingin template carousel yang tinggal edit teks, Canva
+       atau Slidesgo lebih cocok.
+
+================================================================================
+7. KESIMPULAN
+================================================================================
+
+  Carofeed adalah AI carousel generator pertama (dan satu-satunya)
+  dalam Bahasa Indonesia dengan workflow terstruktur dari ide hingga
+  JSON prompt siap pakai.
+
+  Value proposition inti:
+     "Bikin konten Instagram carousel dalam 5-10 menit —
+      tanpa skill design, tanpa tools luar negeri, tanpa ribet."
+
+  Cocok untuk content creator, SMM, agency, dan pemilik bisnis
+  Indonesia yang ingin produksi carousel secara konsisten dan
+  efisien.
+
+================================================================================
