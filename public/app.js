@@ -1510,7 +1510,7 @@ function applyPresetData(data) {
   const customStyleEl = document.getElementById("inp-customstyle");
   if (customStyleEl) { customStyleEl.value = state.customStyle; autoExpand(customStyleEl); }
   const coverHookEl = document.getElementById("inp-cover-hook");
-  if (coverHookEl) coverHookEl.value = state.coverHook;
+  if (coverHookEl) { coverHookEl.value = state.coverHook; autoExpand(coverHookEl); }
   const paletteEl = document.getElementById("inp-palette");
   if (paletteEl) paletteEl.value = state.palette;
   const brandEl = document.getElementById("inp-brand");
@@ -1720,6 +1720,7 @@ function resetApp(silent) {
   document.getElementById("inp-customstyle").value = "";
   autoExpand(document.getElementById("inp-customstyle"));
   document.getElementById("inp-cover-hook").value = "";
+  autoExpand(document.getElementById("inp-cover-hook"));
   updateColorSwatches();
   document.getElementById("inp-palette").value = "";
   document.getElementById("inp-brand").value = "";
@@ -2235,7 +2236,7 @@ async function generateIdeaFromNiche() {
       state.topic = topic;
 
       const hookEl = document.getElementById("inp-cover-hook");
-      if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; }
+      if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; autoExpand(hookEl); }
 
       renderSlidesArea();
       showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
@@ -3740,7 +3741,7 @@ async function init() {
     showLoginModal();
   }
   loadSettings();
-  ["inp-topic","inp-brand","inp-customstyle","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative"].forEach(id => {
+  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative"].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => autoExpand(el));
