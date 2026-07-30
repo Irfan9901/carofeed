@@ -2303,13 +2303,14 @@ async function aiGenerateSlideContent() {
   const p = state.prompts || DEFAULT_PROMPTS;
   const systemPrompt = p.system_slide;
   const brandNoteLine = state.brandNote.trim() ? `\nBrand/Catatan: ${state.brandNote.trim()}` : "";
+  const customInstructionLine = state.customStyle.trim() ? `\nInstruksi tambahan: ${state.customStyle.trim()}` : "";
   const userPrompt = replacePromptVars(p.user_slide, {
     topic: state.topic,
     purpose: state.purpose,
     audience: state.audience,
     slideCount: String(state.slideCount),
     brandNoteLine,
-  });
+  }) + customInstructionLine;
 
   const modelsToTry = getActiveModels();
   let lastError = null;
