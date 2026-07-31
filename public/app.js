@@ -128,8 +128,10 @@ let DEFAULT_NEGATIVE = "blurry, low quality, distorted text, extra limbs, waterm
 let DEFAULT_PROMPTS = {
   system_idea: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Ikuti aturan sumber ide berikut dengan ketat: (1) Jika pengguna memberikan niche DAN subniche, maka topik dan coverHook WAJIB berkaitan erat dengan hal-hal yang relevan pada subniche tersebut (masalah, tips, tren, atau praktik yang dibahas di subniche itu), spesifik dan mendalam. Nama niche/subniche TIDAK wajib disebut secara literal di topik, coverHook, atau isi slide — yang penting substansinya berhubungan dengan niche dan subniche. Contoh: niche='Keuangan', subniche='Investasi Saham' → topik seperti '7 Kesalahan Investasi Saham yang Sering Membuat Pemula Rugi' atau 'Strategi Jual Murah Saat Pasar Sedang Turun', bukan topik keuangan yang umum. (2) Jika pengguna hanya memberikan niche tanpa subniche, topik dan coverHook boleh bersifat generik namun tetap berkaitan erat dengan niche besar tersebut. (3) Jika pengguna tidak memberikan niche maupun subniche, pilih sendiri satu niche secara acak sebagai sumber ide topik dan coverHook. Berdasarkan sumber ide tersebut, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik dengan pendekatan hypnotic copywriting. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel yang bersifat umum sebagai tema besar, gunakan teknik hypnotic copywriting Joe Vitale (pattern interrupt, curiosity gap, emotional trigger) agar langsung memikat perhatian\", \"coverHook\": \"string hook spesifik yang lebih fokus dan konkret, diturunkan dari sumber ide sesuai aturan di atas. Biasanya dalam bentuk angka, cara, tips, atau pertanyaan yang memicu rasa penasaran. Contoh: topic='Menghadapi krisis ekonomi di Indonesia', coverHook='5 Cara Berhemat di Masa Krisis Ekonomi Saat Ini'\"}. Jangan tambahkan teks lain.",
   user_idea: "Niche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 ide topik carousel sesuai aturan pada system prompt.",
+  system_coverhook: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Topik carousel SUDAH ditentukan oleh pengguna — JANGAN membuat topik baru atau mengubah topik. Tugasmu: buatkan 1 coverHook yang fokus dan spesifik sebagai inti pembahasan dari topik tersebut, tetap berhubungan dengan niche dan subniche yang diberikan (tidak wajib menyebutkan nama niche/subniche secara literal). Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI, dengan teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger, embedded command). Balas HANYA dengan JSON object: {\"coverHook\": \"string hook fokus yang lebih konkret dan spesifik dari topik. Biasanya dalam bentuk angka, cara, tips, atau pertanyaan yang memicu rasa penasaran. Contoh: topik='Menghadapi krisis ekonomi di Indonesia', coverHook='5 Cara Berhemat di Masa Krisis Ekonomi Saat Ini'\"}. Jangan tambahkan teks lain.",
   system_slide: "Kamu adalah asisten penyusun konten carousel Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat menggunakan hypnotic copywriting Joe Vitale. Gunakan teknik hypnotic copywriting karya Joe Vitale di SETIAP slide agar pembaca terus tergerak membaca sampai akhir: pola kalimat yang memicu rasa penasaran (curiosity gap), pattern interrupt (kalimat yang mematahkan ekspektasi), embedded command (perintah tersirat), ajakan emosional, dan direct address (Anda/Kamu). Bukan sekadar informatif — setiap slide harus membuat pembaca ingin lanjut ke slide berikutnya dengan rasa penasaran yang tak tertahankan. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Seluruh isi slide (headline, body, visualIdea) harus berhubungan dengan niche dan subniche yang ada pada brief, namun tidak wajib menyebutkan nama niche/subniche secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
   user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
+  user_coverhook: "Topik: {{topic}}\nNiche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 cover hook yang fokus sebagai inti pembahasan dari topik di atas.",
   negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
@@ -2196,6 +2198,9 @@ async function generateIdeaFromNiche() {
   const niche = evergreen + (subniche ? " - " + subniche : "");
   if (!evergreen) { document.getElementById("niche-alert-modal").classList.remove("hidden"); lockScroll(); return; }
 
+  const manualTopic = document.getElementById("inp-topic").value.trim();
+  const hookOnly = manualTopic.length > 0;
+
   const keyStatus = await api("/api/ai/api-key");
   if (!keyStatus.hasKey) { showToast("API Key belum diatur. Minta Admin untuk mengatur API Key.", "error"); return; }
   if (!getActiveModels().length) { showToast("Model AI belum dipilih.", "error"); return; }
@@ -2211,8 +2216,12 @@ async function generateIdeaFromNiche() {
   const originalLabel = label.innerHTML;
 
   const p = state.prompts || DEFAULT_PROMPTS;
-  const systemPrompt = p.system_idea;
-  const userPrompt = replacePromptVars(p.user_idea, { niche, subniche });
+  const systemPrompt = hookOnly
+    ? (p.system_coverhook || DEFAULT_PROMPTS.system_coverhook)
+    : p.system_idea;
+  const userPrompt = hookOnly
+    ? replacePromptVars(p.user_coverhook || DEFAULT_PROMPTS.user_coverhook, { topic: manualTopic, niche, subniche })
+    : replacePromptVars(p.user_idea, { niche, subniche });
 
   const modelsToTry = getActiveModels();
   let lastError = null;
@@ -2221,7 +2230,7 @@ async function generateIdeaFromNiche() {
     if (state._aborted) break;
     const modelId = modelsToTry[i];
     state.openCodeModel = modelId;
-    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> Menggali ide… <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
+    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> ${hookOnly ? "Membuat cover hook…" : "Menggali ide…"} <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
 
     try {
       const text = await callOpenCode(systemPrompt, userPrompt, signal);
@@ -2229,17 +2238,26 @@ async function generateIdeaFromNiche() {
 
       let cleaned = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
       const result = JSON.parse(cleaned);
-      const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
-      const coverHook = result.coverHook || topic;
-
-      document.getElementById("inp-topic").value = topic;
-      state.topic = topic;
 
       const hookEl = document.getElementById("inp-cover-hook");
-      if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; autoExpand(hookEl); }
 
-      renderSlidesArea();
-      showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
+      if (hookOnly) {
+        const coverHook = result.coverHook || result.topic || manualTopic;
+        if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; autoExpand(hookEl); }
+        renderSlidesArea();
+        showToast("Cover hook untuk topik kamu berhasil dibuat", "success");
+      } else {
+        const topic = result.topic || `Tips ${niche.toLowerCase()} untuk pemula`;
+        const coverHook = result.coverHook || topic;
+
+        document.getElementById("inp-topic").value = topic;
+        state.topic = topic;
+
+        if (hookEl) { hookEl.value = coverHook; state.coverHook = coverHook; autoExpand(hookEl); }
+
+        renderSlidesArea();
+        showToast(`Ide untuk niche "${niche}" berhasil dibuat`, "success");
+      }
 
       btn.disabled = false;
       label.innerHTML = originalLabel;
@@ -3143,7 +3161,9 @@ function bindInputs() {
       document.getElementById("prompt-system-slide").value = p.system_slide;
       document.getElementById("prompt-user-slide").value = p.user_slide;
       document.getElementById("prompt-negative").value = p.negative_prompt;
-      ["prompt-system-idea","prompt-system-slide","prompt-negative"].forEach(id => autoExpand(document.getElementById(id)));
+      document.getElementById("prompt-system-coverhook").value = p.system_coverhook || "";
+      document.getElementById("prompt-user-coverhook").value = p.user_coverhook || "";
+      ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook"].forEach(id => autoExpand(document.getElementById(id)));
     } catch (err) { showToast("Gagal memuat prompts", "error"); }
   }
   document.getElementById("btn-prompt-ai").addEventListener("click", openPromptModal);
@@ -3158,7 +3178,7 @@ function bindInputs() {
     content.classList.toggle("hidden");
     icon.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
     if (!isOpen) {
-      ["prompt-user-idea","prompt-user-slide"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
+      ["prompt-user-idea","prompt-user-slide","prompt-user-coverhook"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
     }
   });
   document.getElementById("prompt-modal").addEventListener("click", (e) => {
@@ -3173,6 +3193,8 @@ function bindInputs() {
       system_slide: document.getElementById("prompt-system-slide").value.trim(),
       user_slide: document.getElementById("prompt-user-slide").value.trim(),
       negative_prompt: document.getElementById("prompt-negative").value.trim(),
+      system_coverhook: document.getElementById("prompt-system-coverhook").value.trim(),
+      user_coverhook: document.getElementById("prompt-user-coverhook").value.trim(),
     };
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
@@ -3192,7 +3214,9 @@ function bindInputs() {
     document.getElementById("prompt-system-slide").value = prompts.system_slide;
     document.getElementById("prompt-user-slide").value = prompts.user_slide;
     document.getElementById("prompt-negative").value = prompts.negative_prompt;
-    ["prompt-system-idea","prompt-system-slide","prompt-negative"].forEach(id => autoExpand(document.getElementById(id)));
+    document.getElementById("prompt-system-coverhook").value = prompts.system_coverhook;
+    document.getElementById("prompt-user-coverhook").value = prompts.user_coverhook;
+    ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook"].forEach(id => autoExpand(document.getElementById(id)));
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
       state.prompts = prompts;
@@ -3749,7 +3773,7 @@ async function init() {
     showLoginModal();
   }
   loadSettings();
-  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative"].forEach(id => {
+  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative","prompt-system-coverhook","prompt-user-coverhook"].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => autoExpand(el));
