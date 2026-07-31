@@ -23,19 +23,29 @@ const FREE_MODELS = [
 ];
 
 const DEFAULT_PROMPTS = {
-  system_idea: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Berdasarkan niche yang diberikan, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik dengan pendekatan hypnotic copywriting. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel yang bersifat umum sebagai tema besar, gunakan teknik hypnotic copywriting Joe Vitale (pattern interrupt, curiosity gap, emotional trigger) agar langsung memikat perhatian\", \"coverHook\": \"string hook spesifik yang lebih fokus dan konkret, diturunkan dari topik dan niche menggunakan teknik hypnotic copywriting. Biasanya dalam bentuk angka, cara, tips, atau pertanyaan yang memicu rasa penasaran. Contoh: topic='Menghadapi krisis ekonomi di Indonesia', coverHook='5 Cara Berhemat di Masa Krisis Ekonomi Saat Ini'\"}. Jangan tambahkan teks lain.",
+  system_idea: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik/niche yang diberikan. Ikuti aturan sumber ide berikut dengan ketat: (1) Jika pengguna memberikan niche DAN subniche, maka topik dan coverHook WAJIB diturunkan langsung dari subniche tersebut, spesifik dan memuat kata kunci subniche. Contoh: niche='Keuangan', subniche='Investasi Saham' → topik seperti '7 Kesalahan Investasi Saham yang Sering Membuat Pemula Rugi', bukan topik keuangan yang umum. (2) Jika pengguna hanya memberikan niche tanpa subniche, topik dan coverHook boleh bersifat generik namun tetap relevan dengan niche besar tersebut. (3) Jika pengguna tidak memberikan niche maupun subniche, pilih sendiri satu niche secara acak sebagai sumber ide topik dan coverHook. Berdasarkan sumber ide tersebut, buatkan 1 ide topik carousel Instagram yang menarik, relevan, dan spesifik dengan pendekatan hypnotic copywriting. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"topic\": \"string judul carousel yang bersifat umum sebagai tema besar, gunakan teknik hypnotic copywriting Joe Vitale (pattern interrupt, curiosity gap, emotional trigger) agar langsung memikat perhatian\", \"coverHook\": \"string hook spesifik yang lebih fokus dan konkret, diturunkan dari sumber ide sesuai aturan di atas. Biasanya dalam bentuk angka, cara, tips, atau pertanyaan yang memicu rasa penasaran. Contoh: topic='Menghadapi krisis ekonomi di Indonesia', coverHook='5 Cara Berhemat di Masa Krisis Ekonomi Saat Ini'\"}. Jangan tambahkan teks lain.",
+  user_idea: "Niche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 ide topik carousel sesuai aturan pada system prompt.",
   system_slide: "Kamu adalah asisten penyusun konten carousel Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat menggunakan hypnotic copywriting Joe Vitale. Gunakan teknik hypnotic copywriting karya Joe Vitale di SETIAP slide agar pembaca terus tergerak membaca sampai akhir: pola kalimat yang memicu rasa penasaran (curiosity gap), pattern interrupt (kalimat yang mematahkan ekspektasi), embedded command (perintah tersirat), ajakan emosional, dan direct address (Anda/Kamu). Bukan sekadar informatif — setiap slide harus membuat pembaca ingin lanjut ke slide berikutnya dengan rasa penasaran yang tak tertahankan. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
+  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
   negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
+const PROMPTS_VERSION = 2;
+
 function defaultConfig() {
-  return { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [], archivedModels: [], prompts: { ...DEFAULT_PROMPTS } };
+  return { apiKeyEncrypted: null, activeModels: FREE_MODELS.map((m) => m.id), customModels: [], archivedModels: [], prompts: { ...DEFAULT_PROMPTS }, promptsVersion: PROMPTS_VERSION };
 }
 
 async function getConfig() {
   let cfg = await get('config');
   if (!cfg) return defaultConfig();
-  if (!cfg.prompts) cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+  // Migrasi satu kali: prompt baru (versi 2) menimpa prompt lama yang tersimpan
+  if (cfg.promptsVersion !== PROMPTS_VERSION) {
+    cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS }, promptsVersion: PROMPTS_VERSION };
+    await set('config', cfg);
+  } else if (!cfg.prompts) {
+    cfg = { ...cfg, prompts: { ...DEFAULT_PROMPTS } };
+  }
   return cfg;
 }
 
