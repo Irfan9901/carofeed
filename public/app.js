@@ -759,7 +759,7 @@ function composeMainPrompt(slide) {
   }
 
   if (state.brandNote) {
-    parts.push(` Text overlay "${state.brandNote}" at top left corner.`);
+    parts.push(` Text overlay "${state.brandNote}" at top left corner, without any logo or do not create any logo.`);
   }
 
   if (state.swipeText && slide.role !== "penutup") {
