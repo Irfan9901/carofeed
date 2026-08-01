@@ -134,6 +134,10 @@ let DEFAULT_PROMPTS = {
   user_coverhook: "Topik: {{topic}}\nNiche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 cover hook yang fokus sebagai inti pembahasan dari topik di atas.",
   system_poster: "Kamu adalah asisten kreator konten visual yang menguasai teknik hypnotic copywriting karya Joe Vitale. Tugasmu: membuat 1 poster tunggal (single poster) yang BERDIRI SENDIRI — BUKAN bagian dari carousel, TIDAK boleh ada kelanjutan, TIDAK boleh menyebut slide lain, TIDAK boleh berakhir dengan ajakan \"lanjut ke slide berikutnya\". Seluruh pesan harus tuntas dalam SATU slide: hook pembuka yang kuat → inti/value utama → kesimpulan + call-to-action. Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI. Pakai teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger, embedded command, direct address). Seluruh isi harus berhubungan dengan niche dan subniche pada brief, tidak wajib menyebutnya secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun — hanya objek, teks, bangunan, abstrak, pemandangan alam tanpa makhluk hidup. Balas HANYA dengan JSON array berisi PERSIS SATU elemen: [{\"headline\": \"string hook singkat memikat, bahasa sesuai topik\", \"body\": \"string 1-2 kalimat pendukung yang memuat inti pesan DAN call-to-action, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator yang menggambarkan keseluruhan konsep poster\"}]. Tanpa teks lain, tanpa markdown code fence.",
   user_poster: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nBuat 1 poster tunggal yang tuntas tanpa kelanjutan sesuai brief di atas.",
+  system_posteridea: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Pengguna akan membuat POSTER TUNGGAL (1 slide, tanpa kelanjutan) — jadi topik dan coverHook yang kamu buat harus BUKAN tips, BUKAN daftar angka/cara (misal '5 Cara…', '7 Tips…'), BUKAN serial, dan BUKAN bagian awal dari serial atau tips; keduanya harus berupa ide copywriting persuasif yang berdiri sendiri dan tuntas dalam satu pesan. Ikuti aturan sumber ide berikut dengan ketat: (1) Jika pengguna memberikan niche DAN subniche, maka topik dan coverHook WAJIB berkaitan erat dengan hal-hal yang relevan pada subniche tersebut, spesifik dan mendalam. Nama niche/subniche TIDAK wajib disebut secara literal. Contoh: niche='Keuangan', subniche='Investasi Saham' → topik seperti 'Kepanikan pasar adalah saat kamu paling dikendalikan emosi', bukan '7 Kesalahan Investasi Saham yang Sering Membuat Pemula Rugi'. (2) Jika pengguna hanya memberikan niche tanpa subniche, topik dan coverHook boleh bersifat generik namun tetap berkaitan erat dengan niche besar tersebut. (3) Jika pengguna tidak memberikan niche maupun subniche, pilih sendiri satu niche secara acak sebagai sumber ide. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI, dengan teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger). Balas HANYA dengan JSON object: {\"topic\": \"string tema besar poster tunggal, non-tips non-serial, memikat perhatian\", \"coverHook\": \"string hook spesifik poster tunggal, copywriting persuasif yang menuntaskan satu pesan, non-tips non-serial, bukan 'X Cara/Tips…'\"}. Jangan tambahkan teks lain.",
+  user_posteridea: "Niche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 ide topik poster tunggal (non-tips, non-serial) sesuai aturan pada system prompt.",
+  system_posterhook: "Kamu adalah copywriter konten Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Topik SUDAH ditentukan oleh pengguna — JANGAN membuat topik baru atau mengubah topik. Tugasmu: buatkan 1 headline/cover hook untuk POSTER TUNGGAL yang berdiri sendiri. Hook ini BUKAN tips, BUKAN daftar angka/cara (misal '5 Cara…', '7 Tips…'), BUKAN serial, dan BUKAN bagian awal dari serial atau tips — melainkan copywriting/teks persuasif yang tuntas memikat dalam satu kalimat: pattern interrupt, curiosity gap, emotional trigger, atau direct address. Tetap berhubungan dengan niche dan subniche yang diberikan (tidak wajib menyebutkan nama niche/subniche secara literal). Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"coverHook\": \"string hook poster tunggal berupa copywriting persuasif non-tips non-serial, spesifik dan konkret\"}. Jangan tambahkan teks lain.",
+  user_posterhook: "Topik: {{topic}}\nNiche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 cover hook poster tunggal (copywriting persuasif, bukan tips/serial) dari topik di atas.",
   negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
@@ -2218,12 +2222,13 @@ async function generateIdeaFromNiche() {
   const originalLabel = label.innerHTML;
 
   const p = state.prompts || DEFAULT_PROMPTS;
+  const isPosterMode = state.slideCount === 1;
   const systemPrompt = hookOnly
-    ? (p.system_coverhook || DEFAULT_PROMPTS.system_coverhook)
-    : p.system_idea;
+    ? (isPosterMode ? (p.system_posterhook || DEFAULT_PROMPTS.system_posterhook) : (p.system_coverhook || DEFAULT_PROMPTS.system_coverhook))
+    : (isPosterMode ? (p.system_posteridea || DEFAULT_PROMPTS.system_posteridea) : p.system_idea);
   const userPrompt = hookOnly
-    ? replacePromptVars(p.user_coverhook || DEFAULT_PROMPTS.user_coverhook, { topic: manualTopic, niche, subniche })
-    : replacePromptVars(p.user_idea, { niche, subniche });
+    ? replacePromptVars(isPosterMode ? (p.user_posterhook || DEFAULT_PROMPTS.user_posterhook) : (p.user_coverhook || DEFAULT_PROMPTS.user_coverhook), { topic: manualTopic, niche, subniche })
+    : replacePromptVars(isPosterMode ? (p.user_posteridea || DEFAULT_PROMPTS.user_posteridea) : p.user_idea, { niche, subniche });
 
   const modelsToTry = getActiveModels();
   let lastError = null;
@@ -2232,7 +2237,7 @@ async function generateIdeaFromNiche() {
     if (state._aborted) break;
     const modelId = modelsToTry[i];
     state.openCodeModel = modelId;
-    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> ${hookOnly ? "Membuat cover hook…" : "Menggali ide…"} <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
+    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> ${hookOnly ? (isPosterMode ? "Membuat hook poster…" : "Membuat cover hook…") : "Menggali ide…"} <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
 
     try {
       const text = await callOpenCode(systemPrompt, userPrompt, signal);
@@ -3172,7 +3177,11 @@ function bindInputs() {
       document.getElementById("prompt-user-coverhook").value = p.user_coverhook || "";
       document.getElementById("prompt-system-poster").value = p.system_poster || "";
       document.getElementById("prompt-user-poster").value = p.user_poster || "";
-      ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster"].forEach(id => autoExpand(document.getElementById(id)));
+      document.getElementById("prompt-system-posteridea").value = p.system_posteridea || "";
+      document.getElementById("prompt-user-posteridea").value = p.user_posteridea || "";
+      document.getElementById("prompt-system-posterhook").value = p.system_posterhook || "";
+      document.getElementById("prompt-user-posterhook").value = p.user_posterhook || "";
+      ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster","prompt-system-posteridea","prompt-system-posterhook"].forEach(id => autoExpand(document.getElementById(id)));
     } catch (err) { showToast("Gagal memuat prompts", "error"); }
   }
   document.getElementById("btn-prompt-ai").addEventListener("click", openPromptModal);
@@ -3187,7 +3196,7 @@ function bindInputs() {
     content.classList.toggle("hidden");
     icon.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
     if (!isOpen) {
-      ["prompt-user-idea","prompt-user-slide","prompt-user-coverhook","prompt-user-poster"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
+      ["prompt-user-idea","prompt-user-slide","prompt-user-coverhook","prompt-user-poster","prompt-user-posteridea","prompt-user-posterhook"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
     }
   });
   document.getElementById("prompt-modal").addEventListener("click", (e) => {
@@ -3206,6 +3215,10 @@ function bindInputs() {
       user_coverhook: document.getElementById("prompt-user-coverhook").value.trim(),
       system_poster: document.getElementById("prompt-system-poster").value.trim(),
       user_poster: document.getElementById("prompt-user-poster").value.trim(),
+      system_posteridea: document.getElementById("prompt-system-posteridea").value.trim(),
+      user_posteridea: document.getElementById("prompt-user-posteridea").value.trim(),
+      system_posterhook: document.getElementById("prompt-system-posterhook").value.trim(),
+      user_posterhook: document.getElementById("prompt-user-posterhook").value.trim(),
     };
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
@@ -3229,7 +3242,11 @@ function bindInputs() {
     document.getElementById("prompt-user-coverhook").value = prompts.user_coverhook;
     document.getElementById("prompt-system-poster").value = prompts.system_poster;
     document.getElementById("prompt-user-poster").value = prompts.user_poster;
-    ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster"].forEach(id => autoExpand(document.getElementById(id)));
+    document.getElementById("prompt-system-posteridea").value = prompts.system_posteridea;
+    document.getElementById("prompt-user-posteridea").value = prompts.user_posteridea;
+    document.getElementById("prompt-system-posterhook").value = prompts.system_posterhook;
+    document.getElementById("prompt-user-posterhook").value = prompts.user_posterhook;
+    ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster","prompt-system-posteridea","prompt-system-posterhook"].forEach(id => autoExpand(document.getElementById(id)));
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
       state.prompts = prompts;
@@ -3786,7 +3803,7 @@ async function init() {
     showLoginModal();
   }
   loadSettings();
-  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative","prompt-system-coverhook","prompt-user-coverhook","prompt-system-poster","prompt-user-poster"].forEach(id => {
+  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative","prompt-system-coverhook","prompt-user-coverhook","prompt-system-poster","prompt-user-poster","prompt-system-posteridea","prompt-user-posteridea","prompt-system-posterhook","prompt-user-posterhook"].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => autoExpand(el));
