@@ -702,6 +702,21 @@ function findStyleById(id) {
   return null;
 }
 
+function updateSwipeToggleUI(checked) {
+  document.getElementById("inp-swipe-text").checked = checked;
+  document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "#000000";
+  document.getElementById("swipe-knob").style.transform = checked ? "translateX(20px)" : "translateX(0)";
+  document.getElementById("swipe-label").style.color = checked ? "var(--ink-soft)" : "var(--ink-faint)";
+}
+
+function applySwipeAuto() {
+  const want = state.slideCount > 1;
+  state.swipeText = want;
+  updateSwipeToggleUI(want);
+  refreshJsonOutput();
+  renderCarouselTrack();
+}
+
 function activeStyleTags() {
   const preset = findStyleById(state.stylePreset);
   const base = preset ? [...preset.tags] : [];
@@ -1202,6 +1217,8 @@ function renderSlideList() {
         else s.role = "isi";
       });
       document.getElementById("inp-count").value = String(state.slides.length);
+      state.slideCount = state.slides.length;
+      applySwipeAuto();
       renderSlidesArea();
     });
   });
@@ -1507,6 +1524,7 @@ function applyPresetData(data) {
   if (audienceEl) audienceEl.value = state.audience;
   const countEl = document.getElementById("inp-count");
   if (countEl) countEl.value = state.slideCount;
+  applySwipeAuto();
   const ratioEl = document.getElementById("inp-ratio");
   if (ratioEl) ratioEl.value = state.aspectRatio;
   const ratioW = document.getElementById("inp-ratio-w");
@@ -1716,6 +1734,7 @@ function resetApp(silent) {
   state.customRatioH = "";
   state.slideCount = 5;
   state.jsonGenerated = false;
+  applySwipeAuto();
 
   document.getElementById("inp-topic").value = "";
   autoExpand(document.getElementById("inp-topic"));
@@ -2393,6 +2412,7 @@ async function aiGenerateSlideContent() {
       state.generateFailCount = 0;
       state.slideCount = state.slides.length;
       document.getElementById("inp-count").value = String(state.slideCount);
+      applySwipeAuto();
       renderSlidesArea();
       showToast("Isi slide berhasil disusun AI", "success");
       completeGenerate();
@@ -2727,12 +2747,6 @@ function bindInputs() {
   document.getElementById("inp-purpose").addEventListener("change", (e) => { state.purpose = e.target.value; });
   document.getElementById("inp-audience").addEventListener("change", (e) => { state.audience = e.target.value; });
 
-  function updateSwipeToggleUI(checked) {
-    document.getElementById("inp-swipe-text").checked = checked;
-    document.getElementById("swipe-track").style.background = checked ? "var(--amber)" : "#000000";
-    document.getElementById("swipe-knob").style.transform = checked ? "translateX(20px)" : "translateX(0)";
-    document.getElementById("swipe-label").style.color = checked ? "var(--ink-soft)" : "var(--ink-faint)";
-  }
   document.getElementById("lbl-swipe-text").addEventListener("click", (e) => {
     e.preventDefault();
     const cb = document.getElementById("inp-swipe-text");
@@ -2746,6 +2760,7 @@ function bindInputs() {
   document.getElementById("inp-count").addEventListener("change", (e) => {
     const n = Math.max(1, Math.min(15, Number(e.target.value) || 1));
     state.slideCount = n;
+    applySwipeAuto();
     if (state.slides.length > 0) {
       reconcileSlideCount(n);
       renderSlidesArea();
@@ -2901,6 +2916,7 @@ function bindInputs() {
     });
     state.slideCount = state.slides.length;
     document.getElementById("inp-count").value = String(state.slideCount);
+    applySwipeAuto();
     renderSlidesArea();
   });
 
