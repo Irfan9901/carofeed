@@ -101,10 +101,10 @@ Production menggunakan `@upstash/redis` (REST API). Development (`DEV_MODE=true`
 - **Input fields:**
   - Niche (30 pilihan, misal: Bisnis, Kesehatan, Teknologi, Parenting, dll.)
   - Subniche (20 per niche, total ~600)
-  - Topik/judul — manual atau generate via AI
+  - Topik/judul — manual atau generate via AI (jika topik sudah diisi manual, "Generate ide dari niche" hanya membuat cover hook — topik tidak ditimpa)
   - Tujuan konten (textarea)
   - Target audiens (textarea)
-  - Jumlah slide (5-10, default 8)
+  - Jumlah slide (1-15, default 5)
   - Aspek rasio (1:1, 4:5, 9:16)
   - Gaya visual dari 49 style preset dalam 10 kategori (Modern, Illustration, 3D, Artistic, Classic, Tropical, Urban, Luxury, Playful, Minimal)
   - Layout slide (40+ layout dari `data_layouts` key — admin dapat mengelola via CRUD)
@@ -115,8 +115,9 @@ Production menggunakan `@upstash/redis` (REST API). Development (`DEV_MODE=true`
   - Lighting options
   - Composition options
   - Negative prompt
-- **AI Generate Ide Topik:** POST ke AI dengan konteks niche/subniche
+- **AI Generate Ide Topik:** POST ke AI dengan konteks niche/subniche → menghasilkan `{ topic, coverHook }`. Jika topik sudah diisi manual → mode hook-only: hanya `coverHook` dibuat, topik tidak ditimpa (`generateIdeaFromNiche()` di app.js)
 - **AI Generate Konten Slide:** POST ke AI → menghasilkan `{ headline, body, visualIdea }` per slide
+- **Poster Tunggal (Jumlah slide = 1):** memakai prompt `system_poster`/`user_poster` (editable admin) → JSON array berisi PERSIS 1 elemen yang tuntas tanpa kelanjutan (hook → inti → CTA). Brief tetap lengkap: topic, purpose, audience, slideCount=1, brandNote, niche, subniche, customStyle, dan coverHook diadaptasi menjadi "Poster headline HARUS persis: …" + perintah tuntas tanpa kelanjutan. Label tombol: "AI menyusun poster…"
 - **Slide Editor:** Add slide, remove slide, reorder (drag), edit teks per slide
 - **JSON Output:** Viewer dengan copy button
 
@@ -150,7 +151,7 @@ Production menggunakan `@upstash/redis` (REST API). Development (`DEV_MODE=true`
   - upgradeLink (URL)
   - AI model management: enable/disable, custom models, archive
   - API key editor
-  - Prompt editor: system prompt, user prompt, negative prompt
+  - Prompt editor: system/user prompt (idea, slide, coverhook, poster) + negative prompt
   - Guide editor (8 steps, reorderable)
   - Category images: upload/delete per styleId
   - Custom categories: add/delete, add/remove styles with images
