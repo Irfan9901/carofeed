@@ -6,7 +6,9 @@ TOKEN=$(cat ~/Library/Application\ Support/com.vercel.cli/auth.json | python3 -c
 TEAM="team_huU4gZ4yxJfvHSUwOevNsX71"
 
 git add -A
-git commit -m "$MSG"
+if ! git diff --cached --quiet; then
+  git commit -m "$MSG"
+fi
 
 echo "🚀 Deploy..."
 OUT=$(npx vercel deploy --prod --yes 2>&1)
