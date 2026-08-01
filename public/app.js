@@ -132,6 +132,8 @@ let DEFAULT_PROMPTS = {
   system_slide: "Kamu adalah asisten penyusun konten carousel Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat menggunakan hypnotic copywriting Joe Vitale. Gunakan teknik hypnotic copywriting karya Joe Vitale di SETIAP slide agar pembaca terus tergerak membaca sampai akhir: pola kalimat yang memicu rasa penasaran (curiosity gap), pattern interrupt (kalimat yang mematahkan ekspektasi), embedded command (perintah tersirat), ajakan emosional, dan direct address (Anda/Kamu). Bukan sekadar informatif — setiap slide harus membuat pembaca ingin lanjut ke slide berikutnya dengan rasa penasaran yang tak tertahankan. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Seluruh isi slide (headline, body, visualIdea) harus berhubungan dengan niche dan subniche yang ada pada brief, namun tidak wajib menyebutkan nama niche/subniche secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
   user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
   user_coverhook: "Topik: {{topic}}\nNiche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 cover hook yang fokus sebagai inti pembahasan dari topik di atas.",
+  system_poster: "Kamu adalah asisten kreator konten visual yang menguasai teknik hypnotic copywriting karya Joe Vitale. Tugasmu: membuat 1 poster tunggal (single poster) yang BERDIRI SENDIRI — BUKAN bagian dari carousel, TIDAK boleh ada kelanjutan, TIDAK boleh menyebut slide lain, TIDAK boleh berakhir dengan ajakan \"lanjut ke slide berikutnya\". Seluruh pesan harus tuntas dalam SATU slide: hook pembuka yang kuat → inti/value utama → kesimpulan + call-to-action. Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI. Pakai teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger, embedded command, direct address). Seluruh isi harus berhubungan dengan niche dan subniche pada brief, tidak wajib menyebutnya secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun — hanya objek, teks, bangunan, abstrak, pemandangan alam tanpa makhluk hidup. Balas HANYA dengan JSON array berisi PERSIS SATU elemen: [{\"headline\": \"string hook singkat memikat, bahasa sesuai topik\", \"body\": \"string 1-2 kalimat pendukung yang memuat inti pesan DAN call-to-action, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator yang menggambarkan keseluruhan konsep poster\"}]. Tanpa teks lain, tanpa markdown code fence.",
+  user_poster: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nBuat 1 poster tunggal yang tuntas tanpa kelanjutan sesuai brief di atas.",
   negative_prompt: "blurry, low quality, distorted text, extra limbs, watermark, signature, cropped, jpeg artifacts, inconsistent style with other slides, logo, living beings, character"
 };
 
@@ -2331,17 +2333,22 @@ async function aiGenerateSlideContent() {
   btn.disabled = true;
 
   const p = state.prompts || DEFAULT_PROMPTS;
-  const systemPrompt = p.system_slide;
+  const isPoster = state.slideCount === 1;
+  const systemPrompt = isPoster
+    ? (p.system_poster || DEFAULT_PROMPTS.system_poster)
+    : p.system_slide;
   const brandNoteLine = state.brandNote.trim() ? `\nBrand/Catatan: ${state.brandNote.trim()}` : "";
   const customInstructionLine = state.customStyle.trim() ? `\nInstruksi tambahan: ${state.customStyle.trim()}` : "";
-  const coverHookLine = state.coverHook.trim() ? `\nCover slide headline HARUS persis: "${state.coverHook.trim()}". Slide 2 sampai seterusnya adalah kelanjutan atau penjelasan dari hook tersebut, tetap dalam cakupan topik yang sama.` : "";
+  const coverHookLine = isPoster
+    ? (state.coverHook.trim() ? `\nPoster headline HARUS persis: "${state.coverHook.trim()}". Seluruh pesan poster harus tuntas dalam satu slide ini tanpa kelanjutan.` : "")
+    : (state.coverHook.trim() ? `\nCover slide headline HARUS persis: "${state.coverHook.trim()}". Slide 2 sampai seterusnya adalah kelanjutan atau penjelasan dari hook tersebut, tetap dalam cakupan topik yang sama.` : "");
   const nicheEl = document.getElementById("inp-evergreen-niche");
   const subEl = document.getElementById("inp-subniche");
-  const userPrompt = replacePromptVars(p.user_slide, {
+  const userPrompt = replacePromptVars(isPoster ? (p.user_poster || DEFAULT_PROMPTS.user_poster) : p.user_slide, {
     topic: state.topic,
     purpose: state.purpose,
     audience: state.audience,
-    slideCount: String(state.slideCount),
+    slideCount: isPoster ? "1" : String(state.slideCount),
     brandNoteLine,
     niche: (nicheEl?.value || "") + (subEl?.value ? " - " + subEl.value : ""),
     subniche: subEl?.value || "",
@@ -2356,7 +2363,7 @@ async function aiGenerateSlideContent() {
     state.openCodeModel = modelId;
     const select = document.getElementById("inp-model");
     if (select) select.value = modelId;
-    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> AI menyusun slide… <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
+    label.innerHTML = `<span class="inline-flex items-center gap-2"><section class="dots-container"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></section> ${isPoster ? "AI menyusun poster…" : "AI menyusun slide…"} <span class="text-[10px] ml-1 opacity-60">Escape batal</span></span>`;
     setSlideListSkeleton(true);
 
     try {
@@ -3163,7 +3170,9 @@ function bindInputs() {
       document.getElementById("prompt-negative").value = p.negative_prompt;
       document.getElementById("prompt-system-coverhook").value = p.system_coverhook || "";
       document.getElementById("prompt-user-coverhook").value = p.user_coverhook || "";
-      ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook"].forEach(id => autoExpand(document.getElementById(id)));
+      document.getElementById("prompt-system-poster").value = p.system_poster || "";
+      document.getElementById("prompt-user-poster").value = p.user_poster || "";
+      ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster"].forEach(id => autoExpand(document.getElementById(id)));
     } catch (err) { showToast("Gagal memuat prompts", "error"); }
   }
   document.getElementById("btn-prompt-ai").addEventListener("click", openPromptModal);
@@ -3178,7 +3187,7 @@ function bindInputs() {
     content.classList.toggle("hidden");
     icon.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
     if (!isOpen) {
-      ["prompt-user-idea","prompt-user-slide","prompt-user-coverhook"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
+      ["prompt-user-idea","prompt-user-slide","prompt-user-coverhook","prompt-user-poster"].forEach(id => { const el = document.getElementById(id); if (el) autoExpand(el); });
     }
   });
   document.getElementById("prompt-modal").addEventListener("click", (e) => {
@@ -3195,6 +3204,8 @@ function bindInputs() {
       negative_prompt: document.getElementById("prompt-negative").value.trim(),
       system_coverhook: document.getElementById("prompt-system-coverhook").value.trim(),
       user_coverhook: document.getElementById("prompt-user-coverhook").value.trim(),
+      system_poster: document.getElementById("prompt-system-poster").value.trim(),
+      user_poster: document.getElementById("prompt-user-poster").value.trim(),
     };
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
@@ -3216,7 +3227,9 @@ function bindInputs() {
     document.getElementById("prompt-negative").value = prompts.negative_prompt;
     document.getElementById("prompt-system-coverhook").value = prompts.system_coverhook;
     document.getElementById("prompt-user-coverhook").value = prompts.user_coverhook;
-    ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook"].forEach(id => autoExpand(document.getElementById(id)));
+    document.getElementById("prompt-system-poster").value = prompts.system_poster;
+    document.getElementById("prompt-user-poster").value = prompts.user_poster;
+    ["prompt-system-idea","prompt-system-slide","prompt-negative","prompt-system-coverhook","prompt-system-poster"].forEach(id => autoExpand(document.getElementById(id)));
     try {
       await api("/api/ai/prompts", { method: "PUT", body: JSON.stringify({ prompts }) });
       state.prompts = prompts;
@@ -3773,7 +3786,7 @@ async function init() {
     showLoginModal();
   }
   loadSettings();
-  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative","prompt-system-coverhook","prompt-user-coverhook"].forEach(id => {
+  ["inp-topic","inp-brand","inp-customstyle","inp-cover-hook","prompt-system-idea","prompt-user-idea","prompt-system-slide","prompt-user-slide","prompt-negative","prompt-system-coverhook","prompt-user-coverhook","prompt-system-poster","prompt-user-poster"].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", () => autoExpand(el));
