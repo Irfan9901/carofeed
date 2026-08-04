@@ -1937,7 +1937,7 @@ function renderLayoutManager() {
         <input class="input-field flex-[2] rounded-lg px-3 py-2.5 text-sm" value="${escapeHtml(l.label)}" placeholder="Label" data-field="label">
         <button data-del-layout="${escapeHtml(l.id)}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
       </div>
-      <div class="mt-2 grid grid-cols-3 gap-2">
+      <div class="mt-2 grid grid-cols-1 gap-2">
         <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Posisi teks" data-field="textPos">${escapeHtml(l.textPos || "")}</textarea>
         <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Detail teks" data-field="textDetail">${escapeHtml(l.textDetail || "")}</textarea>
         <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Posisi gambar" data-field="imagePos">${escapeHtml(l.imagePos || "")}</textarea>
