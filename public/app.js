@@ -2215,7 +2215,7 @@ async function callOpenCode(systemPrompt, userPrompt, signal) {
     signal,
     body: JSON.stringify({
       model,
-      max_tokens: 2000,
+      max_tokens: 2000 + (state.slideCount || 5) * 300,
       temperature: 0.7,
       messages: [
         { role: "system", content: systemPrompt },

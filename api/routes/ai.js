@@ -256,7 +256,7 @@ router.post('/chat', requireAuth, aiLimiter, async (req, res) => {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 120000);
+    const timeout = setTimeout(() => controller.abort(), 180000);
 
     try {
       const response = await fetch('https://opencode.ai/zen/v1/chat/completions', {
@@ -269,7 +269,7 @@ router.post('/chat', requireAuth, aiLimiter, async (req, res) => {
         signal: controller.signal,
         body: JSON.stringify({
           model,
-          max_tokens: max_tokens || 2000,
+          max_tokens: max_tokens || 4000,
           temperature: temperature || 0.7,
           messages,
         }),
