@@ -838,11 +838,12 @@
 </div>
 
 <div id="layout-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,.6)">
-  <div class="rounded-xl border w-full max-w-md mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card);border-color:var(--border-strong)">
+  <div class="rounded-xl border w-full max-w-2xl mx-4 p-5 max-h-[80vh] flex flex-col" style="background:var(--bg-card);border-color:var(--border-strong)">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-display text-sm" style="color:var(--cream)">Kelola Layout Slide</h3>
       <button id="btn-close-layout" class="text-lg" style="color:var(--ink-faint)"><i class="ti ti-x"></i></button>
     </div>
+    <p class="text-xs mb-3" style="color:var(--ink-faint)">Isi deskripsi posisi teks, detail teks, dan posisi gambar. Deskripsi ini dipakai sebagai instruksi AI saat membuat gambar dan teks slide.</p>
     <div class="flex gap-2 mb-3">
       <input id="inp-new-layout-id" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="ID (contoh: hero-center)" autocomplete="off">
       <input id="inp-new-layout-label" class="input-field flex-1 rounded-lg px-3 py-2 text-xs" placeholder="Label (contoh: Hero Center)" autocomplete="off">

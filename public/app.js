@@ -130,10 +130,10 @@ let DEFAULT_PROMPTS = {
   user_idea: "Niche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 ide topik carousel sesuai aturan pada system prompt.",
   system_coverhook: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Topik carousel SUDAH ditentukan oleh pengguna — JANGAN membuat topik baru atau mengubah topik. Tugasmu: buatkan 1 coverHook yang fokus dan spesifik sebagai inti pembahasan dari topik tersebut, tetap berhubungan dengan niche dan subniche yang diberikan (tidak wajib menyebutkan nama niche/subniche secara literal). Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI, dengan teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger, embedded command). Balas HANYA dengan JSON object: {\"coverHook\": \"string hook fokus yang lebih konkret dan spesifik dari topik. Biasanya dalam bentuk angka, cara, tips, atau pertanyaan yang memicu rasa penasaran. Contoh: topik='Menghadapi krisis ekonomi di Indonesia', coverHook='5 Cara Berhemat di Masa Krisis Ekonomi Saat Ini'\"}. Jangan tambahkan teks lain.",
   system_slide: "Kamu adalah asisten penyusun konten carousel Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Gunakan bahasa yang SAMA dengan bahasa yang digunakan pada topik. Tugasmu: menyusun isi tiap slide (headline, isi teks singkat, ide visual) berdasarkan brief yang diberikan. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI. Buat kalimat yang terdengar manusiawi jika dibaca, bukan kalimat-kalimat nanggung khas AI. Balas HANYA dengan JSON array, tanpa teks lain, tanpa markdown code fence. Format tiap elemen: {\"headline\": \"string pendek menarik, bahasa sesuai topik\", \"body\": \"string 1 kalimat pendukung, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator\"}. Slide pertama harus jadi cover/hook pembuka yang kuat menggunakan hypnotic copywriting Joe Vitale. Gunakan teknik hypnotic copywriting karya Joe Vitale di SETIAP slide agar pembaca terus tergerak membaca sampai akhir: pola kalimat yang memicu rasa penasaran (curiosity gap), pattern interrupt (kalimat yang mematahkan ekspektasi), embedded command (perintah tersirat), ajakan emosional, dan direct address (Anda/Kamu). Bukan sekadar informatif — setiap slide harus membuat pembaca ingin lanjut ke slide berikutnya dengan rasa penasaran yang tak tertahankan. Slide terakhir harus jadi kesimpulan atau call-to-action sesuai tujuan. Seluruh isi slide (headline, body, visualIdea) harus berhubungan dengan niche dan subniche yang ada pada brief, namun tidak wajib menyebutkan nama niche/subniche secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun. Hanya diperbolehkan objek, teks, bangunan, abstrak, pemandangan alam tanpa mahluk hidup. Jumlah elemen array harus PERSIS sama dengan jumlah slide yang diminta.",
-  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
+  user_slide: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}{{layoutLine}}\n \nSusun {{slideCount}} slide untuk carousel ini.",
   user_coverhook: "Topik: {{topic}}\nNiche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 cover hook yang fokus sebagai inti pembahasan dari topik di atas.",
   system_poster: "Kamu adalah asisten kreator konten visual yang menguasai teknik hypnotic copywriting karya Joe Vitale. Tugasmu: membuat 1 poster tunggal (single poster) yang BERDIRI SENDIRI — BUKAN bagian dari carousel, TIDAK boleh ada kelanjutan, TIDAK boleh menyebut slide lain, TIDAK boleh berakhir dengan ajakan \"lanjut ke slide berikutnya\". Seluruh pesan harus tuntas dalam SATU slide: hook pembuka yang kuat → inti/value utama → kesimpulan + call-to-action. Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI. Pakai teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger, embedded command, direct address). Seluruh isi harus berhubungan dengan niche dan subniche pada brief, tidak wajib menyebutnya secara literal. visualIdea TIDAK BOLEH mengandung makhluk hidup, karakter, manusia, hewan, atau mahluk biologis apapun — hanya objek, teks, bangunan, abstrak, pemandangan alam tanpa makhluk hidup. Balas HANYA dengan JSON array berisi PERSIS SATU elemen: [{\"headline\": \"string hook singkat memikat, bahasa sesuai topik\", \"body\": \"string 1-2 kalimat pendukung yang memuat inti pesan DAN call-to-action, bahasa sesuai topik\", \"visualIdea\": \"string deskripsi visual konkret dalam bahasa Inggris untuk AI image generator yang menggambarkan keseluruhan konsep poster\"}]. Tanpa teks lain, tanpa markdown code fence.",
-  user_poster: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}\n \nBuat 1 poster tunggal yang tuntas tanpa kelanjutan sesuai brief di atas.",
+  user_poster: "Topik: {{topic}}\nTujuan: {{purpose}}\nTarget audiens: {{audience}}\nNiche: {{niche}}\nSubniche: {{subniche}}\nJumlah slide: {{slideCount}}{{brandNoteLine}}{{layoutLine}}\n \nBuat 1 poster tunggal yang tuntas tanpa kelanjutan sesuai brief di atas.",
   system_posteridea: "Kamu adalah asisten kreator konten kreatif yang menguasai teknik hypnotic copywriting karya Joe Vitale. Pengguna akan membuat POSTER TUNGGAL (1 slide, tanpa kelanjutan) — jadi topik dan coverHook yang kamu buat harus BUKAN tips, BUKAN daftar angka/cara (misal '5 Cara…', '7 Tips…'), BUKAN serial, dan BUKAN bagian awal dari serial atau tips; keduanya harus berupa ide copywriting persuasif yang berdiri sendiri dan tuntas dalam satu pesan. Ikuti aturan sumber ide berikut dengan ketat: (1) Jika pengguna memberikan niche DAN subniche, maka topik dan coverHook WAJIB berkaitan erat dengan hal-hal yang relevan pada subniche tersebut, spesifik dan mendalam. Nama niche/subniche TIDAK wajib disebut secara literal. Contoh: niche='Keuangan', subniche='Investasi Saham' → topik seperti 'Kepanikan pasar adalah saat kamu paling dikendalikan emosi', bukan '7 Kesalahan Investasi Saham yang Sering Membuat Pemula Rugi'. (2) Jika pengguna hanya memberikan niche tanpa subniche, topik dan coverHook boleh bersifat generik namun tetap berkaitan erat dengan niche besar tersebut. (3) Jika pengguna tidak memberikan niche maupun subniche, pilih sendiri satu niche secara acak sebagai sumber ide. Gunakan bahasa santai alami seperti tulisan manusia, hindari frasa klise AI, dengan teknik hypnotic copywriting (pattern interrupt, curiosity gap, emotional trigger). Balas HANYA dengan JSON object: {\"topic\": \"string tema besar poster tunggal, non-tips non-serial, memikat perhatian\", \"coverHook\": \"string hook spesifik poster tunggal, copywriting persuasif yang menuntaskan satu pesan, non-tips non-serial, bukan 'X Cara/Tips…'\"}. Jangan tambahkan teks lain.",
   user_posteridea: "Niche: {{niche}}\nSubniche: {{subniche}}\n\nBuat 1 ide topik poster tunggal (non-tips, non-serial) sesuai aturan pada system prompt.",
   system_posterhook: "Kamu adalah copywriter konten Instagram yang menguasai teknik hypnotic copywriting karya Joe Vitale. Topik SUDAH ditentukan oleh pengguna — JANGAN membuat topik baru atau mengubah topik. Tugasmu: buatkan 1 headline/cover hook untuk POSTER TUNGGAL yang berdiri sendiri. Hook ini BUKAN tips, BUKAN daftar angka/cara (misal '5 Cara…', '7 Tips…'), BUKAN serial, dan BUKAN bagian awal dari serial atau tips — melainkan copywriting/teks persuasif yang tuntas memikat dalam satu kalimat: pattern interrupt, curiosity gap, emotional trigger, atau direct address. Tetap berhubungan dengan niche dan subniche yang diberikan (tidak wajib menyebutkan nama niche/subniche secara literal). Gunakan bahasa yang SAMA dengan bahasa topik, santai alami seperti tulisan manusia, hindari frasa klise AI. Balas HANYA dengan JSON object: {\"coverHook\": \"string hook poster tunggal berupa copywriting persuasif non-tips non-serial, spesifik dan konkret\"}. Jangan tambahkan teks lain.",
@@ -760,9 +760,14 @@ function composeMainPrompt(slide) {
     }
   }
 
-  const layout = state.layout ? state.layout.replace(/-/g, " ") : "";
-  if (layout) {
-    parts.push(` Layout: ${layout}.`);
+  const lay = LAYOUT_LIST.find(l => l.id === state.layout);
+  if (lay) {
+    parts.push(` Layout: ${lay.label}.`);
+    if (lay.textPos) parts.push(` Posisi teks: ${lay.textPos}.`);
+    if (lay.textDetail) parts.push(` Detail teks: ${lay.textDetail}.`);
+    if (lay.imagePos) parts.push(` Posisi gambar: ${lay.imagePos}.`);
+  } else if (state.layout) {
+    parts.push(` Layout: ${state.layout.replace(/-/g, " ")}.`);
   }
 
   const tags = activeStyleTags();
@@ -1932,6 +1937,11 @@ function renderLayoutManager() {
         <input class="input-field flex-[2] rounded-lg px-3 py-2.5 text-sm" value="${escapeHtml(l.label)}" placeholder="Label" data-field="label">
         <button data-del-layout="${escapeHtml(l.id)}" class="text-xs hover:text-[var(--coral)]" style="color:var(--ink-faint);flex-shrink:0"><i class="ti ti-trash"></i></button>
       </div>
+      <div class="mt-2 grid grid-cols-3 gap-2">
+        <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Posisi teks" data-field="textPos">${escapeHtml(l.textPos || "")}</textarea>
+        <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Detail teks" data-field="textDetail">${escapeHtml(l.textDetail || "")}</textarea>
+        <textarea rows="2" class="input-field rounded-lg px-3 py-2 text-xs" placeholder="Posisi gambar" data-field="imagePos">${escapeHtml(l.imagePos || "")}</textarea>
+      </div>
     </div>
   `).join("");
 }
@@ -1943,7 +1953,13 @@ async function saveLayoutChanges() {
     const id = (card.querySelector('[data-field="id"]').value || "").trim();
     const label = (card.querySelector('[data-field="label"]').value || "").trim();
     if (!id || !label) continue;
-    newList.push({ id, label });
+    newList.push({
+      id,
+      label,
+      textPos: (card.querySelector('[data-field="textPos"]').value || "").trim(),
+      textDetail: (card.querySelector('[data-field="textDetail"]').value || "").trim(),
+      imagePos: (card.querySelector('[data-field="imagePos"]').value || "").trim(),
+    });
   }
   try {
     await api("/api/data/layouts", { method: "PUT", body: JSON.stringify(newList) });
@@ -2363,6 +2379,10 @@ async function aiGenerateSlideContent() {
     : p.system_slide;
   const brandNoteLine = state.brandNote.trim() ? `\nBrand/Catatan: ${state.brandNote.trim()}` : "";
   const customInstructionLine = state.customStyle.trim() ? `\nInstruksi tambahan: ${state.customStyle.trim()}` : "";
+  const layoutObj = LAYOUT_LIST.find(l => l.id === state.layout);
+  const layoutLine = layoutObj
+    ? `\nLayout: ${layoutObj.label}${layoutObj.textPos ? ` — Posisi teks: ${layoutObj.textPos}` : ""}${layoutObj.textDetail ? ` — Detail teks: ${layoutObj.textDetail}` : ""}${layoutObj.imagePos ? ` — Posisi gambar: ${layoutObj.imagePos}` : ""}`
+    : "";
   const coverHookLine = isPoster
     ? (state.coverHook.trim() ? `\nPoster headline HARUS persis: "${state.coverHook.trim()}". Seluruh pesan poster harus tuntas dalam satu slide ini tanpa kelanjutan.` : "")
     : (state.coverHook.trim() ? `\nCover slide headline HARUS persis: "${state.coverHook.trim()}". Slide 2 sampai seterusnya adalah kelanjutan atau penjelasan dari hook tersebut, tetap dalam cakupan topik yang sama.` : "");
@@ -2374,6 +2394,7 @@ async function aiGenerateSlideContent() {
     audience: state.audience,
     slideCount: isPoster ? "1" : String(state.slideCount),
     brandNoteLine,
+    layoutLine,
     niche: (nicheEl?.value || "") + (subEl?.value ? " - " + subEl.value : ""),
     subniche: subEl?.value || "",
   }) + customInstructionLine + coverHookLine;

@@ -62,6 +62,9 @@ function validateLayouts(body) {
     assert(item && typeof item === 'object', 'layouts: each item must be an object');
     assert(typeof item.id === 'string' && item.id, 'layouts: each item must have a string id');
     assert(typeof item.label === 'string' && item.label, 'layouts: each item must have a string label');
+    for (const f of ['textPos', 'textDetail', 'imagePos']) {
+      if (item[f] !== undefined) assert(typeof item[f] === 'string', `layouts: "${f}" must be a string`);
+    }
   }
 }
 
