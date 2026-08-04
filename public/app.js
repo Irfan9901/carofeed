@@ -780,14 +780,6 @@ function composeMainPrompt(slide) {
     parts.push(` Color palette: ${pal}.`);
   }
 
-  if (state.lightingNote && state.lightingNote !== "—") {
-    parts.push(` Lighting: ${state.lightingNote}.`);
-  }
-
-  if (state.compositionNote && state.compositionNote !== "—") {
-    parts.push(` Composition: ${state.compositionNote}.`);
-  }
-
   if (state.brandNote) {
     parts.push(` Text overlay "${state.brandNote}" at top left corner, without any logo or do not create any logo.`);
   }
@@ -2502,8 +2494,6 @@ function buildSingleSlideJson(slide, idx) {
         accent: state.color3 || null,
         description: getPaletteString() || "konsisten di semua slide, pilih warna yang harmonis",
       },
-      lighting: state.lightingNote,
-      composition: state.compositionNote,
       brand_note: state.brandNote || null,
       consistency_instruction: "Gunakan gaya visual, palet warna, dan pencahayaan yang sama persis di semua slide agar terlihat sebagai satu rangkaian carousel yang utuh.",
     },
@@ -2530,8 +2520,6 @@ function buildJsonOutput() {
         accent: state.color3 || null,
         description: getPaletteString() || "konsisten di semua slide, pilih warna yang harmonis",
       },
-      lighting: state.lightingNote,
-      composition: state.compositionNote,
       brand_note: state.brandNote || null,
       ...(state.slides.length > 1 ? { consistency_instruction: "Gunakan gaya visual, palet warna, dan pencahayaan yang sama persis di semua slide agar terlihat sebagai satu rangkaian carousel yang utuh." } : {}),
     },
