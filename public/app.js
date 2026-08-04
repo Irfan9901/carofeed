@@ -798,8 +798,6 @@ function composeMainPrompt(slide) {
 
   let prompt = parts.join("") + " STRICT NON-NEGOTIABLE RULE: Absolutely NO living beings, people, characters, animals, creatures, humans, faces, body parts, or any biological entity. No mascots, no cartoon characters, no people. Only objects, text, abstract shapes, buildings, nature without living beings. STRICT RULE: The color palette provided MUST be used for all backgrounds, ambiance, and atmosphere. If the visual scene description contains any background color, mood, or ambiance description, it MUST be replaced with the colors from the provided color palette. Ignore any color or ambiance instructions in the visual scene and use ONLY the palette colors.";
 
-  prompt += `\n\nNegative prompt: ${state.negativePrompt || DEFAULT_NEGATIVE}`;
-
   return prompt;
 }
 
