@@ -791,7 +791,7 @@ function composeMainPrompt(slide) {
     parts.push(` Include subtle "Geser Untuk Melanjutkan →" text at the bottom of the slide.`);
   }
 
-  if (state.slideCount === 1 || slide.role === "penutup") {
+  if (slide.role === "penutup") {
     parts.push(` Call-to-action text: a short topic-relevant invitation matching the slide's message (e.g. "Ayo Mulai Sekarang", "Saatnya Berubah", "Coba Gratis Sekarang"); never "Geser" or "swipe" language.`);
   }
 
