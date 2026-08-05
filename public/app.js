@@ -721,7 +721,9 @@ function activeStyleTags() {
   const preset = findStyleById(state.stylePreset);
   const base = preset ? [...preset.tags] : [];
   if (state.customStyle.trim()) {
-    state.customStyle.split(",").map((t) => t.trim()).filter(Boolean).forEach((t) => base.push(t));
+    state.customStyle.split(",").map((t) => t.trim()).filter(Boolean).forEach((t) => {
+      if (!base.some((b) => b.toLowerCase() === t.toLowerCase())) base.push(t);
+    });
   }
   return base;
 }
@@ -747,11 +749,6 @@ function composeMainPrompt(slide) {
     : `A premium Instagram carousel ${slide.role} in ${ratio} portrait format.`;
   parts.push(`${opening} Highly ultra realistic detailed, professional high quality, sharp focus, rich textures, cinematic lighting material from visual idea or visual scene.`);
 
-  const preset = findStyleById(state.stylePreset);
-  if (preset) {
-    parts.push(` ${preset.label} aesthetic with ${preset.tags.slice(0, 3).join(", ")}.`);
-  }
-
   if (slide.visualIdea) {
     parts.push(` The visual scene: ${slide.visualIdea}.`);
   }
@@ -775,7 +772,7 @@ function composeMainPrompt(slide) {
 
   const tags = activeStyleTags();
   if (tags.length) {
-    parts.push(` Style direction: ${tags.join(", ")}.`);
+    parts.push(` The ENTIRE composition MUST follow the style: ${tags.join(", ")}. Every background, texture, shape, material, and visual element must be created according to this style.`);
   }
 
   const nicheEl = document.getElementById("inp-evergreen-niche");
