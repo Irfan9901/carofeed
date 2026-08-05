@@ -742,7 +742,10 @@ function composeMainPrompt(slide) {
   const parts = [];
 
   const ratio = getAspectRatioValue();
-  parts.push(`A premium Instagram carousel ${slide.role} in ${ratio} portrait format. Highly ultra realistic detailed, professional high quality, sharp focus, rich textures, cinematic lighting material from visual idea or visual scene.`);
+  const opening = state.slideCount === 1
+    ? `A professional premium social media poster in ${ratio} portrait format.`
+    : `A premium Instagram carousel ${slide.role} in ${ratio} portrait format.`;
+  parts.push(`${opening} Highly ultra realistic detailed, professional high quality, sharp focus, rich textures, cinematic lighting material from visual idea or visual scene.`);
 
   const preset = findStyleById(state.stylePreset);
   if (preset) {
