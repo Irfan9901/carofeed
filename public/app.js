@@ -778,6 +778,12 @@ function composeMainPrompt(slide) {
     parts.push(` Style direction: ${tags.join(", ")}.`);
   }
 
+  const nicheEl = document.getElementById("inp-evergreen-niche");
+  const subEl = document.getElementById("inp-subniche");
+  if (nicheEl?.value) parts.push(` Visual elements relevant to the ${nicheEl.value}${subEl?.value ? " (" + subEl.value + ")" : ""} niche, such as props, symbols, and imagery associated with it.`);
+  if (state.topic.trim()) parts.push(` Topic-related visual elements: "${state.topic.trim()}".`);
+  if (state.coverHook.trim()) parts.push(` Cover hook-related visual elements: "${state.coverHook.trim()}".`);
+
   const pal = getPaletteString();
   if (pal) {
     parts.push(` Color palette: ${pal}.`);
