@@ -110,18 +110,36 @@ Production menggunakan `@upstash/redis` (REST API). Development (`DEV_MODE=true`
   - Layout slide (40+ layout dari `data_layouts` key — admin dapat mengelola via CRUD)
   - Palet warna (3 warna + auto-fill dari style palette)
   - Color picker HSV
-  - Custom style tags (comma-separated)
+  - Custom style tags (comma-separated) — digabung ke `activeStyleTags()` untuk `style_tags` & modul Style Direction (dedupe case-insensitive)
   - Brand notes
-  - Lighting options
-  - Composition options
-  - Negative prompt
+  - Swipe text toggle ("Geser untuk melanjutkan") — hanya dipakai di output slide isi carousel, tidak di poster/penutup
+  - Negative prompt (field JSON terpisah, tidak duplikat di dalam `prompt`)
 - **AI Generate Ide Topik:** POST ke AI dengan konteks niche/subniche → menghasilkan `{ topic, coverHook }`. Jika topik sudah diisi manual → mode hook-only: hanya `coverHook` dibuat, topik tidak ditimpa (`generateIdeaFromNiche()` di app.js)
 - **AI Generate Konten Slide:** POST ke AI → menghasilkan `{ headline, body, visualIdea }` per slide
 - **Poster Tunggal (Jumlah slide = 1):** memakai prompt `system_poster`/`user_poster` (editable admin) → JSON array berisi PERSIS 1 elemen yang tuntas tanpa kelanjutan (hook → inti → CTA). Brief tetap lengkap: topic, purpose, audience, slideCount=1, brandNote, niche, subniche, customStyle, dan coverHook diadaptasi menjadi "Poster headline HARUS persis: …" + perintah tuntas tanpa kelanjutan. Label tombol: "AI menyusun poster…"
 - **Slide Editor:** Add slide, remove slide, reorder (drag), edit teks per slide
 - **JSON Output:** Viewer dengan copy button
 
-### B. Preset System
+### B. Copy Prompt Output (Salin Prompt)
+
+Fitur **salin prompt** menghasilkan 1 string `prompt` per slide (dari `composeMainPrompt()` di `app.js`). Struktur tersusun dari modul-modul berikut, dianggap aktif sesuai input/kondisi:
+
+| Modul | Isi | Sumber Parameter | Kondisi |
+|-------|-----|------------------|---------|
+| **1. Opening** | `A professional premium social media poster in {rasio} portrait format.` **atau** `A premium Instagram carousel {role} in {rasio} portrait format.` + kualitas (`Highly ultra realistic ... cinematic lighting material`) + visualIdea + `IGNORE any color mentioned.` | `state.slideCount`, `state.ratio` (`getAspectRatioValue()`), `slide.role`, `slide.visualIdea` | selalu |
+| **2. Konteks Niche/Topic/Hook** | `Visual elements relevant to the {niche} ({subniche}) niche ...` + `Topic-related visual elements: "{topic}".` + `Cover hook-related visual elements: "{coverHook}".` | `#inp-evergreen-niche`, `#inp-subniche` (DOM), `state.topic`, `state.coverHook` | tiap baris hanya jika terisi |
+| **3. Style Direction** | `The ENTIRE composition MUST follow the style: {preset-tags}, {custom-style-tags}, {hex-palette}. Every background, texture...` — satu-satunya blok style, tanpa duplikasi label preset | `activeStyleTags()` (preset `state.stylePreset` + custom `state.customStyle`, dedupe case-insensitive) + hex warna | jika ada tag/palette |
+| **4. Layout** | `Layout: {label}. Posisi teks: {textPos}...` | `state.layout` → `LAYOUT_LIST` | jika layout terpilih |
+| **5. Text Overlay** | `Text overlay reads "{headline}". Supporting text: "{body}".` | `slide.headline`, `slide.body` | jika headline terisi |
+| **6. Color Palette** | `Color palette: Primary (use as backgrounds, Texts, main elements): {c1}. Secondary (use as text and elements): {c2}. Accent (use as text and elements): {c3}.` | `state.color1..3`, fallback `state.palette` | jika warna manual terisi |
+| **7. Brand Note** | `Text overlay "{brandNote}" at top left corner, without logo.` | `state.brandNote` | jika terisi |
+| **8. Swipe Text** | `Include subtle "Geser Untuk Melanjutkan →" text at the bottom.` | `state.slideCount`, `state.swipeText` | slideCount > 1 DAN swipe ON DAN role ≠ penutup |
+| **9. CTA (Penutup)** | `Call-to-action text: ... never "Geser", "→" or "swipe".` | — | hanya `role === "penutup"` (poster/tunggal TANPA CTA) |
+| **10. Strict Rules** | Larangan makhluk hidup + `Ignore any color instructions ... use ONLY palette colors` | konstanta | selalu |
+
+**Catatan:** pemakaian `getPaletteString()` yang lain (untuk AI generate) tidak berubah; wording khusus "peran warna" hanya dipakai di modul 6. Kata `CTA` di seed layout (`data/layouts.json`) sudah diganti `area ajakan` untuk menghindari image generator menggambar teks "Geser".
+
+### C. Preset System
 
 - **Simpan preset** — validasi duplicate name per user
 - **Load preset** — dropdown memuat semua preset user
