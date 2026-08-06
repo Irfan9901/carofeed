@@ -747,17 +747,22 @@ function composeMainPrompt(slide) {
   const opening = state.slideCount === 1
     ? `A professional premium social media poster in ${ratio} portrait format.`
     : `A premium Instagram carousel ${slide.role} in ${ratio} portrait format.`;
-  parts.push(`${opening} Highly ultra realistic detailed, professional high quality, sharp focus, rich textures, cinematic lighting material from visual idea or visual scene.`);
+  const scene = slide.visualIdea ? ` ${slide.visualIdea}` : "";
+  let qualityLine = `${opening} Highly ultra realistic detailed, professional high quality, sharp focus, rich textures, cinematic lighting material`;
+  qualityLine += scene ? ` ${scene}, IGNORE any color mentioned.` : `. IGNORE any color mentioned.`;
+  parts.push(qualityLine);
 
-  if (slide.visualIdea) {
-    parts.push(` The visual scene: ${slide.visualIdea}.`);
-  }
+  const nicheEl = document.getElementById("inp-evergreen-niche");
+  const subEl = document.getElementById("inp-subniche");
+  if (nicheEl?.value) parts.push(` Visual elements relevant to the ${nicheEl.value}${subEl?.value ? " (" + subEl.value + ")" : ""} niche, such as props, symbols, and imagery associated with it.`);
+  if (state.topic.trim()) parts.push(` Topic-related visual elements: "${state.topic.trim()}".`);
+  if (state.coverHook.trim()) parts.push(` Cover hook-related visual elements: "${state.coverHook.trim()}".`);
 
-  if (slide.headline) {
-    parts.push(` Text overlay reads "${slide.headline}".`);
-    if (slide.body) {
-      parts.push(` Supporting text: "${slide.body}".`);
-    }
+  const tags = activeStyleTags();
+  const paletteHexes = [state.color1, state.color2, state.color3].filter(Boolean).join(", ") || state.palette || "";
+  if (tags.length || paletteHexes) {
+    const styleList = [tags.join(", "), paletteHexes].filter(Boolean).join(", ");
+    parts.push(` The ENTIRE composition MUST follow the style: ${styleList}. Every background, texture, shape, material, and visual element must be created according to this style.`);
   }
 
   const lay = LAYOUT_LIST.find(l => l.id === state.layout);
@@ -770,20 +775,21 @@ function composeMainPrompt(slide) {
     parts.push(` Layout: ${state.layout.replace(/-/g, " ")}.`);
   }
 
-  const tags = activeStyleTags();
-  if (tags.length) {
-    parts.push(` The ENTIRE composition MUST follow the style: ${tags.join(", ")}. Every background, texture, shape, material, and visual element must be created according to this style.`);
+  if (slide.headline) {
+    parts.push(` Text overlay reads "${slide.headline}".`);
+    if (slide.body) {
+      parts.push(` Supporting text: "${slide.body}".`);
+    }
   }
 
-  const nicheEl = document.getElementById("inp-evergreen-niche");
-  const subEl = document.getElementById("inp-subniche");
-  if (nicheEl?.value) parts.push(` Visual elements relevant to the ${nicheEl.value}${subEl?.value ? " (" + subEl.value + ")" : ""} niche, such as props, symbols, and imagery associated with it.`);
-  if (state.topic.trim()) parts.push(` Topic-related visual elements: "${state.topic.trim()}".`);
-  if (state.coverHook.trim()) parts.push(` Cover hook-related visual elements: "${state.coverHook.trim()}".`);
-
-  const pal = getPaletteString();
-  if (pal) {
-    parts.push(` Color palette: ${pal}.`);
+  if (state.color1 || state.color2 || state.color3) {
+    const palParts = [];
+    if (state.color1) palParts.push(`Primary (use as backgrounds, Texts, and main elements): ${state.color1}`);
+    if (state.color2) palParts.push(`Secondary (use as text and elements): ${state.color2}`);
+    if (state.color3) palParts.push(`Accent (use as text and elements): ${state.color3}`);
+    parts.push(` Color palette: ${palParts.join(". ")}.`);
+  } else if (state.palette) {
+    parts.push(` Color palette: ${state.palette}.`);
   }
 
   if (state.brandNote) {
@@ -795,10 +801,10 @@ function composeMainPrompt(slide) {
   }
 
   if (slide.role === "penutup") {
-    parts.push(` Call-to-action text: a short topic-relevant invitation matching the slide's message (e.g. "Ayo Mulai Sekarang", "Saatnya Berubah", "Coba Gratis Sekarang"); never "Geser" or "swipe" language.`);
+    parts.push(` Call-to-action text: a short topic-relevant invitation matching the slide's message (e.g. "Ayo Mulai Sekarang", "Saatnya Berubah", "Coba Gratis Sekarang"); never "Geser", "→" or "swipe" language.`);
   }
 
-  let prompt = parts.join("") + " STRICT NON-NEGOTIABLE RULE: Absolutely NO living beings, people, characters, animals, creatures, humans, faces, body parts, or any biological entity. No mascots, no cartoon characters, no people. Only objects, text, abstract shapes, buildings, nature without living beings. STRICT RULE: The color palette provided MUST be used for all backgrounds, ambiance, and atmosphere. If the visual scene description contains any background color, mood, or ambiance description, it MUST be replaced with the colors from the provided color palette. Ignore any color or ambiance instructions in the visual scene and use ONLY the palette colors.";
+  let prompt = parts.join("") + " STRICT NON-NEGOTIABLE RULE: Absolutely NO living beings, people, characters, animals, creatures, humans, faces, body parts, or any biological entity. No mascots, no cartoon characters, no people. Only objects, text, abstract shapes, buildings, nature without living beings. STRICT RULE: The color palette provided MUST be used for all backgrounds, ambiance, and atmosphere. If the visual scene description contains any background color, mood, or ambiance description, it MUST be replaced with the colors from the provided color palette. Ignore any color instructions in the visual scene and use ONLY the palette colors.";
 
   return prompt;
 }
